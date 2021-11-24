@@ -1,0 +1,49 @@
+{
+    "SRCDIR": [
+        "src/**"
+    ],
+    "SRC": [
+        "kernel.s",
+        "kernel.cpp",
+        "io.cpp",
+        "intr.cpp",
+        "dev.cpp"
+    ],
+    "mbr": "mbr.s",
+    "boot": "boot.s",
+    "CP_mbr": "",
+    "LDP_mbr": "-e mbr -Ttext 0x7c00",
+    "CP_boot": "-I\"C:\\Users\\forty\\Desktop\\Big OS\\src\\asm\"",
+    "LDP_boot": "-e boot -Ttext 0x1000",
+    "CP_cxx": [
+        "-c",
+        "-O2",
+        "-mcmodel=large",
+        "-ffreestanding",
+        "-mno-red-zone",
+        "-fno-exceptions",
+        "-fno-rtti",
+        "-I \"C:\\Users\\forty\\Desktop\\Big OS\\src\\include\""
+    ],
+    "CP_asm": [],
+    "LDP": [
+        "-Ttext 0x4000100000",
+        "-nostdlib",
+        "-L\"C:\\Users\\forty\\Desktop\\Big OS\\lib\"",
+        "-lgcc",
+        "-e __kernel"
+    ],
+    "objdump": [
+        "-D"
+    ],
+    "objcopy_kernel": [
+        "-O binary",
+        "-R .xdata",
+        "-R .pdata"
+    ],
+    "objcopy_loader": [
+        "-O binary",
+        "-j .text"
+    ],
+    "deg": "wt \"E:\\Bochs-2.7\\bochsdbg\" -q -f \"C:\\Users\\forty\\Desktop\\Big OS\\tools\\vm\\bochsrc.bxrc\""
+}
