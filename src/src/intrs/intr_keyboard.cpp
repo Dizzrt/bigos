@@ -1,9 +1,9 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 10:56:53
- * @LastEditTime: 2021-11-21 14:08:24
+ * @LastEditTime: 2021-11-24 18:32:41
  * @LastEditors: Dizzrt
- * @FilePath: \Big OS\src\src\intrs\intr_keyboard.cpp
+ * @FilePath: \bigos\src\src\intrs\intr_keyboard.cpp
  * @Description:
  */
 #include "dev/svga.h"
@@ -83,5 +83,5 @@ void intr_keyboard() {
         }
     }
 
-    iret;
+    return;
 }

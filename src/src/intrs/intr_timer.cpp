@@ -1,9 +1,9 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 18:24:28
- * @LastEditTime: 2021-11-21 14:09:38
+ * @LastEditTime: 2021-11-24 18:32:46
  * @LastEditors: Dizzrt
- * @FilePath: \Big OS\src\src\intrs\intr_timer.cpp
+ * @FilePath: \bigos\src\src\intrs\intr_timer.cpp
  * @Description:
  */
 
@@ -24,5 +24,5 @@ extern "C" void intr_timer() {
     // outb(0x20, 0x20);
     // outb(0xa0, 0x20);
 
-    iret;
+    return;
 }

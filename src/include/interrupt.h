@@ -1,9 +1,9 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 11:05:33
- * @LastEditTime: 2021-11-21 14:07:36
+ * @LastEditTime: 2021-11-24 21:05:04
  * @LastEditors: Dizzrt
- * @FilePath: \Big OS\src\include\interrupt.h
+ * @FilePath: \bigos\src\include\interrupt.h
  * @Description: 所有中断服务在此进行注册，中断服务程序应在此文件中声明,最多64个中断服务，最大idt号0x40
  */
 #ifndef __BIG_INTERRUPT_H__
@@ -12,7 +12,8 @@
 #define iret __iret__()
 
 #include "stdint.h"
-typedef void *intr_handler;
+typedef void (*intr_handler)();
+extern intr_handler intr_entry_table[64];
 enum intr_status { INTR_OFF, INTR_ON };
 
 extern "C" {
@@ -22,7 +23,7 @@ void intr_keyboard();
 }
 
 extern "C" {
-void __iret__();
+void do_intr(uint64_t, uint64_t);
 
 //初始化中断门描述符
 void idt_init();

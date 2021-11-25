@@ -1,9 +1,9 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 12:00:41
- * @LastEditTime: 2021-11-21 14:04:09
+ * @LastEditTime: 2021-11-24 21:10:32
  * @LastEditors: Dizzrt
- * @FilePath: \Big OS\src\src\intrs\interrupt.cpp
+ * @FilePath: \bigos\src\src\intrs\interrupt.cpp
  * @Description:
  */
 #include "interrupt.h"
@@ -11,15 +11,19 @@
 #include "io.h"
 
 void intr_init() {
-    idt_init();
+    // idt_init();
+    // init idt
+    for (int i = 0; i < 64; i++)
+        intr_register_handler(i, intr_entry_table[i]);
+
     pic_init(0xfc, 0xff); //初始化中断代理芯片
     intr_Set(intr_status::INTR_ON);
 }
 
-void idt_init() {
-    intr_register_handler(0x20, intr_timer);    // IRQ0----时钟中断
-    intr_register_handler(0x21, intr_keyboard); // IRQ1----键盘中断
-}
+// void idt_init() {
+//     intr_register_handler(0x20, intr_timer);    // IRQ0----时钟中断
+//     intr_register_handler(0x21, intr_keyboard); // IRQ1----键盘中断
+// }
 
 void pic_init(uint8_t OCW1_m, uint8_t OCW1_s) // for 8259A
 {
@@ -38,7 +42,7 @@ void pic_init(uint8_t OCW1_m, uint8_t OCW1_s) // for 8259A
     __outb__(0xa1, OCW1_s);
 }
 
-void intr_register_handler(uint8_t vnum, void (*handler)()) {
+void intr_register_handler(uint8_t vnum, intr_handler handler) {
     uint64_t *p = 0;
     p += vnum * 2;
 
@@ -79,3 +83,5 @@ intr_status intr_Set(intr_status status) {
     // return intr_Get();
     return intr_status::INTR_ON;
 }
+
+void do_intr(uint64_t ivec, uint64_t ecode) {}

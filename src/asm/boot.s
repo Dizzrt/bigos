@@ -142,9 +142,11 @@ long_mod:
     movw %ax,%ds
 
 load_kernel:
+    movq $0,%r9
     movq $0,%rax
     mov $0x4000100000,%r8
 load_kernel_Loop:
+    incq %r9
     movl (0x500),%eax
     push %r8
     push %rax
@@ -164,7 +166,7 @@ enter_kernel:
 
 continue_load_kernel:
     add $0x200,%r8
-    incb (0x500)
+    incl (0x500)
     jmp load_kernel_Loop
 
 io_delay:
