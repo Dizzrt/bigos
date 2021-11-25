@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 10:56:53
- * @LastEditTime: 2021-11-24 18:32:41
+ * @LastEditTime: 2021-11-25 15:23:05
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\src\intrs\intr_keyboard.cpp
  * @Description:
@@ -40,7 +40,7 @@ bool shift_l = false, shift_r = false;
 bool ctrl_l = false, ctrl_r = false;
 bool alt_l = false, alt_r = false;
 
-void intr_keyboard() {
+void intr_keyboard(uint64_t ecode) {
     __outb__(0x20, 0x61);
     uint8_t keyCode = __inb__(0x60);
 

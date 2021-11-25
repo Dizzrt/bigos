@@ -9,7 +9,7 @@ intr_entry_\ivec:
     .if \ecode==0
         pushq $0
     .endif
-    pushq \ivec
+    pushq $\ivec
     jmp intr_entry
 .data
 .quad intr_entry_\ivec
@@ -17,8 +17,23 @@ intr_entry_\ivec:
 
 .text
 intr_entry:
+    push %rbp
+    mov %rsp,%rbp
+    push %rdi
+    push %rsi
+    mov 8(%rbp),%rdi
+    mov 16(%rbp),%rsi
     call do_intr
+    pop %rsi
+    pop %rdi
+    pop %rbp
     addq $16,%rsp
+
+    mov $0x20,%dx
+    mov $0x20,%al
+    outb %al,%dx
+    mov $0xa0,%al
+    outb %al,%dx
     iretq
 
 intr_entry 0x00

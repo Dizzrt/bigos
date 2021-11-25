@@ -1,10 +1,10 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-10-10 21:42:47
- * @LastEditTime: 2021-11-23 15:49:38
+ * @LastEditTime: 2021-11-25 19:34:50
  * @LastEditors: Dizzrt
  * @Description:
- * @FilePath: \Big OS\src\kernel.cpp
+ * @FilePath: \bigos\src\kernel.cpp
  */
 
 #include "dev/svga.h"
@@ -20,9 +20,6 @@ static void init_kernel();
 }
 
 void Kernel() {
-    init_kernel();
-    svga_Clear();
-
     char msg_kernel[] = "in kernel";
     char *addr = (char *)0x40000b8000;
 
@@ -30,6 +27,8 @@ void Kernel() {
         *addr++ = msg_kernel[i];
         *addr++ = 0x0c;
     }
+    init_kernel();
+    // svga_Clear();
 
     // memset((void *)0x4000000000, 0xff, 1024);
 

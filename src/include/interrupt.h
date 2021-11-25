@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 11:05:33
- * @LastEditTime: 2021-11-24 21:05:04
+ * @LastEditTime: 2021-11-25 21:21:23
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\include\interrupt.h
  * @Description: 所有中断服务在此进行注册，中断服务程序应在此文件中声明,最多64个中断服务，最大idt号0x40
@@ -9,24 +9,22 @@
 #ifndef __BIG_INTERRUPT_H__
 #define __BIG_INTERRUPT_H__
 
-#define iret __iret__()
-
 #include "stdint.h"
-typedef void (*intr_handler)();
-extern intr_handler intr_entry_table[64];
+extern void *intr_entry_table[64];
+typedef void (*intr_handler)(uint64_t);
+static intr_handler intr_handler_table[64];
+
 enum intr_status { INTR_OFF, INTR_ON };
 
 extern "C" {
 // void intr_timer();
-void intr_timer();
-void intr_keyboard();
+void intr_timer(uint64_t);
+void intr_keyboard(uint64_t);
 }
 
 extern "C" {
-void do_intr(uint64_t, uint64_t);
-
-//初始化中断门描述符
-void idt_init();
+void reg_intrs();
+void do_intr(uint8_t, uint64_t);
 
 /**
  * @description: 初始化中断代理芯片(8259A)
@@ -45,7 +43,8 @@ intr_status intr_Set(intr_status);
  * @param {uint_8} 中断号
  * @param {intr_handler} 中断服务程序
  */
-void intr_register_handler(uint8_t, void (*)());
+void intr_register_handler(uint8_t, intr_handler);
+static void inline intr_register_entry(uint8_t, void *);
 }
 
 #endif

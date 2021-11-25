@@ -1,29 +1,29 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 12:00:41
- * @LastEditTime: 2021-11-24 21:10:32
+ * @LastEditTime: 2021-11-25 21:21:27
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\src\intrs\interrupt.cpp
  * @Description:
  */
 #include "interrupt.h"
-
 #include "io.h"
 
-void intr_init() {
-    // idt_init();
-    // init idt
-    for (int i = 0; i < 64; i++)
-        intr_register_handler(i, intr_entry_table[i]);
-
-    pic_init(0xfc, 0xff); //初始化中断代理芯片
-    intr_Set(intr_status::INTR_ON);
+void reg_intrs() {
+    intr_register_handler(0x20, intr_timer);    // IRQ0----时钟中断
+    intr_register_handler(0x21, intr_keyboard); // IRQ1----键盘中断
 }
 
-// void idt_init() {
-//     intr_register_handler(0x20, intr_timer);    // IRQ0----时钟中断
-//     intr_register_handler(0x21, intr_keyboard); // IRQ1----键盘中断
-// }
+void intr_init() {
+    // init idt
+    for (int i = 0; i < 64; i++)
+        intr_register_entry(i, intr_entry_table[i]);
+
+    reg_intrs();
+
+    pic_init(0xfe, 0xff); //初始化中断代理芯片
+    intr_Set(intr_status::INTR_ON);
+}
 
 void pic_init(uint8_t OCW1_m, uint8_t OCW1_s) // for 8259A
 {
@@ -43,12 +43,17 @@ void pic_init(uint8_t OCW1_m, uint8_t OCW1_s) // for 8259A
 }
 
 void intr_register_handler(uint8_t vnum, intr_handler handler) {
+    intr_handler_table[vnum] = handler;
+    return;
+}
+
+static void inline intr_register_entry(uint8_t vnum, void *entry) {
     uint64_t *p = 0;
     p += vnum * 2;
 
-    uint64_t addr_low = (uint64_t)handler & 0x000000000000ffff;
-    uint64_t addr_mid = (uint64_t)handler & 0x00000000ffff0000;
-    uint64_t addr_high = (uint64_t)handler & 0xffffffff00000000;
+    uint64_t addr_low = (uint64_t)entry & 0x000000000000ffff;
+    uint64_t addr_mid = (uint64_t)entry & 0x00000000ffff0000;
+    uint64_t addr_high = (uint64_t)entry & 0xffffffff00000000;
 
     addr_mid <<= 32;
     addr_high >>= 32;
@@ -84,4 +89,4 @@ intr_status intr_Set(intr_status status) {
     return intr_status::INTR_ON;
 }
 
-void do_intr(uint64_t ivec, uint64_t ecode) {}
+void do_intr(uint8_t ivec, uint64_t ecode) { intr_handler_table[ivec](ecode); }
