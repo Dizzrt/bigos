@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-10-10 21:42:47
- * @LastEditTime: 2021-11-25 19:34:50
+ * @LastEditTime: 2021-11-26 12:36:23
  * @LastEditors: Dizzrt
  * @Description:
  * @FilePath: \bigos\src\kernel.cpp
@@ -20,6 +20,11 @@ static void init_kernel();
 }
 
 void Kernel() {
+    init_kernel();
+
+    svga_Clear();
+    svga_SetCursorPos(0, 2);
+
     char msg_kernel[] = "in kernel";
     char *addr = (char *)0x40000b8000;
 
@@ -27,12 +32,8 @@ void Kernel() {
         *addr++ = msg_kernel[i];
         *addr++ = 0x0c;
     }
-    init_kernel();
-    // svga_Clear();
-
     // memset((void *)0x4000000000, 0xff, 1024);
 
-    // svga_SetCursorPos(0, 2);
     //  uint8_t *base = (uint8_t *)0x600;
     //  uint8_t *lenth = (uint8_t *)0x608;
     //  uint8_t *flag = (uint8_t *)0x610;

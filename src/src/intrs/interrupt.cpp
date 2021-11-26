@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 12:00:41
- * @LastEditTime: 2021-11-25 21:21:27
+ * @LastEditTime: 2021-11-26 12:38:15
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\src\intrs\interrupt.cpp
  * @Description:
@@ -21,7 +21,7 @@ void intr_init() {
 
     reg_intrs();
 
-    pic_init(0xfe, 0xff); //初始化中断代理芯片
+    pic_init(0xfc, 0xff); //初始化中断代理芯片
     intr_Set(intr_status::INTR_ON);
 }
 

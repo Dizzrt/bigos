@@ -1,15 +1,15 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-17 15:00:41
- * @LastEditTime: 2021-11-18 19:22:24
+ * @LastEditTime: 2021-11-26 12:20:02
  * @LastEditors: Dizzrt
- * @FilePath: \Big OS\src\src\string.cpp
+ * @FilePath: \bigos\src\src\string.cpp
  * @Description:
  */
 
 #include "string.h"
 
-void *__cdecl memset(void *dstpp, int c, size_t len) {
+void *memset(void *dstpp, int c, size_t len) {
     long long dstp = (long long)dstpp;
 
     if (len >= 8) {
@@ -52,7 +52,7 @@ void *__cdecl memset(void *dstpp, int c, size_t len) {
 
     return dstpp;
 }
-int __cdecl memcmp(const void *s1, const void *s2, size_t len) {
+int memcmp(const void *s1, const void *s2, size_t len) {
     size_t xlen = len % OPSIZE;
     len -= xlen;
 
@@ -80,7 +80,7 @@ int __cdecl memcmp(const void *s1, const void *s2, size_t len) {
 
     return 0;
 }
-void *__cdecl memcpy(void *dstp, const void *srcp, size_t len) {
+void *memcpy(void *dstp, const void *srcp, size_t len) {
     size_t xlen = len % OPSIZE;
     len -= xlen;
 
@@ -101,8 +101,8 @@ void *__cdecl memcpy(void *dstp, const void *srcp, size_t len) {
     return dstp;
 }
 
-const char *__cdecl strcpy(char *dst, const char *src) { return (const char *)memcpy(dst, src, strlen(src) + 1); }
-int __cdecl strcmp(const char *s1, const char *s2) {
+const char *strcpy(char *dst, const char *src) { return (const char *)memcpy(dst, src, strlen(src) + 1); }
+int strcmp(const char *s1, const char *s2) {
     const unsigned char *ss1 = (const unsigned char *)s1;
     const unsigned char *ss2 = (const unsigned char *)s2;
 
@@ -116,7 +116,7 @@ int __cdecl strcmp(const char *s1, const char *s2) {
 
     return c1 - c2;
 }
-size_t __cdecl strlen(const char *str) {
+size_t strlen(const char *str) {
     const char *char_ptr;
     unsigned long long _str;
     const unsigned long long *str_ptr;
@@ -154,6 +154,6 @@ size_t __cdecl strlen(const char *str) {
             return cp - str + 7;
     }
 }
-// char *__cdecl strchr(const char *_Str, int _Val);
-// char *__cdecl strrchr(const char *_Str, int _Ch);
-// char *__cdecl strcat(char *__restrict__ _Dest, const char *__restrict__ _Source);
+// char * strchr(const char *_Str, int _Val);
+// char * strrchr(const char *_Str, int _Ch);
+// char * strcat(char *__restrict__ _Dest, const char *__restrict__ _Source);
