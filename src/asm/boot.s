@@ -1,14 +1,15 @@
 .file "boot"
 .text
 .code16
-.global boot
 boot:
     mov $0,%ax
     mov %ax,%ds
     mov %ax,%es
+
 detect_memory:
     mov $0,%ebx
-    mov $0x7e00,%di
+    mov $0x7c00,%di
+    mov $0x508,%si
 detect_memory_Loop:
     mov $20,%ecx
     mov $0xe820,%eax
@@ -18,12 +19,25 @@ detect_memory_Loop:
     movl 16(%di),%eax
     cmp $1,%eax
     jne L0
-    add $20,%di
+    movl (%di),%eax
+    movl %eax,(%si)
+    movl 4(%di),%eax
+    movl %eax,4(%si)
+    movl 8(%di),%eax
+    movl %eax,8(%si)
+    movl 12(%di),%eax
+    movl %eax,12(%si)
+    add $16,%si
+    incl ams
 L0:
     cmp $0,%ebx
     jne detect_memory_Loop
+    movl ams,%eax
+    movl %eax,0x504
 
 jmp build_gdt
+ams: .long 0 #available memory segment count
+
 gdt_attribute:
     .word 55 #7*8-1
     .quad 0x7c00

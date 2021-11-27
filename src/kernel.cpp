@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-10-10 21:42:47
- * @LastEditTime: 2021-11-26 12:36:23
+ * @LastEditTime: 2021-11-27 17:13:04
  * @LastEditors: Dizzrt
  * @Description:
  * @FilePath: \bigos\src\kernel.cpp
@@ -12,7 +12,7 @@
 #include "global.h"
 #include "interrupt.h"
 #include "io.h"
-//#include "string.h"
+#include "memory.h"
 
 extern "C" {
 void Kernel();
@@ -27,34 +27,17 @@ void Kernel() {
 
     char msg_kernel[] = "in kernel";
     char *addr = (char *)0x40000b8000;
+    asm volatile("nop\nnop");
+    uint32_t *amsCount = (uint32_t *)0x504;
+
+    //__put_int__(*amsCount, INT_MODE::DEC);
 
     for (int i = 0; i < 9; i++) {
         *addr++ = msg_kernel[i];
         *addr++ = 0x0c;
     }
-    // memset((void *)0x4000000000, 0xff, 1024);
 
-    //  uint8_t *base = (uint8_t *)0x600;
-    //  uint8_t *lenth = (uint8_t *)0x608;
-    //  uint8_t *flag = (uint8_t *)0x610;
-
-    // while (true) {
-    //     if (*((uint32_t *)flag) == 0)
-    //         break;
-
-    //     __put_int__(*((uint64_t *)base), INT_MODE::HEX);
-    //     __put_char__('\t');
-    //     __put_int__(*((uint64_t *)lenth), INT_MODE::HEX);
-    //     __put_char__('\t');
-    //     __put_int__(*((uint32_t *)flag), INT_MODE::HEX);
-    //     __put_char__('\n');
-
-    //     base += 20;
-    //     lenth += 20;
-    //     flag += 20;
-    // }
-    // char str[] = "123456789123456789";
-    // __put_int__(strlen(str), INT_MODE::DEC);
+    test();
 
     while (1) {};
 }

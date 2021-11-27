@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-04 12:44:43
- * @LastEditTime: 2021-11-26 12:39:52
+ * @LastEditTime: 2021-11-27 16:23:33
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\src\io.cpp
  * @Description:
@@ -48,7 +48,11 @@ void __put_int__(uint64_t val, INT_MODE mode) {
 
     uint8_t mod;
     switch (mode) {
-        case INT_MODE::HEX: mod = 16; break;
+        case INT_MODE::HEX:
+            mod = 16;
+            __put_char__('0');
+            __put_char__('x');
+            break;
         case INT_MODE::DEC: mod = 10; break;
         case INT_MODE::OCT: mod = 8; break;
         case INT_MODE::BIN: mod = 2; break;
@@ -60,16 +64,18 @@ void __put_int__(uint64_t val, INT_MODE mode) {
         val /= mod;
     }
 
-    if (i == 0)
+    if (i == 0) {
         __put_char__('0');
-    else
-        while (i > 0) {
-            --i;
-            if (buf[i] > 9)
-                __put_char__(buf[i] - 10 + 'A');
-            else
-                __put_char__(buf[i] + '0');
-        }
+        return;
+    }
+
+    do {
+        --i;
+        if (buf[i] > 9)
+            __put_char__(buf[i] - 10 + 'A');
+        else
+            __put_char__(buf[i] + '0');
+    } while (i > 0);
 
     return;
 }

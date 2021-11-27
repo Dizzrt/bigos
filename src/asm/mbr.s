@@ -3,7 +3,7 @@
 .text
 .code16
 mbr:
-jmpw .
+jmp BootCode
 
 FileSystemName: .ascii "EXFAT   "
 MustBeZero:
@@ -29,12 +29,6 @@ Reserved_0:
     .rept 7
         .byte 1
     .endr
-
-cur_lba: .long 1
-cur_sector: .byte 2
-cur_header: .byte 0
-cur_cylinder: .byte 0
-msg_error: .asciz "load boot error"
 
 BootCode:
     movw $0x100,%ax
@@ -100,7 +94,6 @@ enter_boot_L1:
     mov $0x1000,%ax
     jmpw *%ax
 
-.global error
 error:
     movw $msg_error,%si
 print:
@@ -113,6 +106,12 @@ print:
     jmp print
 end:
     jmp .
+
+cur_lba: .long 1
+cur_sector: .byte 2
+cur_header: .byte 0
+cur_cylinder: .byte 0
+msg_error: .asciz "load boot error"
 
 UniqueDiskID:
     .fill 0x1b8-(. - mbr),1,0
