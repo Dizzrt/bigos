@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-27 17:05:29
- * @LastEditTime: 2021-11-27 17:18:29
+ * @LastEditTime: 2021-11-28 22:06:07
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\src\memory.cpp
  * @Description:
@@ -9,47 +9,47 @@
 
 #include "memory.h"
 #include "io.h"
-#include "string.h"
-static void pbase() {
-    char p[] = "base:";
-    for (int i = 0; i < strlen(p); i++)
-        __put_char__(p[i]);
-}
 
-static void plen() {
-    char p[] = "len:";
-    for (int i = 0; i < strlen(p); i++)
-        __put_char__(p[i]);
-}
-
-void test() {
+void init_memory() {
     uint32_t amsCount = *((uint32_t *)0x504);
-    AMS *ams = (AMS *)0x508;
+    uint64_t *ams = (uint64_t *)0x508; // available memory segment
 
-    char p[] = "available memory segment count:";
-    for (int i = 0; i < strlen(p); i++)
-        __put_char__(p[i]);
-    __put_int__(amsCount, INT_MODE::DEC);
-    __put_char__('\n');
+    // the first bitmap
+    MemoryPools = (MemoryPoolNode *)0x400002b000;
+    MemoryPools->bitmap.bits = (uint8_t *)0x400002b100;
+    MemoryPools->base = *ams++;
+    MemoryPools->len = *ams++;                         // how much bytes in this pool
+    MemoryPools->bitmap.len = MemoryPools->len / 4096; // how much pages in this bitmap
 
-    for (int i = 0; i < amsCount; i++) {
-        pbase();
-        __put_int__(ams[i].base, INT_MODE::HEX);
-        __put_char__('\n');
+    *MemoryPools->bitmap.bits = 0xff;
+    *(MemoryPools->bitmap.bits + 1) = 0x80;
 
-        plen();
-        __put_int__(ams[i].len, INT_MODE::HEX);
-        __put_char__('\n');
-        __put_char__('\n');
-    }
-
-    char total[] = "total available memory:";
-    for (int i = 0; i < strlen(total); i++)
-        __put_char__(total[i]);
-    __put_int__((ams[0].len + ams[1].len) / (512 * 512), INT_MODE::DEC);
-    __put_char__('M');
-    __put_char__('B');
-    __put_char__('\n');
+    for (int i = 1; i < amsCount; i++) {}
 
     return;
+}
+
+void *__malloc__(size_t len) {
+    void *addr;
+    len = len / 4096 + (len % 4096 == 0 ? 0 : 1);
+    // TODO malloc
+
+    uint64_t offset = -1;
+    MemoryPoolNode *mpool = MemoryPools;
+    while (true) {
+        offset = bitmap_scan(mpool->bitmap, len);
+        if (offset != -1)
+            break;
+        else if (mpool->next != nullptr)
+            mpool = mpool->next;
+    }
+
+    if (offset == -1)
+        addr = nullptr;
+    else
+        addr = (void *)(offset * 0x1000 + mpool->base);
+
+    // TODO update bitmap
+
+    return addr;
 }

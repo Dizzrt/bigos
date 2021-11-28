@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-10-10 21:42:47
- * @LastEditTime: 2021-11-27 17:13:04
+ * @LastEditTime: 2021-11-28 16:45:19
  * @LastEditors: Dizzrt
  * @Description:
  * @FilePath: \bigos\src\kernel.cpp
@@ -43,6 +43,8 @@ void Kernel() {
 }
 
 static void init_kernel() {
+    init_memory();
+
     ppt_init(0x34, (CLOCK_TICK_RATE + HZ / 2) / HZ); // 1193=1193180/中断频率(100)
     intr_init();
 }
