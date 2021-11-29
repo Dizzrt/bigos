@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-06 15:56:49
- * @LastEditTime: 2021-11-29 16:21:58
+ * @LastEditTime: 2021-11-29 16:50:29
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\include\bitmap.h
  * @Description:
@@ -24,6 +24,8 @@ struct BitMap {
 };
 
 void bitmap_init(BitMap *);
+
+// return the offset from bitmap.bits(step is bit)
 uint64_t bitmap_scan(BitMap *, uint64_t);
 
 // bitmap  offset  len  isSet

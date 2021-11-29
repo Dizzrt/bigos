@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-27 17:05:29
- * @LastEditTime: 2021-11-29 16:19:28
+ * @LastEditTime: 2021-11-29 18:34:40
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\src\memory.cpp
  * @Description:
@@ -23,25 +23,24 @@ void memory_init() {
 
     bitmap_init(&MemoryPools->bitmap); // set all bits to 1(available page)
 
-    // top 10 pages (0x0~0x9000) are used
-    *MemoryPools->bitmap.bits = 0;
-    *(MemoryPools->bitmap.bits + 1) = 0x3f;
+    // top 44 pages (0x0~0x9000) are used
+    bitmap_update(&MemoryPools->bitmap, 0, 44);
 
-    // MemoryPoolNode *mnode = MemoryPools->next;
-    // for (int i = 1; i < amsCount; i++) {
-    //     mnode = (MemoryPoolNode *)__malloc__(sizeof(MemoryPoolNode));
-    //     mnode->base = *ams++;
-    //     mnode->len = *ams++;
-    //     mnode->bitmap.len = mnode->len / 4096;
-    //     mnode->bitmap.bits = (uint8_t *)__malloc__(mnode->bitmap.len / 8 + (mnode->bitmap.len % 8 ? 1 : 0));
-    //     bitmap_init(&mnode->bitmap);
-
-    //     mnode = mnode->next;
-    // }
+    MemoryPoolNode *curPool = MemoryPools;
+    for (int i = 1; i < amsCount; i++) {
+        curPool->next = (MemoryPoolNode *)__malloc__(sizeof(MemoryPoolNode));
+        curPool = curPool->next;
+        curPool->base = *ams++;
+        curPool->len = *ams++;
+        curPool->bitmap.len = curPool->len / 4096;
+        curPool->bitmap.bits = (uint8_t *)__malloc__(curPool->bitmap.len / 8 + (curPool->bitmap.len % 8 ? 1 : 0));
+        bitmap_init(&curPool->bitmap);
+    }
 
     return;
 }
 
+#include "io.h"
 void *__malloc__(size_t len) {
 
     len = len / 4096 + (len % 4096 ? 1 : 0);
@@ -60,9 +59,15 @@ void *__malloc__(size_t len) {
             return nullptr;
     }
 
-    void *addr = (void *)(offset * 0x1000 + mpool->base);
+    uint64_t addr = offset * 0x1000 + mpool->base; // this is a physical address
 
-    // TODO update bitmap
+    // TODO convert pd to vd
+    // TODO make page table
+    { // temporary,just for kernel
+        addr += 0x4000000000;
+    }
 
-    return addr;
+    bitmap_update(&mpool->bitmap, offset, len);
+
+    return (void *)addr;
 }

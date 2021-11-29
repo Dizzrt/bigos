@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-10-10 21:42:47
- * @LastEditTime: 2021-11-29 15:34:52
+ * @LastEditTime: 2021-11-29 18:01:08
  * @LastEditors: Dizzrt
  * @Description:
  * @FilePath: \bigos\src\kernel.cpp
@@ -14,26 +14,24 @@
 #include "io.h"
 #include "memory.h"
 
-extern "C" {
-void Kernel();
+extern "C" void Kernel();
 static void init_kernel();
-}
 
 void Kernel() {
-    svga_Clear();
     init_kernel();
 
-    svga_SetCursorPos(0, 2);
+    // svga_Clear();
+    // svga_SetCursorPos(0, 2);
 
-    {
-        char msg_kernel[] = "in kernel";
-        char *addr = (char *)0x40000b8000;
+    // {
+    //     char msg_kernel[] = "in kernel";
+    //     char *addr = (char *)0x40000b8000;
 
-        for (int i = 0; i < 9; i++) {
-            *addr++ = msg_kernel[i];
-            *addr++ = 0x0c;
-        }
-    }
+    //     for (int i = 0; i < 9; i++) {
+    //         *addr++ = msg_kernel[i];
+    //         *addr++ = 0x0c;
+    //     }
+    // }
 
     while (true)
         asm volatile("hlt");
