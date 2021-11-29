@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-27 16:59:38
- * @LastEditTime: 2021-11-28 22:00:15
+ * @LastEditTime: 2021-11-29 13:44:12
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\include\memory.h
  * @Description:
@@ -12,7 +12,6 @@
 
 #include "bitmap.h"
 #include "stdint.h"
-#include "string.h"
 
 struct MemoryPoolNode {
     uint64_t len;
@@ -22,13 +21,10 @@ struct MemoryPoolNode {
     MemoryPoolNode *next = nullptr;
 };
 
-static uint64_t totalMemory;
+static uint64_t totalMsemory;
 static MemoryPoolNode *MemoryPools;
 
-extern "C" {
-void test();
-void init_memory();
+void memory_init();
 void *__malloc__(size_t len);
-}
 
 #endif

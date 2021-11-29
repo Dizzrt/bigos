@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-10-10 21:42:47
- * @LastEditTime: 2021-11-28 16:45:19
+ * @LastEditTime: 2021-11-29 15:34:52
  * @LastEditors: Dizzrt
  * @Description:
  * @FilePath: \bigos\src\kernel.cpp
@@ -20,30 +20,27 @@ static void init_kernel();
 }
 
 void Kernel() {
+    svga_Clear();
     init_kernel();
 
-    svga_Clear();
     svga_SetCursorPos(0, 2);
 
-    char msg_kernel[] = "in kernel";
-    char *addr = (char *)0x40000b8000;
-    asm volatile("nop\nnop");
-    uint32_t *amsCount = (uint32_t *)0x504;
+    {
+        char msg_kernel[] = "in kernel";
+        char *addr = (char *)0x40000b8000;
 
-    //__put_int__(*amsCount, INT_MODE::DEC);
-
-    for (int i = 0; i < 9; i++) {
-        *addr++ = msg_kernel[i];
-        *addr++ = 0x0c;
+        for (int i = 0; i < 9; i++) {
+            *addr++ = msg_kernel[i];
+            *addr++ = 0x0c;
+        }
     }
 
-    test();
-
-    while (1) {};
+    while (true)
+        asm volatile("hlt");
 }
 
 static void init_kernel() {
-    init_memory();
+    memory_init();
 
     ppt_init(0x34, (CLOCK_TICK_RATE + HZ / 2) / HZ); // 1193=1193180/中断频率(100)
     intr_init();

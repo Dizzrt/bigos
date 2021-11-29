@@ -1,6 +1,7 @@
 .file "boot"
 .text
 .code16
+.global boot
 boot:
     mov $0,%ax
     mov %ax,%ds

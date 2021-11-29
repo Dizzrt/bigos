@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-04 12:44:43
- * @LastEditTime: 2021-11-27 16:23:33
+ * @LastEditTime: 2021-11-29 13:54:59
  * @LastEditors: Dizzrt
  * @FilePath: \bigos\src\src\io.cpp
  * @Description:
@@ -23,7 +23,8 @@ void __outb__(uint16_t port, uint8_t value) {
 }
 
 void __put_char__(uint8_t val) {
-    uint8_t *p = (uint8_t *)(svga_GetCursorPos() << 1) + 0x40000b8000;
+    // this long long means to avoid warning which is "cast to pointer from integer of different size"
+    uint8_t *p = (uint8_t *)(long long)((svga_GetCursorPos() << 1) + 0x40000b8000);
 
     if (val == '\n') {
         uint16_t pos = svga_GetCursorPos();

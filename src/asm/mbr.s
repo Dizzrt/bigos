@@ -2,6 +2,7 @@
 
 .text
 .code16
+.global mbr
 mbr:
 jmp BootCode
 
