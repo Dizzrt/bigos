@@ -1,14 +1,9 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-11-27 17:05:29
- * @LastEditTime: 2021-11-29 18:34:40
- * @LastEditors: Dizzrt
- * @FilePath: \bigos\src\src\memory.cpp
- * @Description:
+ * @LastEditTime: 2021-11-30 15:49:35
  */
 
-#include "memory.h"
-#include "io.h"
+#include "MMU\memory.h"
 
 void memory_init() {
     uint32_t amsCount = *((uint32_t *)0x504);
@@ -40,7 +35,6 @@ void memory_init() {
     return;
 }
 
-#include "io.h"
 void *__malloc__(size_t len) {
 
     len = len / 4096 + (len % 4096 ? 1 : 0);

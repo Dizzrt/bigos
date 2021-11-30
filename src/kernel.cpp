@@ -1,10 +1,6 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-10-10 21:42:47
- * @LastEditTime: 2021-11-29 18:01:08
- * @LastEditors: Dizzrt
- * @Description:
- * @FilePath: \bigos\src\kernel.cpp
+ * @LastEditTime: 2021-11-30 15:40:17
  */
 
 #include "dev/svga.h"

@@ -1,14 +1,10 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-11-28 17:20:35
- * @LastEditTime: 2021-11-29 18:33:55
- * @LastEditors: Dizzrt
- * @FilePath: \bigos\src\src\bitmap.cpp
- * @Description:
+ * @LastEditTime: 2021-11-30 15:49:21
  */
 
-#include "bitmap.h"
-#include "io.h"
+#include "MMU\bitmap.h"
+
 uint64_t bitmap_scan(BitMap *bitmap, uint64_t cnt) {
     uint8_t *pointer = bitmap->bits;
     for (uint64_t p = 0; p < bitmap->len; p++) {
