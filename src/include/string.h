@@ -1,14 +1,16 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-06 17:21:31
- * @LastEditTime: 2021-11-26 12:20:11
- * @LastEditors: Dizzrt
+ * @LastEditTime: 2021-12-02 15:34:15
+ * @LastEditors: Please set LastEditors
  * @FilePath: \bigos\src\include\string.h
  * @Description:
  */
 
 #ifndef __BIG_STRING_H__
 #define __BIG_STRING_H__
+
+#include "stdint.h"
 
 #define OPSIZE 8 // align 8 byte
 #define byte unsigned char
@@ -25,5 +27,7 @@ size_t strlen(const char *);
 // char * strchr(const char *_Str, int _Val);
 // char * strrchr(const char *_Str, int _Ch);
 // char * strcat(char *, const char *);
+
+char *itoa(int, char *, uint8_t);
 }
 #endif

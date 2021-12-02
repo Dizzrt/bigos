@@ -1,8 +1,8 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-17 15:00:41
- * @LastEditTime: 2021-11-26 12:20:02
- * @LastEditors: Dizzrt
+ * @LastEditTime: 2021-12-02 15:43:42
+ * @LastEditors: Please set LastEditors
  * @FilePath: \bigos\src\src\string.cpp
  * @Description:
  */
@@ -157,3 +157,32 @@ size_t strlen(const char *str) {
 // char * strchr(const char *_Str, int _Val);
 // char * strrchr(const char *_Str, int _Ch);
 // char * strcat(char *__restrict__ _Dest, const char *__restrict__ _Source);
+
+char *itoa(int val, char *str, uint8_t radix) {
+    char c[] = "0123456789ABCDEF";
+
+    uint32_t uval;
+    uint32_t offset = 0;
+
+    if (radix == 10 && val < 0) {
+        uval = (unsigned)-val;
+        str[offset++] = '-';
+    } else
+        uval = (unsigned)val;
+
+    do {
+        str[offset++] = c[uval % radix];
+        uval /= radix;
+    } while (uval);
+    str[offset] = '\0';
+
+    uint32_t flag = str[0] == '-' ? 1 : 0;
+    for (uint32_t i = flag; i <= (offset - 1) / 2; i++) {
+        char temp;
+        temp = str[i];
+        str[i] = str[offset - 1 + flag - i];
+        str[offset - 1 + flag - i] = temp;
+    }
+
+    return str;
+}

@@ -1,8 +1,8 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-01 10:56:53
- * @LastEditTime: 2021-11-25 15:23:05
- * @LastEditors: Dizzrt
+ * @LastEditTime: 2021-12-02 14:22:06
+ * @LastEditors: Please set LastEditors
  * @FilePath: \bigos\src\src\intrs\intr_keyboard.cpp
  * @Description:
  */
@@ -51,7 +51,7 @@ void intr_keyboard(uint64_t ecode) {
         {
             if (keyCode == 0x0e) {
                 svga_MoveCursor(1, false);
-                __put_char__(0);
+                putk_svag(0);
                 svga_MoveCursor(1, false); // FIXME backspace
                 return;
             }
@@ -63,11 +63,11 @@ void intr_keyboard(uint64_t ecode) {
                 case 0x3a: capslock = !capslock; break;
                 default:
                     if ((shift_r || shift_l))
-                        __put_char__(keyMap[keyCode].shift);
+                        putk_svag(keyMap[keyCode].shift);
                     else if (capslock)
-                        __put_char__(keyMap[keyCode].capslock);
+                        putk_svag(keyMap[keyCode].capslock);
                     else
-                        __put_char__(keyMap[keyCode].normal);
+                        putk_svag(keyMap[keyCode].normal);
                     break;
             }
         } else // released

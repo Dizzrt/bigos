@@ -1,8 +1,8 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-03 10:50:28
- * @LastEditTime: 2021-11-14 22:10:26
- * @LastEditors: Dizzrt
+ * @LastEditTime: 2021-12-02 13:47:49
+ * @LastEditors: Please set LastEditors
  * @FilePath: \Big OS\src\include\dev\svga.h
  * @Description:
  */
@@ -11,8 +11,6 @@
 #define __BIG_SVGA_H__
 
 #include "stdint.h"
-
-extern "C" {
 
 /**
  * @description: 设置显示模式
@@ -36,6 +34,5 @@ void __svga_SetCursorPos__(uint16_t);
  */
 void svga_MoveCursor(uint16_t, bool);
 void svga_Clear();
-}
 
 #endif

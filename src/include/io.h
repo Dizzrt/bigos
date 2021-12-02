@@ -1,24 +1,29 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-03 17:35:01
- * @LastEditTime: 2021-11-19 13:12:40
- * @LastEditors: Dizzrt
+ * @LastEditTime: 2021-12-02 16:02:36
+ * @LastEditors: Please set LastEditors
  * @FilePath: \Big OS\src\include\io.h
  * @Description:
  */
 
 #ifndef __BIG_IO_H__
 #define __BIG_IO_H__
+
+#include "stdarg.h"
 #include "stdint.h"
+#include "string.h"
+
+#define TAB_WIDTH 4
+
 // output for text mode
 enum INT_MODE { HEX, DEC, OCT, BIN };
 
-extern "C" {
 uint8_t __inb__(uint16_t);
 void __outb__(uint16_t, uint8_t);
 
-void __put_char__(uint8_t);
-void __put_int__(uint64_t, INT_MODE);
-}
+void putk_svag(char);
+void putsk_svga(char *);
+void printk_svga(char *, ...);
 
 #endif

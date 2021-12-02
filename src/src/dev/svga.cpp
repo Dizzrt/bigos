@@ -1,8 +1,8 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-03 10:59:30
- * @LastEditTime: 2021-11-17 13:44:45
- * @LastEditors: Dizzrt
+ * @LastEditTime: 2021-12-02 13:47:45
+ * @LastEditors: Please set LastEditors
  * @FilePath: \Big OS\src\src\dev\svga.cpp
  * @Description: svga driver
  */
