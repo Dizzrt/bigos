@@ -1,11 +1,8 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-11-01 11:05:33
- * @LastEditTime: 2021-11-25 21:21:23
- * @LastEditors: Dizzrt
- * @FilePath: \bigos\src\include\interrupt.h
- * @Description: 所有中断服务在此进行注册，中断服务程序应在此文件中声明,最多64个中断服务，最大idt号0x40
+ * @LastEditTime: 2021-12-02 20:32:28
  */
+
 #ifndef __BIG_INTERRUPT_H__
 #define __BIG_INTERRUPT_H__
 

@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-04 12:44:43
- * @LastEditTime: 2021-12-02 16:02:55
+ * @LastEditTime: 2021-12-02 16:09:10
  * @LastEditors: Please set LastEditors
  * @FilePath: \bigos\src\src\io.cpp
  * @Description:
@@ -48,7 +48,7 @@ void putk_svag(char val) {
     return;
 }
 
-void putsk_svga(char *str) {
+void putsk_svga(const char *str) {
     uint16_t curPosDelta = 0;
     uint8_t *p = __getSvagPointer();
 
@@ -93,7 +93,7 @@ static uint8_t updateBuffer(char *buffer, char *val, uint8_t offset) {
     return ret;
 }
 
-void printk_svga(char *fmt, ...) {
+void printk_svga(const char *fmt, ...) {
     va_list valist;
     va_start(valist, fmt);
 

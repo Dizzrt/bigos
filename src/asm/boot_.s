@@ -41,14 +41,10 @@ ams: .long 0 #available memory segment count
 
 gdt_attribute:
     .word 55 #7*8-1
-    .quad 0x320
-
-gdt_attribute_x64:
-    .word 223
-    .quad 0x4000000320
+    .quad 0x7c00
 
 build_gdt:
-    mov $0x320,%bx
+    mov $0x7c00,%bx
 .equ SELECTOR_NULL,0x0<<3
     movl $0x000000,0x0(%bx)
     movl $0x000000,0x4(%bx)
@@ -65,7 +61,7 @@ build_gdt:
     movl $0x0000ffff,0x20(%bx)
     movl $0x00af9200,0x24(%bx)
 .equ SELECTOR_STACK_x64,0x5<<3
-    movl $0x00003000,0x28(%bx)
+    movl $0x00000500,0x28(%bx)
     movl $0x00209600,0x2c(%bx)
 .equ SELECTOR_VIDEO_x64,0x6<<3
     movl $0x00000500,0x30(%bx)
@@ -146,13 +142,16 @@ enter_long:
     mov %eax,%cr0
 
     ljmp $SELECTOR_CODE_x64,$(long_mod)
+
 .code64
 long_mod:
-    lgdt (gdt_attribute_x64)
-
+    mov $0x4000000000,%rbx
+    addq %rbx,(gdt_attribute+2)
+    lgdt (gdt_attribute)
+    
     movw $SELECTOR_STACK_x64,%ax #init stack
     movw %ax,%ss
-    movq $0x4000004fff,%rsp
+    movq $0x4000007bff,%rsp
 
     movw $SELECTOR_DATA_x64,%ax
     movw %ax,%ds
@@ -184,6 +183,15 @@ continue_load_kernel:
     add $0x200,%r8
     incl (0x500)
     jmp load_kernel_Loop
+
+io_delay:
+    push %rcx
+    movq $8,%rcx
+io_delay_loop: #TODO xxx
+    nop
+    loop io_delay_loop
+    pop %rcx
+    ret
 
 error:
     jmp .

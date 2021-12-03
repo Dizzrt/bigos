@@ -8,6 +8,8 @@
 __kernel:
     movabsq $idt_attribute,%rax
     lidt (%rax)
+
+    movq $0x4000004fff,%rsp
     jmp Kernel
 
 
@@ -15,5 +17,5 @@ __kernel:
 
 .data
 idt_attribute:
-    .word 0x3ff
+    .word 0x320
     .quad 0x4000000000

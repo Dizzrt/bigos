@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-02 16:05:36
+ * @LastEditTime: 2021-12-03 22:02:23
  */
 
 #include "MMU/memory.h"
@@ -16,23 +16,14 @@ extern "C" void Kernel();
 static void init_kernel();
 
 void Kernel() {
+
     init_kernel();
-
     svga_Clear();
-    svga_SetCursorPos(0, 2);
 
-    {
-        char msg_kernel[] = "in kernel";
-        char *addr = (char *)0x40000b8000;
-
-        for (int i = 0; i < 9; i++) {
-            *addr++ = msg_kernel[i];
-            *addr++ = 0x0c;
-        }
-    }
+    printk_svga("big OS(developing)\n", 123);
 
     while (true)
-        asm volatile("hlt");
+        ;
 }
 
 static void init_kernel() {

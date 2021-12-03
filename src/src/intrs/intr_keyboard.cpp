@@ -1,10 +1,6 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-11-01 10:56:53
- * @LastEditTime: 2021-12-02 14:22:06
- * @LastEditors: Please set LastEditors
- * @FilePath: \bigos\src\src\intrs\intr_keyboard.cpp
- * @Description:
+ * @LastEditTime: 2021-12-02 20:32:54
  */
 #include "dev/svga.h"
 #include "interrupt.h"

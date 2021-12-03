@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-03 10:59:30
- * @LastEditTime: 2021-12-02 13:47:45
+ * @LastEditTime: 2021-12-02 16:13:49
  * @LastEditors: Please set LastEditors
  * @FilePath: \Big OS\src\src\dev\svga.cpp
  * @Description: svga driver
@@ -56,5 +56,7 @@ void svga_Clear() {
         *(p + 1) = 0x0f;
         p += 2;
     }
+
+    svga_SetCursorPos(0, 0);
     return;
 }

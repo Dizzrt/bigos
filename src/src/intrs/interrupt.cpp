@@ -1,11 +1,8 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-11-01 12:00:41
- * @LastEditTime: 2021-11-26 12:38:15
- * @LastEditors: Dizzrt
- * @FilePath: \bigos\src\src\intrs\interrupt.cpp
- * @Description:
+ * @LastEditTime: 2021-12-03 21:23:26
  */
+
 #include "interrupt.h"
 #include "io.h"
 
@@ -16,7 +13,7 @@ void reg_intrs() {
 
 void intr_init() {
     // init idt
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i < 50; i++)
         intr_register_entry(i, intr_entry_table[i]);
 
     reg_intrs();
