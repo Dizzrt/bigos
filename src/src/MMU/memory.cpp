@@ -1,11 +1,24 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-11-30 15:49:35
+ * @LastEditTime: 2021-12-04 20:47:23
  */
 
 #include "MMU\memory.h"
 
 void memory_init() {
+    permanentSlab.bitmap.bits = (uint8_t *)0x600;
+    permanentSlab.bitmap.len = 0x2000; // 1024*8
+    bitmap_init(&permanentSlab.bitmap);
+
+    permanentSlab.__using = 0;
+    permanentSlab.__free = 0x2000; // 8192bytes
+    permanentSlab.vaddr = (void *)0x40000010000;
+
+    pSlabNode.val = &permanentSlab;
+    kmem_cache.pool_empty.__list_init(&pSlabNode);
+
+    //---------------------------------------------------
+
     uint32_t amsCount = *((uint32_t *)0x504);
     uint64_t *ams = (uint64_t *)0x508; // available memory segment
 

@@ -1,9 +1,10 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-03 22:02:23
+ * @LastEditTime: 2021-12-04 20:53:54
  */
 
 #include "MMU/memory.h"
+#include "MMU/slab.h"
 #include "dev/svga.h"
 #include "dev/timer.h"
 #include "global.h"
@@ -22,8 +23,9 @@ void Kernel() {
 
     printk_svga("big OS(developing)\n", 123);
 
-    while (true)
-        ;
+    while (true) {
+        asm volatile("hlt");
+    }
 }
 
 static void init_kernel() {

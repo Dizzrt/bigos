@@ -1,8 +1,8 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-06 15:56:49
- * @LastEditTime: 2021-11-29 16:50:29
- * @LastEditors: Dizzrt
+ * @LastEditTime: 2021-12-04 17:00:28
+ * @LastEditors: Please set LastEditors
  * @FilePath: \bigos\src\include\bitmap.h
  * @Description:
  */
@@ -16,11 +16,11 @@
 #define BITMAP_MASK 0x80
 
 struct BitMap {
-    uint64_t len; // the count of pages
+    uint64_t len; // the count of bits
     uint8_t *bits;
 
-    // bit==1 => available page
-    // bit==0 => unavailable page
+    // bit==1 => free
+    // bit==0 => in using
 };
 
 void bitmap_init(BitMap *);
