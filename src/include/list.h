@@ -1,28 +1,26 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-04 22:17:14
+ * @LastEditTime: 2021-12-05 22:12:06
  */
 
 #ifndef __BIG_LIST_H__
 #define __BIG_LIST_H__
+#include "io.h"
+template <typename T> struct __list_node {
+    T val;
 
-struct __list_node_base {
-    __list_node_base *next = nullptr;
-    __list_node_base *prev = nullptr;
+    __list_node<T> *next = nullptr;
+    __list_node<T> *prev = nullptr;
 };
 
-template <typename T> struct __list_node : public __list_node_base { T val; };
-
 template <typename T> struct __list_iterator {
-    __list_node_base *node;
+    __list_node<T> *node;
 
-    __list_iterator(__list_node_base *_node) { this->node = _node; }
-
-    T &operator*() const { return static_cast<__list_node<T> *>(node)->val; }
+    __list_iterator(__list_node<T> *_node) : node(_node) {}
 
     // iter++
     __list_iterator<T> operator++(int) {
-        __List_iterator<T> __tmp = *this;
+        __list_iterator<T> __tmp = *this;
         node = node->next;
         return __tmp;
     }
@@ -45,49 +43,66 @@ template <typename T> struct __list_iterator {
         node = node->prev;
         return *this;
     }
+
+    T &operator*() const { return node->val; }
+    bool operator==(const __list_iterator &x) { return this->node == x.node; }
+    bool operator!=(const __list_iterator &x) { return this->node != x.node; }
 };
 
 template <typename T> class list {
-  private:
-    __list_node<T> *head = nullptr;
-    __list_node<T> *tail = nullptr;
-
+  public:
+    __list_node<T> node;
     unsigned int __size = 0;
 
   public:
     typedef __list_iterator<T> iterator;
 
-    list() {}
-
-    void push_back(T _val) {}
-    void push_front(T _val) {}
-
-    unsigned int size() { return __size; }
-    bool empty() { return __size == 0 ? true : false; }
-
-    bool remove(T _tar) { // TODO free memory
-        __list_node<T> *tmp = head;
-        while (tmp != nullptr) {
-            if (tmp->val == _tar) {
-                if (tmp == head)
-                    head = tmp->next;
-                else if (tmp == tail)
-                    tmp->prev->next = nullptr;
-                else {
-                    tmp->prev->next = tmp->next;
-                    tmp->next->prev = tmp->prev;
-                }
-                return true;
-            }
-        }
-        return false;
+    list() {
+        printk_svga("constructor");
+        node.next = &node;
+        node.prev = &node;
     }
 
-    iterator begin() { return iterator(this->head); }
+    // void push_back(T _val) {}
+    // void push_front(T _val) {}
 
-    void __list_init(__list_node<T> *_val) {
-        head = tail = _val;
-        __size = 1;
+    T &front() { return *begin(); }
+    T &back() { return *(--end()); }
+
+    unsigned int size() const { return __size; }
+    bool empty() const { return node.next == &node; }
+
+    // bool remove(T _tar) { // TODO free memory
+    //     __list_node<T> *tmp = head;
+    //     while (tmp != nullptr) {
+    //         if (tmp->val == _tar) {
+    //             if (tmp == head)
+    //                 head = tmp->next;
+    //             else if (tmp == tail)
+    //                 tmp->prev->next = nullptr;
+    //             else {
+    //                 tmp->prev->next = tmp->next;
+    //                 tmp->next->prev = tmp->prev;
+    //             }
+    //             return true;
+    //         }
+    //     }
+
+    //     return false;
+    // }
+
+    iterator begin() { return iterator(node.next); }
+    iterator end() { return iterator(&node); }
+
+    void __push_back_(__list_node<T> *_node) {
+        printk_svga("this obj addr:0x%x\n", this);
+
+        node.prev->next = _node;
+        _node->prev = node.prev;
+        node.prev = _node;
+        _node->next = &node;
+
+        __size++;
     }
 };
 #endif

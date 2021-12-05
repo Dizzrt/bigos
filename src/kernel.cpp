@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-04 20:53:54
+ * @LastEditTime: 2021-12-05 22:12:15
  */
 
 #include "MMU/memory.h"
@@ -15,13 +15,30 @@
 
 extern "C" void Kernel();
 static void init_kernel();
-
+Slab tslab;
+list<Slab *> tlist;
+__list_node<Slab *> tnode;
 void Kernel() {
-
+    // svga_Clear();
     init_kernel();
-    svga_Clear();
+    svga_SetCursorPos(0, 1);
 
-    printk_svga("big OS(developing)\n", 123);
+    tlist.node.next = &tlist.node;
+    tlist.node.prev = &tlist.node; // MARKER 不知道为何定义全局变量的类对象不会自动调用构造函数。
+
+    tslab.__free = 123;
+    tnode.val = &tslab;
+    printk_svga("0x%x\n", &tlist);
+    tlist.__push_back_(&tnode);
+
+    __list_node<Slab *> *tmp = tlist.node.next;
+    printk_svga("this cnt is %d\n", tlist.__size);
+    printk_svga("0x%x\n", &tnode);
+    printk_svga("tmp is 0x%x\n", tmp);
+
+    printk_svga("val is 0x%x\n", tmp->val);
+    //  list<Slab *>::iterator iter = tlist.begin();
+    //  printk_svga("%d\n", (*iter)->__free);
 
     while (true) {
         asm volatile("hlt");
