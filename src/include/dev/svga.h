@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-03 10:50:28
- * @LastEditTime: 2021-12-02 13:47:49
+ * @LastEditTime: 2021-12-06 20:58:14
  * @LastEditors: Please set LastEditors
  * @FilePath: \Big OS\src\include\dev\svga.h
  * @Description:
@@ -11,6 +11,9 @@
 #define __BIG_SVGA_H__
 
 #include "stdint.h"
+
+extern uint16_t resolution_x;
+extern uint16_t resolution_y;
 
 /**
  * @description: 设置显示模式

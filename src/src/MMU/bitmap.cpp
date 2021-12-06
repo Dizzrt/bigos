@@ -1,12 +1,13 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-11-30 15:49:21
+ * @LastEditTime: 2021-12-06 20:02:40
  */
 
 #include "MMU\bitmap.h"
 
 uint64_t bitmap_scan(BitMap *bitmap, uint64_t cnt) {
     uint8_t *pointer = bitmap->bits;
+
     for (uint64_t p = 0; p < bitmap->len; p++) {
         // find the first byte which not 0x00
         if (*pointer == 0) {
@@ -22,6 +23,24 @@ uint64_t bitmap_scan(BitMap *bitmap, uint64_t cnt) {
             mask >>= 1;
         } while (true);
 
+        uint64_t ret = (pointer - bitmap->bits) * 8;
+        if (mask == 0x80)
+            ret += 0;
+        else if (mask == 0x40)
+            ret += 1;
+        else if (mask == 0x20)
+            ret += 2;
+        else if (mask == 0x10)
+            ret += 3;
+        else if (mask == 0x08)
+            ret += 4;
+        else if (mask == 0x04)
+            ret += 5;
+        else if (mask == 0x02)
+            ret += 6;
+        else if (mask == 0x01)
+            ret += 7;
+
         uint64_t __cnt = 0;
         do {
             if (*pointer & mask == mask)
@@ -29,27 +48,8 @@ uint64_t bitmap_scan(BitMap *bitmap, uint64_t cnt) {
             else
                 break;
 
-            if (__cnt == cnt) {
-                uint64_t ret = (pointer - bitmap->bits) * 8;
-                if (mask == 0x80)
-                    ret += 0;
-                else if (mask == 0x40)
-                    ret += 1;
-                else if (mask == 0x20)
-                    ret += 2;
-                else if (mask == 0x10)
-                    ret += 3;
-                else if (mask == 0x08)
-                    ret += 4;
-                else if (mask == 0x04)
-                    ret += 5;
-                else if (mask == 0x02)
-                    ret += 6;
-                else if (mask == 0x01)
-                    ret += 7;
-
+            if (__cnt == cnt)
                 return ret;
-            }
 
             if (mask != 1)
                 mask >>= 1;

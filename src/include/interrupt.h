@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-02 20:32:28
+ * @LastEditTime: 2021-12-06 20:58:34
  */
 
 #ifndef __BIG_INTERRUPT_H__
@@ -21,7 +21,7 @@ void intr_keyboard(uint64_t);
 
 extern "C" {
 void reg_intrs();
-void do_intr(uint8_t, uint64_t);
+void do_intr(uint8_t, uint64_t); // TODO optimize intr
 
 /**
  * @description: 初始化中断代理芯片(8259A)

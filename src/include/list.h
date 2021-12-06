@@ -1,11 +1,11 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-05 22:12:06
+ * @LastEditTime: 2021-12-06 19:56:54
  */
 
 #ifndef __BIG_LIST_H__
 #define __BIG_LIST_H__
-#include "io.h"
+
 template <typename T> struct __list_node {
     T val;
 
@@ -50,15 +50,17 @@ template <typename T> struct __list_iterator {
 };
 
 template <typename T> class list {
-  public:
+  private:
     __list_node<T> node;
     unsigned int __size = 0;
 
   public:
     typedef __list_iterator<T> iterator;
 
+    // MARKER temporary crtbegin
+    void __temporary_init_() { this->node.next = this->node.prev = &this->node; }
+
     list() {
-        printk_svga("constructor");
         node.next = &node;
         node.prev = &node;
     }
@@ -95,8 +97,6 @@ template <typename T> class list {
     iterator end() { return iterator(&node); }
 
     void __push_back_(__list_node<T> *_node) {
-        printk_svga("this obj addr:0x%x\n", this);
-
         node.prev->next = _node;
         _node->prev = node.prev;
         node.prev = _node;

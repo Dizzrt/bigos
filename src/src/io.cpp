@@ -1,14 +1,11 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-11-04 12:44:43
- * @LastEditTime: 2021-12-02 16:09:10
- * @LastEditors: Please set LastEditors
- * @FilePath: \bigos\src\src\io.cpp
- * @Description:
+ * @LastEditTime: 2021-12-06 21:01:54
  */
+
 #include "io.h"
 #include "dev/svga.h"
-#include "global.h"
+#include "string.h"
 
 uint8_t __inb__(uint16_t port) {
     uint8_t ret;

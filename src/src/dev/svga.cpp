@@ -1,15 +1,17 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-03 10:59:30
- * @LastEditTime: 2021-12-02 16:13:49
+ * @LastEditTime: 2021-12-06 21:02:47
  * @LastEditors: Please set LastEditors
  * @FilePath: \Big OS\src\src\dev\svga.cpp
  * @Description: svga driver
  */
 
 #include "dev/svga.h"
-#include "global.h"
 #include "io.h"
+
+uint16_t resolution_x = 80;
+uint16_t resolution_y = 25;
 
 void svga_SetMode(uint8_t) {} // TODO 设置显示模式
 uint16_t svga_GetCursorPos() {

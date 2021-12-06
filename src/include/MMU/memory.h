@@ -1,14 +1,15 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-11-27 16:59:38
- * @LastEditTime: 2021-12-05 18:09:24
- * @LastEditors: Please set LastEditors
- * @FilePath: \bigos\src\include\memory.h
- * @Description:
+ * @LastEditTime: 2021-12-06 21:01:36
  */
 
 #ifndef __BIG_MEMORY_H__
 #define __BIG_MEMORY_H__
+
+#define SELECTOR_CODE 0x18
+#define SELECTOR_DATA 0x20
+#define SELECTOR_STACK 0x28
+#define SELECTOR_VIDEO 0x30
 
 #include "bitmap.h"
 #include "slab.h"

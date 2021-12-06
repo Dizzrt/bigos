@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-05 20:38:21
+ * @LastEditTime: 2021-12-06 20:43:10
  */
 
 #include "MMU\memory.h"
@@ -14,6 +14,8 @@ __list_node<Slab *> iSlabNode_1;
 Slab_cache kmem_cache;
 
 void memory_init() {
+    kmem_cache.__tmporary_init(); // MARKER temp
+
     //----slab init----
     // 0x600-0x9ff are used as bitmap of slab
     iSlab_0.__using = 0;
@@ -22,7 +24,7 @@ void memory_init() {
     iSlab_0.bitmap.bits = (uint8_t *)0x600;
 
     bitmap_init(&iSlab_0.bitmap);
-    iSlab_0.vaddr = (void *)0x4000001000;
+    iSlab_0.vaddr = 0x4000001000;
 
     iSlab_1.__using = 0;
     iSlab_1.__free = 0x1000;
@@ -30,13 +32,16 @@ void memory_init() {
     iSlab_1.bitmap.bits = (uint8_t *)0x800;
 
     bitmap_init(&iSlab_1.bitmap);
-    iSlab_1.vaddr = (void *)0x4000002000;
+    iSlab_1.vaddr = 0x4000002000;
+
+    iSlab_0.type = SlabType::PERMANENT;
+    iSlab_1.type = SlabType::PERMANENT;
 
     iSlabNode_0.val = &iSlab_0;
     iSlabNode_1.val = &iSlab_1;
 
+    kmem_cache.__appendSlab_(&iSlabNode_0);
     kmem_cache.__appendSlab_(&iSlabNode_1);
-    kmem_cache.__appendSlab_(&iSlabNode_0, PoolType::PARTIAL);
     //----end----
 
     // uint32_t amsCount = *((uint32_t *)0x504);
@@ -70,37 +75,9 @@ void memory_init() {
 }
 
 void *kmalloc(size_t len) {
-    void *ret = kmem_cache.__alloc(len);
-    return ret;
-}
-
-void *__malloc__(size_t len) {
-
-    len = len / 4096 + (len % 4096 ? 1 : 0);
-    // TODO malloc
-
-    //按页分配
-    uint64_t offset = -1;
-    MemoryPoolNode *mpool = MemoryPools;
-    while (true) {
-        offset = bitmap_scan(&mpool->bitmap, len);
-        if (offset != -1)
-            break;
-        else if (mpool->next != nullptr)
-            mpool = mpool->next;
-        else
-            return nullptr;
+    if (len < 4096)
+        return kmem_cache.__alloc(len);
+    else {
+        // TODO get page from buddy
     }
-
-    uint64_t addr = offset * 0x1000 + mpool->base; // this is a physical address
-
-    // TODO convert pd to vd
-    // TODO make page table
-    { // temporary,just for kernel
-        addr += 0x4000000000;
-    }
-
-    bitmap_update(&mpool->bitmap, offset, len);
-
-    return (void *)addr;
 }

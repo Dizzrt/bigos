@@ -1,10 +1,6 @@
 /*
  * @Author: Dizzrt
- * @Date: 2021-11-03 17:35:01
- * @LastEditTime: 2021-12-02 16:08:47
- * @LastEditors: Please set LastEditors
- * @FilePath: \Big OS\src\include\io.h
- * @Description:
+ * @LastEditTime: 2021-12-06 21:01:40
  */
 
 #ifndef __BIG_IO_H__
@@ -12,7 +8,6 @@
 
 #include "stdarg.h"
 #include "stdint.h"
-#include "string.h"
 
 #define TAB_WIDTH 4
 
