@@ -3,19 +3,12 @@
 
 .text
 .code64
+#.extern _init
 .extern Kernel
-.global __kernel
-__kernel:
-    movabsq $idt_attribute,%rax
-    lidt (%rax)
-
+    
+.global _start
+.type _start, @function
+_start:
     movq $0x4000004fff,%rsp
+    #call _init
     jmp Kernel
-
-
-.include "intr_entries.s"
-
-.data
-idt_attribute:
-    .word 0x320
-    .quad 0x4000000000

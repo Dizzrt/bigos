@@ -47,6 +47,10 @@ gdt_attribute_x64:
     .word 223
     .quad 0x4000000320
 
+idt_attribute:
+    .word 0x320
+    .quad 0x4000000000
+
 build_gdt:
     mov $0x320,%bx
 .equ SELECTOR_NULL,0x0<<3
@@ -156,6 +160,9 @@ long_mod:
 
     movw $SELECTOR_DATA_x64,%ax
     movw %ax,%ds
+
+    movabsq $idt_attribute,%rax
+    lidt (%rax)
 
 load_kernel:
     movq $0,%r9
