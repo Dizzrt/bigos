@@ -1,4 +1,5 @@
 /* x86_64 crti.s */
+.code64
 .section .init
 .global _init
 .type _init, @function

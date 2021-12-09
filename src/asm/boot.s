@@ -6,7 +6,7 @@ boot:
     mov $0,%ax
     mov %ax,%ds
     mov %ax,%es
-
+    
 detect_memory:
     mov $0,%ebx
     mov $0x7c00,%di

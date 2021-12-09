@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-06 20:43:10
+ * @LastEditTime: 2021-12-09 17:44:49
  */
 
 #include "MMU\memory.h"
@@ -14,7 +14,7 @@ __list_node<Slab *> iSlabNode_1;
 Slab_cache kmem_cache;
 
 void memory_init() {
-    kmem_cache.__tmporary_init(); // MARKER temp
+    // kmem_cache.__tmporary_init(); // MARKER temp
 
     //----slab init----
     // 0x600-0x9ff are used as bitmap of slab
