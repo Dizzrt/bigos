@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-06 20:44:01
+ * @LastEditTime: 2021-12-10 13:44:09
  */
 
 #include "MMU\slab.h"
@@ -38,11 +38,6 @@ void *Slab_cache::__alloc(size_t len) {
 void Slab_cache::appendSlab(Slab *slab) {}
 
 void Slab_cache::__appendSlab_(__list_node<Slab *> *node) { pool_available.__push_back_(node); }
-
-void Slab_cache::__tmporary_init() {
-    pool_full.__temporary_init_();
-    pool_available.__temporary_init_();
-}
 
 Slab::Slab() {
     this->vaddr = 0;

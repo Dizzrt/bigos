@@ -1,10 +1,13 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-09 17:39:06
+ * @LastEditTime: 2021-12-10 18:23:38
  */
+#include "MMU/memory.h"
 
 #ifndef __BIG_LIST_H__
 #define __BIG_LIST_H__
+
+void ZZtest() { int *p = (int *)kmalloc(sizeof(int)); }
 
 template <typename T> struct __list_node {
     T val;
@@ -57,9 +60,6 @@ template <typename T> class list {
   public:
     typedef __list_iterator<T> iterator;
 
-    // MARKER temporary crtbegin
-    void __temporary_init_() { this->node.next = this->node.prev = &this->node; }
-
     list() {
         node.next = &node;
         node.prev = &node;
@@ -95,6 +95,13 @@ template <typename T> class list {
 
     iterator begin() { return iterator(node.next); }
     iterator end() { return iterator(&node); }
+
+    void push_back(const T &_val) {
+        // int *p = (int *)kmalloc(sizeof(int));
+        //  __list_node<T> *_node = (__list_node<T> *)kmalloc(sizeof(__list_node<T>));
+        //  _node->val = _val;
+        //  __push_back_(_node);
+    }
 
     void __push_back_(__list_node<T> *_node) {
         node.prev->next = _node;

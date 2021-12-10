@@ -1,9 +1,10 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-09 17:44:49
+ * @LastEditTime: 2021-12-10 18:07:58
  */
 
 #include "MMU\memory.h"
+#include "MMU\buddy.h"
 
 Slab iSlab_0;
 Slab iSlab_1;
@@ -13,9 +14,9 @@ __list_node<Slab *> iSlabNode_1;
 
 Slab_cache kmem_cache;
 
-void memory_init() {
-    // kmem_cache.__tmporary_init(); // MARKER temp
+MemoryInfo memInfo;
 
+void memory_init() {
     //----slab init----
     // 0x600-0x9ff are used as bitmap of slab
     iSlab_0.__using = 0;
@@ -44,8 +45,28 @@ void memory_init() {
     kmem_cache.__appendSlab_(&iSlabNode_1);
     //----end----
 
-    // uint32_t amsCount = *((uint32_t *)0x504);
-    // AMS *ams = (AMS *)0x508; // available memory segment
+    uint32_t amsCount = *((uint32_t *)0x504);
+    AMS *ams = (AMS *)0x508; // available memory segment
+
+    uint64_t __mem_size = ams[0].len;
+
+    int blockSize[11] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+
+    for (uint8_t i = 1; i < amsCount; i++) {
+        __mem_size += ams[i].len;
+
+        uint64_t _addr = ams[i].base;
+        uint64_t _pages = ams[i].len / 4096;
+
+        for (uint8_t bs = 10; bs >= 0; bs--) {
+            while (_pages >= blockSize[bs]) {
+                Block *_block = (Block *)kmalloc(sizeof(Block));
+                _block->addr = _addr;
+                _addr += blockSize[bs] * 4096;
+                // blist[bs].push_back(_block);
+            }
+        }
+    }
 
     // // the first bitmap
     // MemoryPools = (MemoryPoolNode *)0x400002b000;

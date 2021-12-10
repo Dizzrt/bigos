@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-06 20:47:39
+ * @LastEditTime: 2021-12-10 13:42:32
  */
 
 #ifndef __BIG_SLAB_H__
@@ -38,9 +38,6 @@ struct Slab_cache {
     void *__alloc(size_t);
     void appendSlab(Slab *);
     void __appendSlab_(__list_node<Slab *> *);
-
-    // MARKER temporary crtbegin
-    void __tmporary_init();
 
   private:
     list<Slab *> pool_full;

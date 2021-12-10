@@ -8,6 +8,12 @@ SECTIONS
 {
   . = 0x4000100000;
 
+  .init           :
+  {
+    KEEP (*(SORT_NONE(.bigos)))
+    KEEP (*(SORT_NONE(.init)))
+  }
+
   .text           :
   {
     *(.text.unlikely .text.*_unlikely .text.unlikely.*)
@@ -20,19 +26,10 @@ SECTIONS
     *(.gnu.warning)
   }
 
-  .init           :
-  {
-    KEEP (*(SORT_NONE(.init)))
-  }
-
   .fini           :
   {
     KEEP (*(SORT_NONE(.fini)))
   }
-
-  PROVIDE (__etext = .);
-  PROVIDE (_etext = .);
-  PROVIDE (etext = .);
 
   .rodata         : { *(.rodata .rodata.* .gnu.linkonce.r.*) }
   .rodata1        : { *(.rodata1) }
@@ -71,22 +68,6 @@ SECTIONS
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array))
     PROVIDE_HIDDEN (__preinit_array_end = .);
-  }
-
-  .init_array    :
-  {
-    PROVIDE_HIDDEN (__init_array_start = .);
-    KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
-    KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
-    PROVIDE_HIDDEN (__init_array_end = .);
-  }
-
-  .fini_array    :
-  {
-    PROVIDE_HIDDEN (__fini_array_start = .);
-    KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
-    KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
-    PROVIDE_HIDDEN (__fini_array_end = .);
   }
 
   .ctors          :
@@ -221,5 +202,5 @@ SECTIONS
   .debug_str_offsets 0 : { *(.debug_str_offsets) }
   .debug_sup      0 : { *(.debug_sup) }
   .gnu.attributes 0 : { KEEP (*(.gnu.attributes)) }
-  /DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) }
+  /DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) *(.ident) }
 }

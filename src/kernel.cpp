@@ -1,8 +1,9 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-09 17:46:15
+ * @LastEditTime: 2021-12-10 18:07:56
  */
 
+#include "MMU/buddy.h"
 #include "MMU/memory.h"
 #include "MMU/slab.h"
 #include "dev/svga.h"
@@ -20,7 +21,8 @@ void Kernel() {
     init_kernel();
     svga_SetCursorPos(0, 1);
 
-    printk_svga("addr: 0x%x", (uint64_t)kmalloc(10));
+    printk_svga("addr: 0x%x\n", (uint64_t)kmalloc(10));
+    pbuddy();
 
     while (true) {
         asm volatile("hlt");

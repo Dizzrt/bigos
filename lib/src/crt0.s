@@ -1,6 +1,5 @@
-.file "crt0.s"
 .code64
-.section .text
+.section .bigos
 
 .extern Kernel
 .extern _init
@@ -12,3 +11,4 @@ _start:
     call _init
     call Kernel
     call _fini
+

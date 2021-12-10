@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-06 21:01:36
+ * @LastEditTime: 2021-12-10 16:44:38
  */
 
 #ifndef __BIG_MEMORY_H__
@@ -29,6 +29,12 @@ struct AMS // available memory segment
     uint64_t len;
 };
 
+struct MemoryInfo {
+    uint64_t size;
+    uint64_t free;
+};
+extern MemoryInfo memInfo;
+
 struct MemoryPoolNode {
     uint64_t len;
     uint64_t base;
@@ -37,11 +43,9 @@ struct MemoryPoolNode {
     MemoryPoolNode *next = nullptr;
 };
 
-static uint64_t totalMsemory;
 static MemoryPoolNode *MemoryPools;
 
 void memory_init();
-void *__malloc__(size_t);
 
 void *kmalloc(size_t);
 
