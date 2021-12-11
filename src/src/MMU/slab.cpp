@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-10 13:44:09
+ * @LastEditTime: 2021-12-11 20:27:11
  */
 
 #include "MMU\slab.h"
@@ -9,35 +9,35 @@ void *Slab_cache::__alloc(size_t len) {
     if (len > 0x1000)
         return nullptr;
 
-    if (pool_available.empty()) {
-        // TODO get new slab from buddy
-    }
+    // if (pool_available.empty()) {
+    //     // TODO get new slab from buddy
+    // }
 
     uint64_t offset;
-    list<Slab *>::iterator iter = pool_available.begin();
+    // list<Slab *>::iterator iter = pool_available.begin();
 
-    while (iter != pool_available.end()) {
+    // while (iter != pool_available.end()) {
 
-        if ((*iter)->__free < len)
-            goto flag;
+    //     if ((*iter)->__free < len)
+    //         goto flag;
 
-        offset = bitmap_scan(&(*iter)->bitmap, len);
+    //     offset = bitmap_scan(&(*iter)->bitmap, len);
 
-        if (offset != -1) {
-            bitmap_update(&(*iter)->bitmap, offset, len);
-            return (void *)((*iter)->vaddr + offset);
-        }
+    //     if (offset != -1) {
+    //         bitmap_update(&(*iter)->bitmap, offset, len);
+    //         return (void *)((*iter)->vaddr + offset);
+    //     }
 
-    flag:
-        iter++;
-    }
+    // flag:
+    //     iter++;
+    // }
 
     return nullptr;
 }
 
 void Slab_cache::appendSlab(Slab *slab) {}
 
-void Slab_cache::__appendSlab_(__list_node<Slab *> *node) { pool_available.__push_back_(node); }
+// void Slab_cache::__appendSlab_(__list_node<Slab *> *node) { pool_available.__push_back_(node); }
 
 Slab::Slab() {
     this->vaddr = 0;

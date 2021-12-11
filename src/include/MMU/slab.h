@@ -31,17 +31,19 @@ struct Slab {
      * @param bp(uint8*) the pointer of bitmap
      */
     Slab(SlabType, uint64_t, uint8_t *);
+
+    list_node list;
 };
 
 struct Slab_cache {
 
     void *__alloc(size_t);
     void appendSlab(Slab *);
-    void __appendSlab_(__list_node<Slab *> *);
+    // void __appendSlab_(__list_node<Slab *> *);
 
   private:
-    list<Slab *> pool_full;
-    list<Slab *> pool_available;
+    // list<Slab *> pool_full;
+    // list<Slab *> pool_available;
 };
 
 #endif

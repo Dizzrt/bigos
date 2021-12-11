@@ -1,115 +1,64 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-10 18:23:38
+ * @LastEditTime: 2021-12-11 20:22:38
  */
-#include "MMU/memory.h"
 
 #ifndef __BIG_LIST_H__
 #define __BIG_LIST_H__
 
-void ZZtest() { int *p = (int *)kmalloc(sizeof(int)); }
+#define offsetof(TYPE, MEMBER) ((long long)&((TYPE *)0)->MEMBER)
 
-template <typename T> struct __list_node {
-    T val;
+#define container_of(ptr, type, member)                                                                                \
+    ({                                                                                                                 \
+        const typeof(((type *)0)->member) *__mptr = (ptr);                                                             \
+        (type *)((char *)__mptr - offsetof(type, member));                                                             \
+    })
 
-    __list_node<T> *next = nullptr;
-    __list_node<T> *prev = nullptr;
+struct list_node {
+    list_node *prev;
+    list_node *next;
+
+    list_node() { prev = next = this; }
 };
 
-template <typename T> struct __list_iterator {
-    __list_node<T> *node;
+template <typename T> struct list_iterator {
+    list_node *node;
 
-    __list_iterator(__list_node<T> *_node) : node(_node) {}
+    list_iterator(list_node *_node) : node(_node) {}
 
     // iter++
-    __list_iterator<T> operator++(int) {
-        __list_iterator<T> __tmp = *this;
+    list_iterator<T> operator++(int) {
+        list_iterator<T> temp = *this;
         node = node->next;
-        return __tmp;
+        return temp;
     }
 
     //++iter
-    __list_iterator<T> &operator++() {
+    list_iterator<T> &operator++() {
         node = node->next;
         return *this;
     }
 
     // iter--
-    __list_iterator<T> operator--(int) {
-        __list_iterator<T> __tmp = *this;
+    list_iterator<T> operator--(int) {
+        list_iterator<T> temp = *this;
         node = node->prev;
-        return __tmp;
+        return temp;
     }
 
     //--iter
-    __list_iterator<T> &operator--() {
+    list_iterator<T> &operator--() {
         node = node->prev;
         return *this;
     }
 
-    T &operator*() const { return node->val; }
-    bool operator==(const __list_iterator &x) { return this->node == x.node; }
-    bool operator!=(const __list_iterator &x) { return this->node != x.node; }
+    T *operator*() const { return (T *)container_of(node, T, list); }
+    bool operator==(const list_iterator &x) { return this->node == x.node; }
+    bool operator!=(const list_iterator &x) { return this->node != x.node; }
 };
 
-template <typename T> class list {
-  private:
-    __list_node<T> node;
-    unsigned int __size = 0;
+void list_add(list_node *, list_node *);
 
-  public:
-    typedef __list_iterator<T> iterator;
+void list_remove(list_node *);
 
-    list() {
-        node.next = &node;
-        node.prev = &node;
-    }
-
-    // void push_back(T _val) {}
-    // void push_front(T _val) {}
-
-    T &front() { return *begin(); }
-    T &back() { return *(--end()); }
-
-    unsigned int size() const { return __size; }
-    bool empty() const { return node.next == &node; }
-
-    // bool remove(T _tar) { // TODO free memory
-    //     __list_node<T> *tmp = head;
-    //     while (tmp != nullptr) {
-    //         if (tmp->val == _tar) {
-    //             if (tmp == head)
-    //                 head = tmp->next;
-    //             else if (tmp == tail)
-    //                 tmp->prev->next = nullptr;
-    //             else {
-    //                 tmp->prev->next = tmp->next;
-    //                 tmp->next->prev = tmp->prev;
-    //             }
-    //             return true;
-    //         }
-    //     }
-
-    //     return false;
-    // }
-
-    iterator begin() { return iterator(node.next); }
-    iterator end() { return iterator(&node); }
-
-    void push_back(const T &_val) {
-        // int *p = (int *)kmalloc(sizeof(int));
-        //  __list_node<T> *_node = (__list_node<T> *)kmalloc(sizeof(__list_node<T>));
-        //  _node->val = _val;
-        //  __push_back_(_node);
-    }
-
-    void __push_back_(__list_node<T> *_node) {
-        node.prev->next = _node;
-        _node->prev = node.prev;
-        node.prev = _node;
-        _node->next = &node;
-
-        __size++;
-    }
-};
 #endif
