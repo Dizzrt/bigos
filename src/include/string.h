@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-06 17:21:31
- * @LastEditTime: 2021-12-02 15:34:15
+ * @LastEditTime: 2021-12-12 15:02:35
  * @LastEditors: Please set LastEditors
  * @FilePath: \bigos\src\include\string.h
  * @Description:
@@ -28,6 +28,6 @@ size_t strlen(const char *);
 // char * strrchr(const char *_Str, int _Ch);
 // char * strcat(char *, const char *);
 
-char *itoa(int, char *, uint8_t);
+char *itoa(int64_t, char *, uint8_t);
 }
 #endif

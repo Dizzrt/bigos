@@ -1,64 +1,90 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-11 20:22:38
+ * @LastEditTime: 2021-12-12 17:37:58
  */
 
 #ifndef __BIG_LIST_H__
 #define __BIG_LIST_H__
 
-#define offsetof(TYPE, MEMBER) ((long long)&((TYPE *)0)->MEMBER)
+#include "stdint.h"
 
-#define container_of(ptr, type, member)                                                                                \
-    ({                                                                                                                 \
-        const typeof(((type *)0)->member) *__mptr = (ptr);                                                             \
-        (type *)((char *)__mptr - offsetof(type, member));                                                             \
-    })
+template <typename T> struct __list_node {
+    T val;
+    __list_node<T> *prev;
+    __list_node<T> *next;
 
-struct list_node {
-    list_node *prev;
-    list_node *next;
-
-    list_node() { prev = next = this; }
+    __list_node() { prev = next = this; }
 };
 
-template <typename T> struct list_iterator {
-    list_node *node;
+template <typename T> struct __list_iterator {
+    __list_node<T> *node;
 
-    list_iterator(list_node *_node) : node(_node) {}
+    __list_iterator(__list_node<T> *_node) : node(_node) {}
 
     // iter++
-    list_iterator<T> operator++(int) {
-        list_iterator<T> temp = *this;
+    __list_iterator<T> operator++(int) {
+        __list_iterator<T> temp = *this;
         node = node->next;
         return temp;
     }
 
     //++iter
-    list_iterator<T> &operator++() {
+    __list_iterator<T> operator++() {
         node = node->next;
         return *this;
     }
 
     // iter--
-    list_iterator<T> operator--(int) {
-        list_iterator<T> temp = *this;
-        node = node->prev;
+    __list_iterator<T> operator--(int) {
+        __list_iterator<T> temp = *this;
+        node = node->next;
         return temp;
     }
 
     //--iter
-    list_iterator<T> &operator--() {
-        node = node->prev;
+    __list_iterator<T> operator--() {
+        node = node->next;
         return *this;
     }
 
-    T *operator*() const { return (T *)container_of(node, T, list); }
-    bool operator==(const list_iterator &x) { return this->node == x.node; }
-    bool operator!=(const list_iterator &x) { return this->node != x.node; }
+    T &operator*() const { return node->val; }
+    bool operator==(const __list_iterator &x) { return this->node == x.node; }
+    bool operator!=(const __list_iterator &x) { return this->node != x.node; }
 };
 
-void list_add(list_node *, list_node *);
+template <typename T> class list {
+  private:
+    __list_node<T> _head;
+    __list_node<T> *_list;
 
-void list_remove(list_node *);
+    uint32_t _size;
+
+  public:
+    typedef __list_iterator<T> iterator;
+
+    iterator begin() { return iterator(_list->next); }
+    iterator end() { return iterator(_list); }
+
+    uint64_t size() { return _size; }
+    bool empty() { return _list->next == _list; }
+
+    void push_back(T _val) {}
+
+    // add a list_node to the tail of the list
+    void __list_add(__list_node<T> *);
+
+    list();
+};
+
+template <typename T> list<T>::list() { _list = &_head; }
+
+template <typename T> void list<T>::__list_add(__list_node<T> *_node) {
+    _list->prev->next = _node;
+    _node->prev = _list->prev;
+    _list->prev = _node;
+    _node->next = _list;
+
+    _size++;
+}
 
 #endif

@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-11 18:31:29
+ * @LastEditTime: 2021-12-12 17:25:14
  */
 
 #ifndef __BIG_MEMORY_H__
@@ -17,8 +17,6 @@
 
 extern Slab iSlab_0; // initial slab
 extern Slab iSlab_1;
-
-extern Slab_cache kmem_cache;
 
 struct AMS // available memory segment
 {
@@ -44,6 +42,6 @@ static MemoryPoolNode *MemoryPools;
 
 void memory_init();
 
-void *kmalloc(size_t);
+void *kmalloc(uint64_t);
 
 #endif

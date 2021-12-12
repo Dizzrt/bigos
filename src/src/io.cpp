@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-06 21:01:54
+ * @LastEditTime: 2021-12-12 16:42:02
  */
 
 #include "io.h"
@@ -87,6 +87,7 @@ static uint8_t updateBuffer(char *buffer, char *val, uint8_t offset) {
 
     if (val_l > 0)
         memcpy(buffer + offset, val + val_offset, val_l);
+
     return ret;
 }
 
@@ -96,19 +97,41 @@ void printk_svga(const char *fmt, ...) {
 
     uint8_t ptr = 0;
     char buffer[256] = {0};
+
+    bool ll_flag = false;
     while (*fmt != 0) {
         if (*fmt == '%') {
-            if (*(fmt + 1) == 'd') {
-                char tmp[10] = {0};
-                itoa(va_arg(valist, int), tmp, 10);
-                ptr = updateBuffer(buffer, tmp, ptr);
-            } else if (*(fmt + 1) == 'x') {
-                char tmp[10] = {0};
-                itoa(va_arg(valist, int), tmp, 16);
-                ptr = updateBuffer(buffer, tmp, ptr);
-            } else {
-                fmt++;
-                goto normalC;
+            if (*(fmt + 1) == 'c') {
+                char p[2] = {0};
+                p[0] = va_arg(valist, int);
+                ptr = updateBuffer(buffer, p, ptr);
+            } else if (*(fmt + 1) == 's') {
+                char *p = (char *)va_arg(valist, long long);
+                ptr = updateBuffer(buffer, p, ptr);
+            } else { // maby a num
+                if (*(fmt + 1) == 'l' && *(fmt + 2) == 'l') {
+                    ll_flag = true;
+                    fmt += 2;
+                }
+
+                if (*(fmt + 1) == 'd') {
+                    char tmp[20] = {0};
+                    if (ll_flag)
+                        itoa(va_arg(valist, int64_t), tmp, 10), ll_flag = false;
+                    else
+                        itoa(va_arg(valist, int32_t), tmp, 10);
+                    ptr = updateBuffer(buffer, tmp, ptr);
+                } else if (*(fmt + 1) == 'x') {
+                    char tmp[20] = {0};
+                    if (ll_flag)
+                        itoa(va_arg(valist, int64_t), tmp, 16), ll_flag = false;
+                    else
+                        itoa(va_arg(valist, int32_t), tmp, 16);
+                    ptr = updateBuffer(buffer, tmp, ptr);
+                } else {
+                    fmt++;
+                    goto normalC;
+                }
             }
 
             fmt += 2;
@@ -128,5 +151,6 @@ void printk_svga(const char *fmt, ...) {
     if (ptr > 0)
         putsk_svga(buffer);
 
+    va_end(valist);
     return;
 }

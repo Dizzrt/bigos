@@ -1,7 +1,7 @@
 /*
  * @Author: Dizzrt
  * @Date: 2021-11-17 15:00:41
- * @LastEditTime: 2021-12-02 15:43:42
+ * @LastEditTime: 2021-12-12 15:03:32
  * @LastEditors: Please set LastEditors
  * @FilePath: \bigos\src\src\string.cpp
  * @Description:
@@ -93,7 +93,7 @@ void *memcpy(void *dstp, const void *srcp, size_t len) {
 
     xlen = len / OPSIZE;
     long long *ldstpp = (long long *)dstpp;
-    long long *lsrcpp = (long long *)srcp;
+    long long *lsrcpp = (long long *)srcpp;
 
     while (xlen--)
         *ldstpp++ = *lsrcpp++;
@@ -158,17 +158,17 @@ size_t strlen(const char *str) {
 // char * strrchr(const char *_Str, int _Ch);
 // char * strcat(char *__restrict__ _Dest, const char *__restrict__ _Source);
 
-char *itoa(int val, char *str, uint8_t radix) {
+char *itoa(int64_t val, char *str, uint8_t radix) {
     char c[] = "0123456789ABCDEF";
 
-    uint32_t uval;
+    uint64_t uval;
     uint32_t offset = 0;
 
     if (radix == 10 && val < 0) {
-        uval = (unsigned)-val;
+        uval = (uint64_t)-val;
         str[offset++] = '-';
     } else
-        uval = (unsigned)val;
+        uval = (uint64_t)val;
 
     do {
         str[offset++] = c[uval % radix];

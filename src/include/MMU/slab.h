@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-10 13:42:32
+ * @LastEditTime: 2021-12-12 17:42:52
  */
 
 #ifndef __BIG_SLAB_H__
@@ -10,40 +10,25 @@
 #include "list.h"
 #include "stdint.h"
 
-enum SlabType { NORMAL, PERMANENT };
+#define SLAB_PERMANENT 0b10000000
 
-// every slab have 4096(1 page) bytes to allocate
-
+// every slab have 4096(1 page) bytes
 struct Slab {
-    SlabType type;
-
-    BitMap bitmap;
+    uint8_t flags;
+    uint16_t objFree;
+    uint32_t objSize;
     uint64_t vaddr;
-
-    uint16_t __free;
-    uint16_t __using;
+    BitMap bitmap;
 
     Slab();
-
-    /**
-     * @param type(SlabType)  the type of this slab
-     * @param vaddr(uint64) the virtual address base of this slab
-     * @param bp(uint8*) the pointer of bitmap
-     */
-    Slab(SlabType, uint64_t, uint8_t *);
-
-    list_node list;
+    Slab(uint8_t, uint32_t, uint64_t, uint8_t *);
 };
 
 struct Slab_cache {
+    void *__alloc(uint16_t);
 
-    void *__alloc(size_t);
-    void appendSlab(Slab *);
-    // void __appendSlab_(__list_node<Slab *> *);
-
-  private:
-    // list<Slab *> pool_full;
-    // list<Slab *> pool_available;
+    list<Slab *> slabs_full;
+    list<Slab *> slabs_available;
 };
 
 #endif
