@@ -1,10 +1,11 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-12 17:44:11
+ * @LastEditTime: 2021-12-13 20:13:31
  */
 
 #include "MMU\memory.h"
 #include "MMU\buddy.h"
+#include "MMU\slab.h"
 
 Slab iSlab_0;
 Slab iSlab_1;
@@ -19,7 +20,7 @@ void memory_init() {
     //----common cache init----
     // 0x600-0x9ff are used as bitmap of slab
     iSlab_0.flags = SLAB_PERMANENT;
-    iSlab_0.vaddr = 0x400001000;
+    iSlab_0.vaddr = 0x4000001000;
     iSlab_0.bitmap.bits = (uint8_t *)0x600;
     bitmap_init(&iSlab_0.bitmap);
 
@@ -31,8 +32,9 @@ void memory_init() {
     iSlab_lnode_0.val = &iSlab_0;
     iSlab_lnode_1.val = &iSlab_1;
 
-    common_cache.slabs_available.__list_add(&iSlab_lnode_0);
-    common_cache.slabs_available.__list_add(&iSlab_lnode_1);
+    common_cache.objSize = 1;
+    common_cache.slabs_available.__list_add(&iSlab_lnode_0, common_cache.slabs_available.end());
+    common_cache.slabs_available.__list_add(&iSlab_lnode_1, common_cache.slabs_available.end());
     //----end common cache init----
 
     //----buddy sys init----

@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-06 20:02:40
+ * @LastEditTime: 2021-12-13 22:14:43
  */
 
 #include "MMU\bitmap.h"
@@ -76,14 +76,13 @@ void bitmap_update(BitMap *bitmap, uint64_t offset, uint64_t len, bool isSet) {
     uint8_t xoff = offset % 8;
     uint8_t *p = bitmap->bits;
 
+    p += offset / 8;
     if (xoff != 0) {      // byte alignment
         count = 9 - xoff; // here is bits count
         if (len >= count)
             len -= count;
         else
             count = len + 1, len = 0;
-
-        p += offset / 8;
 
         count--;
         mask = BITMAP_MASK >> (xoff - 1);

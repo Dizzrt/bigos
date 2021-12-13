@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-12 17:38:55
+ * @LastEditTime: 2021-12-13 18:13:30
  */
 
 #include "MMU\slab.h"
@@ -23,7 +23,11 @@ void *Slab_cache::__alloc(uint16_t len) {
             continue;
 
         bitmap_update(&_slab->bitmap, offset, len);
-        return (void *)(_slab->vaddr + _slab->objSize * offset);
+        _slab->objFree -= len;
+        if (_slab->objFree == 0) {
+            // TODO move to full list
+        }
+        return (void *)(_slab->vaddr + objSize * offset);
 
     } while (++iter != slabs_available.end());
 
@@ -33,7 +37,6 @@ void *Slab_cache::__alloc(uint16_t len) {
 Slab::Slab() {
     this->flags = 0;
     this->vaddr = 0;
-    this->objSize = 1;
     this->objFree = 4096;
     this->bitmap.len = 4096;
     this->bitmap.bits = nullptr;
@@ -41,7 +44,6 @@ Slab::Slab() {
 
 Slab::Slab(uint8_t _flag, uint32_t _objSize, uint64_t _vaddr, uint8_t *_bp) {
     this->flags = _flag;
-    this->objSize = _objSize;
     this->objFree = 4096 / _objSize;
     this->vaddr = _vaddr;
 

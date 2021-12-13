@@ -1,8 +1,7 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-12 17:42:52
+ * @LastEditTime: 2021-12-13 19:54:07
  */
-
 #ifndef __BIG_SLAB_H__
 #define __BIG_SLAB_H__
 
@@ -15,10 +14,9 @@
 // every slab have 4096(1 page) bytes
 struct Slab {
     uint8_t flags;
-    uint16_t objFree;
-    uint32_t objSize;
-    uint64_t vaddr;
     BitMap bitmap;
+    uint64_t vaddr;
+    uint16_t objFree;
 
     Slab();
     Slab(uint8_t, uint32_t, uint64_t, uint8_t *);
@@ -27,6 +25,7 @@ struct Slab {
 struct Slab_cache {
     void *__alloc(uint16_t);
 
+    uint32_t objSize;
     list<Slab *> slabs_full;
     list<Slab *> slabs_available;
 };

@@ -1,22 +1,17 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-12 17:25:14
+ * @LastEditTime: 2021-12-13 20:12:22
  */
 
 #ifndef __BIG_MEMORY_H__
 #define __BIG_MEMORY_H__
+#include "bitmap.h"
+#include "stdint.h"
 
 #define SELECTOR_CODE 0x18
 #define SELECTOR_DATA 0x20
 #define SELECTOR_STACK 0x28
 #define SELECTOR_VIDEO 0x30
-
-#include "bitmap.h"
-#include "slab.h"
-#include "stdint.h"
-
-extern Slab iSlab_0; // initial slab
-extern Slab iSlab_1;
 
 struct AMS // available memory segment
 {
@@ -30,18 +25,7 @@ struct MemoryInfo {
 };
 extern MemoryInfo memInfo;
 
-struct MemoryPoolNode {
-    uint64_t len;
-    uint64_t base;
-    BitMap bitmap;
-
-    MemoryPoolNode *next = nullptr;
-};
-
-static MemoryPoolNode *MemoryPools;
-
 void memory_init();
-
 void *kmalloc(uint64_t);
 
 #endif

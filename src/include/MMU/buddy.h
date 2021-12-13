@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-12 16:48:02
+ * @LastEditTime: 2021-12-13 18:07:24
  */
 
 #ifndef __BIG_BUDDY_H__
@@ -18,4 +18,5 @@ extern list<Block *> blist[11];
 
 // void *__alloc_pages(uint16_t);
 // void pbuddy();
+
 #endif

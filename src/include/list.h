@@ -1,11 +1,12 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-12 17:37:58
+ * @LastEditTime: 2021-12-13 22:15:34
  */
 
 #ifndef __BIG_LIST_H__
 #define __BIG_LIST_H__
-
+#include "MMU/memory.h"
+#include "io.h"
 #include "stdint.h"
 
 template <typename T> struct __list_node {
@@ -59,6 +60,15 @@ template <typename T> class list {
 
     uint32_t _size;
 
+    typedef __list_node<T> *link_type;
+    link_type creat_node(const T &x) {
+        link_type node = (link_type)kmalloc(sizeof(__list_node<T>));
+        node->next = node->prev = node;
+        node->val = x;
+
+        return node;
+    }
+
   public:
     typedef __list_iterator<T> iterator;
 
@@ -68,23 +78,31 @@ template <typename T> class list {
     uint64_t size() { return _size; }
     bool empty() { return _list->next == _list; }
 
-    void push_back(T _val) {}
+    void insert(const iterator &, const T &);
+    void push_front(const T &x) { insert(begin(), x); }
+    void push_back(const T &x) { insert(end(), x); }
 
-    // add a list_node to the tail of the list
-    void __list_add(__list_node<T> *);
+    // add a list_node to the list
+    void __list_add(link_type, const iterator &);
 
     list();
 };
 
 template <typename T> list<T>::list() { _list = &_head; }
 
-template <typename T> void list<T>::__list_add(__list_node<T> *_node) {
-    _list->prev->next = _node;
-    _node->prev = _list->prev;
-    _list->prev = _node;
-    _node->next = _list;
+template <typename T> void list<T>::__list_add(link_type _node, const iterator &position) {
+    position.node->prev->next = _node;
+    _node->prev = position.node->prev;
+    position.node->prev = _node;
+    _node->next = position.node;
 
     _size++;
+}
+
+template <typename T> void list<T>::insert(const iterator &position, const T &x) {
+    link_type tmp = creat_node(x);
+    __list_add(tmp, position);
+    return;
 }
 
 #endif

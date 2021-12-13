@@ -6,6 +6,7 @@
  * @FilePath: \bigos\README.md
  * @Description: 
 -->
-# bigos
+
+# Bigos
 
 a developing toy os(x86_64)
