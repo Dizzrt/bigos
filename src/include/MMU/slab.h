@@ -1,12 +1,12 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-13 19:54:07
+ * @LastEditTime: 2021-12-14 13:08:04
  */
 #ifndef __BIG_SLAB_H__
 #define __BIG_SLAB_H__
 
+#include "KTL\list.h"
 #include "bitmap.h"
-#include "list.h"
 #include "stdint.h"
 
 #define SLAB_PERMANENT 0b10000000

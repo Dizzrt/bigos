@@ -1,13 +1,13 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-13 18:07:24
+ * @LastEditTime: 2021-12-14 13:09:18
  */
 
 #ifndef __BIG_BUDDY_H__
 #define __BIG_BUDDY_H__
 
+#include "KTL\list.h"
 #include "io.h"
-#include "list.h"
 #include "stdint.h"
 
 struct Block {

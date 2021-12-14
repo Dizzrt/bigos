@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-13 18:13:30
+ * @LastEditTime: 2021-12-14 14:28:45
  */
 
 #include "MMU\slab.h"
@@ -25,7 +25,8 @@ void *Slab_cache::__alloc(uint16_t len) {
         bitmap_update(&_slab->bitmap, offset, len);
         _slab->objFree -= len;
         if (_slab->objFree == 0) {
-            // TODO move to full list
+            slabs_available.__list_rm(iter);
+            slabs_full.__list_add(iter.node, slabs_full.end());
         }
         return (void *)(_slab->vaddr + objSize * offset);
 
