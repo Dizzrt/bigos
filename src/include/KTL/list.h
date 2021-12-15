@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-14 14:29:56
+ * @LastEditTime: 2021-12-14 17:54:19
  */
 
 #ifndef __BIG_LIST_H__
@@ -92,6 +92,8 @@ template <typename T> class list {
     void __list_rm(const iterator &);
 
     list();
+    // destructor need '__cxa_atexit'
+    //~list() {}
 };
 
 template <typename T> list<T>::list() { _list = &_head; }

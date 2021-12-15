@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-13 20:13:31
+ * @LastEditTime: 2021-12-15 17:46:57
  */
 
 #include "MMU\memory.h"
@@ -38,6 +38,12 @@ void memory_init() {
     //----end common cache init----
 
     //----buddy sys init----
+    Block *block = (Block *)kmalloc(sizeof(Block));
+    block->flags = 0; // TODO flags;
+    block->paddr = 0x40000;
+    block->vaddr = 0x4000040000;
+    block->len = 64;
+
     // int amsCount = *((int *)0x504);
     // AMS *ams = (AMS *)0x508; // available memory segment
 

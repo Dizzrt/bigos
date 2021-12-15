@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-14 13:09:18
+ * @LastEditTime: 2021-12-15 17:48:56
  */
 
 #ifndef __BIG_BUDDY_H__
@@ -11,12 +11,16 @@
 #include "stdint.h"
 
 struct Block {
-    uint64_t addr;
+    uint8_t flags;
+
+    uint64_t paddr; // physical address the first page
+    uint64_t vaddr; // vitrual address
+
+    uint32_t len; //
 };
 
 extern list<Block *> blist[11];
 
-// void *__alloc_pages(uint16_t);
-// void pbuddy();
+void *get_one_page();
 
 #endif

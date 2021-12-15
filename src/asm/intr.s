@@ -93,4 +93,3 @@ intr_entry 0x2f
 
 #soft irq entry
 intr_entry 0x30
-intr_entry 0x31
