@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-12 16:42:02
+ * @LastEditTime: 2021-12-17 21:09:08
  */
 
 #include "io.h"
@@ -19,7 +19,9 @@ void __outb__(uint16_t port, uint8_t value) {
     return;
 }
 
-static inline uint8_t *__getSvagPointer() { return (uint8_t *)(long long)((svga_GetCursorPos() << 1) + 0x40000b8000); }
+static inline uint8_t *__getSvagPointer() {
+    return (uint8_t *)(long long)((svga_GetCursorPos() << 1) + 0xffff8000000b8000);
+}
 
 static inline void __tab() { return svga_MoveCursor(TAB_WIDTH, true); }
 

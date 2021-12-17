@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-15 17:46:57
+ * @LastEditTime: 2021-12-17 21:08:01
  */
 
 #include "MMU\memory.h"
@@ -20,13 +20,13 @@ void memory_init() {
     //----common cache init----
     // 0x600-0x9ff are used as bitmap of slab
     iSlab_0.flags = SLAB_PERMANENT;
-    iSlab_0.vaddr = 0x4000001000;
-    iSlab_0.bitmap.bits = (uint8_t *)0x600;
+    iSlab_0.vaddr = 0xffff800000001000;
+    iSlab_0.bitmap.bits = (uint8_t *)0xffff800000000800;
     bitmap_init(&iSlab_0.bitmap);
 
     iSlab_1.flags = SLAB_PERMANENT;
-    iSlab_1.vaddr = 0x4000002000;
-    iSlab_1.bitmap.bits = (uint8_t *)0x800;
+    iSlab_1.vaddr = 0xffff800000002000;
+    iSlab_1.bitmap.bits = (uint8_t *)0xffff800000000a00;
     bitmap_init(&iSlab_1.bitmap);
 
     iSlab_lnode_0.val = &iSlab_0;
@@ -38,11 +38,11 @@ void memory_init() {
     //----end common cache init----
 
     //----buddy sys init----
-    Block *block = (Block *)kmalloc(sizeof(Block));
-    block->flags = 0; // TODO flags;
-    block->paddr = 0x40000;
-    block->vaddr = 0x4000040000;
-    block->len = 64;
+    // Block *block = (Block *)kmalloc(sizeof(Block));
+    // block->flags = 0; // TODO flags;
+    // block->paddr = 0x40000;
+    // block->vaddr = 0x4000040000;
+    // block->len = 64;
 
     // int amsCount = *((int *)0x504);
     // AMS *ams = (AMS *)0x508; // available memory segment

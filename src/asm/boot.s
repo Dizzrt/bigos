@@ -40,19 +40,19 @@ jmp build_gdt
 ams: .long 0 #available memory segment count
 
 gdt_attribute:
-    .word 55 #7*8-1
-    .quad 0x320
+    .word 255 
+    .quad 0x300
 
 gdt_attribute_x64:
-    .word 223
-    .quad 0x4000000320
+    .word 255
+    .quad 0xffff800000000300
 
 idt_attribute:
-    .word 0x320
-    .quad 0x4000000000
+    .word 0x300
+    .quad 0xffff800000000000
 
 build_gdt:
-    mov $0x320,%bx
+    mov $0x300,%bx
 .equ SELECTOR_NULL,0x0<<3
     movl $0x000000,0x0(%bx)
     movl $0x000000,0x4(%bx)
@@ -94,43 +94,33 @@ protected_mod:
     mov $SELECTOR_DATA,%ax
     mov %ax,%ds
 
-    movl $0x0000903f,(0x8000) #PML4
+    movl $0x0000903f,(0x8000) #PML4[0]
     movl $0x00000000,(0x8004)
+    movl $0x0000903f,(0x8800) #PML4[256]
+    movl $0x00000000,(0x8804)
 
-    mov $0x200,%ecx
-    movl $0x9000,%ebx
-L1:
-    movl $0x00000000,(%ebx)
-    movl $0x00000000,4(%ebx)
-    add $8,%ebx
-    loop L1 #pdpt清0
-
-# #0 PD of pdpt
-    movl $0x0000a03f,(0x9000)  
-# #256 PD of pdpt
-    movl $0x0000a03f,(0x9800) 
-
-# #0-31 pt of #256(0)pd
-    movl $32,%ecx
+    movl $0x0000a03f,(0x9000) #PDPT[0]
+    movl $0x00000000,(0x9004)
+ 
+    movl $4,%ecx              #PD[0-3]
     movl $0xa000,%ebx
     movl $0x0000b03f,%edx
+L1:
+    movl %edx,(%ebx)
+    movl $0x00000000,4(%ebx)
+    add $8,%ebx
+    add $0x1000,%edx
+    loop L1
+   
+    movl $0x800,%ecx          #the 4 PTs
+    movl $0xb000,%ebx
+    movl $0x000001ff,%edx
 L2:
     movl %edx,(%ebx)
     movl $0x00000000,4(%ebx)
     add $8,%ebx
     add $0x1000,%edx
     loop L2
-
-#the 32 PTs of #256 PD    
-    movl $0x4000,%ecx
-    movl $0xb000,%ebx
-    movl $0x000001ff,%edx
-L3:
-    movl %edx,(%ebx)
-    movl $0x00000000,4(%ebx)
-    add $8,%ebx
-    add $0x1000,%edx
-    loop L3
 
 enter_long:
     mov $0x8000,%eax
@@ -156,10 +146,11 @@ long_mod:
 
     movw $SELECTOR_STACK_x64,%ax #init stack
     movw %ax,%ss
-    movq $0x4000004fff,%rsp
+    movq $0xffff800000006fff,%rsp
 
     movw $SELECTOR_DATA_x64,%ax
     movw %ax,%ds
+    movw %ax,%es
 
     movabsq $idt_attribute,%rax
     lidt (%rax)
@@ -167,7 +158,7 @@ long_mod:
 load_kernel:
     movq $0,%r9
     movq $0,%rax
-    mov $0x4000100000,%r8
+    mov $0xffff800000100000,%r8
 load_kernel_Loop:
     incq %r9
     movl (0x500),%eax
@@ -184,7 +175,7 @@ load_kernel_Loop:
     jne continue_load_kernel
 
 enter_kernel:
-    mov $0x4000100000,%rax
+    mov $0xffff800000100000,%rax
     jmp *%rax
 
 continue_load_kernel:

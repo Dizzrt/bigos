@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-06 20:58:40
+ * @LastEditTime: 2021-12-17 21:22:59
  */
 
 #include "interrupt.h"
@@ -13,7 +13,7 @@ void reg_intrs() {
 
 void intr_init() {
     // init idt
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 48; i++)
         intr_register_entry(i, intr_entry_table[i]);
 
     reg_intrs();
@@ -45,17 +45,17 @@ void intr_register_handler(uint8_t vnum, intr_handler handler) {
 }
 
 static void inline intr_register_entry(uint8_t vnum, void *entry) {
-    uint64_t *p = 0;
+    uint64_t *p = (uint64_t *)0xffff800000000000ull;
     p += vnum * 2;
 
-    uint64_t addr_low = (uint64_t)entry & 0x000000000000ffff;
-    uint64_t addr_mid = (uint64_t)entry & 0x00000000ffff0000;
-    uint64_t addr_high = (uint64_t)entry & 0xffffffff00000000;
+    uint64_t addr_low = (uint64_t)entry & 0x000000000000ffffull;
+    uint64_t addr_mid = (uint64_t)entry & 0x00000000ffff0000ull;
+    uint64_t addr_high = (uint64_t)entry & 0xffffffff00000000ull;
 
     addr_mid <<= 32;
     addr_high >>= 32;
 
-    uint64_t temp = addr_low | addr_mid | 0x00008e0000180000;
+    uint64_t temp = addr_low | addr_mid | 0x00008e0000180000ull;
 
     *p = temp;
     *(p + 1) = addr_high;

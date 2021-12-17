@@ -6,7 +6,7 @@ SEARCH_DIR("C:\\Users\\forty\\Desktop\\bigos\\lib\");
 
 SECTIONS
 {
-  . = 0x4000100000;
+  . = 0xffff800000100000;
 
   .init           :
   {

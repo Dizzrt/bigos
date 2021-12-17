@@ -1,15 +1,15 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-06 20:58:34
+ * @LastEditTime: 2021-12-17 21:23:14
  */
 
 #ifndef __BIG_INTERRUPT_H__
 #define __BIG_INTERRUPT_H__
 
 #include "stdint.h"
-extern void *intr_entry_table[64];
+extern void *intr_entry_table[48];
 typedef void (*intr_handler)(uint64_t);
-static intr_handler intr_handler_table[64];
+static intr_handler intr_handler_table[48];
 
 enum intr_status { INTR_OFF, INTR_ON };
 
