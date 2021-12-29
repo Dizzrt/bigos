@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-14 14:28:45
+ * @LastEditTime: 2021-12-29 18:06:07
  */
 
 #include "MMU\slab.h"
@@ -50,4 +50,14 @@ Slab::Slab(uint8_t _flag, uint32_t _objSize, uint64_t _vaddr, uint8_t *_bp) {
 
     this->bitmap.len = this->objFree;
     this->bitmap.bits = _bp;
+}
+
+void Slab_free(Slab *_slab, uint32_t offset, uint32_t len) {
+    bitmap_update(&_slab->bitmap, offset, len, false);
+    _slab->objFree += len;
+
+    //
+    //  if(!(0b10000000&_slab->flags)&&_slab->objFree==_slab->bitmap.len)
+    //  TODO free slab page
+    return;
 }

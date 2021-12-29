@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-17 21:08:01
+ * @LastEditTime: 2021-12-29 17:59:41
  */
 
 #include "MMU\memory.h"
@@ -83,4 +83,9 @@ void *kmalloc(uint64_t len) {
         // TODO get page from buddy
         return nullptr;
     }
+}
+
+void kfree(const void *p) {
+    list<Slab *>::iterator iter = common_cache.slabs_full.begin();
+    // TODO
 }

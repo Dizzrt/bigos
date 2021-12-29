@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-13 20:12:22
+ * @LastEditTime: 2021-12-29 17:49:21
  */
 
 #ifndef __BIG_MEMORY_H__
@@ -27,5 +27,6 @@ extern MemoryInfo memInfo;
 
 void memory_init();
 void *kmalloc(uint64_t);
+void kfree(const void *);
 
 #endif

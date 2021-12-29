@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-14 13:08:04
+ * @LastEditTime: 2021-12-29 17:59:25
  */
 #ifndef __BIG_SLAB_H__
 #define __BIG_SLAB_H__
@@ -29,5 +29,7 @@ struct Slab_cache {
     list<Slab *> slabs_full;
     list<Slab *> slabs_available;
 };
+
+void Slab_free(Slab *, uint32_t, uint32_t);
 
 #endif
