@@ -1,10 +1,10 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-12 16:48:08
+ * @LastEditTime: 2021-12-30 11:26:22
  */
 #include "MMU\buddy.h"
 
-list<Block *> blist[11];
+list<__buddy_node *> blist[11];
 
 // void pbuddy() {
 //     for (int i = 0; i < 11; i++) {

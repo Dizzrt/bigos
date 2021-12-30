@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-29 17:59:41
+ * @LastEditTime: 2021-12-30 23:34:30
  */
 
 #include "MMU\memory.h"
@@ -38,6 +38,7 @@ void memory_init() {
     //----end common cache init----
 
     //----buddy sys init----
+
     // Block *block = (Block *)kmalloc(sizeof(Block));
     // block->flags = 0; // TODO flags;
     // block->paddr = 0x40000;
