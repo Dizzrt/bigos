@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-30 23:48:37
+ * @LastEditTime: 2021-12-31 19:40:33
  */
 
 //#include "MMU\buddy.h"
@@ -11,16 +11,13 @@
 #include "interrupt.h"
 #include "io.h"
 
-extern void *__endPointer;
 extern "C" void Kernel();
 static void init_kernel();
 
 void Kernel() {
-    init_kernel();
     svga_Clear();
     svga_SetCursorPos(0, 1);
-    printk_svga("%llx\n", __endPointer);
-    // printk_svga("%llx\n", *__endPointer);
+    init_kernel();
 
     while (true) {
         asm volatile("hlt");

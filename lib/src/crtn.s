@@ -10,7 +10,9 @@
 	popq %rbp
 	ret
 
-.section .endPointer
-.global __endPointer
-__endPointer:
-	.quad .
+.section .FOOT,"a"
+.global ENDTAG
+.align 8
+ENDTAG:
+	.quad .+8
+	

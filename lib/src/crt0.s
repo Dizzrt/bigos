@@ -1,5 +1,5 @@
 .code64
-.section .bigos
+.section .bigos,"ax"
 
 .extern Kernel
 .extern _init

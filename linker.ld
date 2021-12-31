@@ -8,9 +8,14 @@ SECTIONS
 {
   . = 0xffff800000100000;
 
-  .init           :
+  .bigos          :
   {
     KEEP (*(SORT_NONE(.bigos)))
+  }
+
+  .init           :
+  {
+
     KEEP (*(SORT_NONE(.init)))
   }
 
@@ -132,7 +137,10 @@ SECTIONS
    . = ALIGN(. != 0 ? 64 / 8 : 1);
   }
 
-  .endPointer : {*(.endPointer)}
+  .FOOT           : 
+  {
+    KEEP (*(SORT_NONE(.FOOT))) 
+  }
 
   /DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) *(.ident) *(.comment) }
 }
