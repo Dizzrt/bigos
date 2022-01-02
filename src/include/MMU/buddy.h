@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-31 23:32:55
+ * @LastEditTime: 2022-01-02 20:06:04
  */
 
 #ifndef __BIG_BUDDY_H__
@@ -37,4 +37,5 @@ void create_buddy_node(uint8_t, uint64_t, BUDDY_NODE_LEN);
 void buddy_deg();
 
 void *get_one_page();
+void *get_pages(int);
 #endif

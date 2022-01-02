@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-31 23:33:52
+ * @LastEditTime: 2022-01-02 21:05:12
  */
 
 #include "MMU\memory.h"
@@ -95,40 +95,11 @@ void memory_init() {
     }
 
     buddy_deg();
-
-    // Block *block = (Block *)kmalloc(sizeof(Block));
-    // block->flags = 0; // TODO flags;
-    // block->paddr = 0x40000;
-    // block->vaddr = 0x4000040000;
-    // block->len = 64;
-
-    // int amsCount = *((int *)0x504);
-    // AMS *ams = (AMS *)0x508; // available memory segment
-
-    // int blockCnt[11] = {0};
-    // int blockSize[11] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
-
-    // for (int i = 0; i < amsCount; i++) {
-    //     memInfo.size += ams[i].len;
-    //     uint64_t paddr = ams[i].base;
-    //     uint64_t page_cnt = ams[i].len / 4096;
-
-    //     for (int j = 10; j >= 0; j--) {
-    //         blockCnt[j] = page_cnt / blockSize[j];
-    //         page_cnt %= blockCnt[j];
-    //         if (!page_cnt)
-    //             break;
-    //     }
-
-    //     for (int j = 0; j < 11; j++) {
-    //         while (blockCnt[j]--) {
-    //             Block *tblock = (Block *)kmalloc(sizeof(Block));
-    //             tblock->addr = paddr;
-    //             paddr += blockSize[j] * 4096;
-    //             blist[j].push_back(tblock);
-    //         }
-    //     }
-    // }
+    void *test = get_one_page();
+    printk_svga("\nget one page from buddy:\n");
+    printk_svga("physical address: 0x%llx\n", (uint64_t)test);
+    printk_svga("virtual address: 0x%llx\n\n", (uint64_t)test + 0xffff800000000000);
+    buddy_deg();
     // end buddy sys init----
 
     return;
@@ -148,3 +119,26 @@ void kfree(const void *p) {
 
     // TODO
 }
+
+void *get_one_page() {
+    int lens[] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+
+    int lidx = 0;
+    while (!blist[lidx].size())
+        lidx++;
+
+    while (lidx > 0) {
+        __buddy_node *_bnode = *blist[lidx].begin();
+        uint64_t midAddr = (lens[lidx] >> 1) * 0x1000 + _bnode->paddr;
+
+        blist[lidx--].pop_front();
+        create_buddy_node(0, _bnode->paddr, (BUDDY_NODE_LEN)lidx);
+        create_buddy_node(0, midAddr, (BUDDY_NODE_LEN)lidx);
+    }
+
+    void *ret = (void *)(*blist[0].begin())->paddr;
+    blist[0].pop_front();
+    return ret;
+}
+
+void *get_pages(int cnt) {}

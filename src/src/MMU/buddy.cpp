@@ -1,6 +1,6 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-31 23:35:21
+ * @LastEditTime: 2022-01-02 19:24:30
  */
 #include "MMU\buddy.h"
 
@@ -16,6 +16,8 @@ void create_buddy_node(uint8_t _flags, uint64_t _paddr, BUDDY_NODE_LEN len) {
     temp->flags = _flags;
     temp->paddr = _paddr;
 
+    uint64_t _endPaddr = _paddr + len * 4096;
+    // TODO merge continuous memory
     blist[len].push_back(temp);
 }
 
