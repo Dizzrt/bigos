@@ -1,26 +1,27 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-14 17:54:19
+ * @LastEditTime: 2022-01-03 15:47:14
  */
 
 #ifndef __BIG_LIST_H__
 #define __BIG_LIST_H__
 #include "MMU\memory.h"
-#include "io.h"
 #include "stdint.h"
 
-template <typename T> struct __list_node {
+template <typename T>
+struct __list_node {
     T val;
-    __list_node<T> *prev;
-    __list_node<T> *next;
+    __list_node<T>* prev;
+    __list_node<T>* next;
 
     __list_node() { prev = next = this; }
 };
 
-template <typename T> struct __list_iterator {
-    __list_node<T> *node;
+template <typename T>
+struct __list_iterator {
+    __list_node<T>* node;
 
-    __list_iterator(__list_node<T> *_node) : node(_node) {}
+    __list_iterator(__list_node<T>* _node) : node(_node) {}
 
     // iter++
     __list_iterator<T> operator++(int) {
@@ -48,20 +49,21 @@ template <typename T> struct __list_iterator {
         return *this;
     }
 
-    T &operator*() const { return node->val; }
-    bool operator==(const __list_iterator &x) { return this->node == x.node; }
-    bool operator!=(const __list_iterator &x) { return this->node != x.node; }
+    T& operator*() const { return node->val; }
+    bool operator==(const __list_iterator& x) { return this->node == x.node; }
+    bool operator!=(const __list_iterator& x) { return this->node != x.node; }
 };
 
-template <typename T> class list {
+template <typename T>
+class list {
   private:
     __list_node<T> _head;
-    __list_node<T> *_list;
+    __list_node<T>* _list;
 
     uint32_t _size;
 
-    typedef __list_node<T> *link_type;
-    link_type creat_node(const T &x) {
+    typedef __list_node<T>* link_type;
+    link_type creat_node(const T& x) {
         link_type node = (link_type)kmalloc(sizeof(__list_node<T>));
         node->next = node->prev = node;
         node->val = x;
@@ -78,27 +80,31 @@ template <typename T> class list {
     uint32_t size() { return _size; }
     bool empty() { return _list->next == _list; }
 
-    void insert(const iterator &, const T &);
-    void push_front(const T &x) { insert(begin(), x); }
-    void push_back(const T &x) { insert(end(), x); }
-    void erase(const iterator &);
-    void erase(const iterator &, const iterator &);
+    void insert(const iterator&, const T&);
+    void push_front(const T& x) { insert(begin(), x); }
+    void push_back(const T& x) { insert(end(), x); }
+    void erase(const iterator&);
+    void erase(const iterator&, const iterator&);
     void reverse();
     void pop_back() { erase(--end()); }
     void pop_front() { erase(begin()); }
 
     // add a list_node to the list
-    void __list_add(link_type, const iterator &);
-    void __list_rm(const iterator &);
+    void __list_add(link_type, const iterator&);
+    void __list_rm(const iterator&);
 
     list();
     // destructor need '__cxa_atexit'
     //~list() {}
 };
 
-template <typename T> list<T>::list() { _list = &_head; }
+template <typename T>
+list<T>::list() {
+    _list = &_head;
+}
 
-template <typename T> void list<T>::__list_add(link_type _node, const iterator &position) {
+template <typename T>
+void list<T>::__list_add(link_type _node, const iterator& position) {
     position.node->prev->next = _node;
     _node->prev = position.node->prev;
     position.node->prev = _node;
@@ -107,26 +113,30 @@ template <typename T> void list<T>::__list_add(link_type _node, const iterator &
     _size++;
 }
 
-template <typename T> void list<T>::__list_rm(const iterator &x) {
+template <typename T>
+void list<T>::__list_rm(const iterator& x) {
     x.node->prev->next = x.node->next;
     x.node->next->prev = x.node->prev;
 
     _size--;
 }
 
-template <typename T> void list<T>::insert(const iterator &position, const T &x) {
+template <typename T>
+void list<T>::insert(const iterator& position, const T& x) {
     link_type tmp = creat_node(x);
     __list_add(tmp, position);
     return;
 }
 
-template <typename T> void list<T>::erase(const iterator &x) {
+template <typename T>
+void list<T>::erase(const iterator& x) {
     __list_rm(x);
 
     // TODO kfree
 }
 
-template <typename T> void list<T>::erase(const iterator &x, const iterator &y) {
+template <typename T>
+void list<T>::erase(const iterator& x, const iterator& y) {
     uint32_t _t = 1;
     for (list<T>::iterator i = x; i != y; i++)
         _t++;
@@ -138,7 +148,8 @@ template <typename T> void list<T>::erase(const iterator &x, const iterator &y) 
     // TODO kfree
 }
 
-template <typename T> void list<T>::reverse() {
+template <typename T>
+void list<T>::reverse() {
     link_type cur = _list;
     link_type next = cur->next;
 

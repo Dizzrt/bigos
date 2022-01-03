@@ -1,9 +1,10 @@
 /*
  * @Author: Dizzrt
- * @LastEditTime: 2021-12-31 19:40:33
+ * @LastEditTime: 2022-01-03 11:46:52
  */
 
 //#include "MMU\buddy.h"
+#include "KTL\pair.h"
 #include "MMU\memory.h"
 #include "MMU\slab.h"
 #include "dev\svga.h"
