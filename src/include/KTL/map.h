@@ -10,9 +10,9 @@
 
 template <typename TKEY, typename TVAL>
 struct __map_node {
-    pair<TKEY, TVAL> val;
-
     bool isRed = true;
+    pair<const TKEY, TVAL> val;
+
     __map_node* left = nullptr;
     __map_node* right = nullptr;
     __map_node* father = nullptr;
@@ -20,11 +20,51 @@ struct __map_node {
 
 template <typename TKEY, typename TVAL>
 struct __map_iterator {
-    __map_node<TKEY, TVAL>* m_node;
-    __map_iterator(__map_node<TKEY, TVAL>* _node) : m_node(_node) {
+    typedef __map_node<TKEY, TVAL> node_type;
+
+    node_type* m_node;
+    __map_iterator(node_type* _node) : m_node(_node) {
         while (m_node->left != nullptr)
             m_node = m_node->left;
     }
+
+    node_type* getNext() {
+        if (m_node == nullptr)
+            return nullptr;
+
+        node_type* f = m_node->father;
+        if (f == nullptr)
+            ;  // TODO no father
+
+        // m_node is left child
+        if (f->left == m_node) {
+            if (m_node->right == nullptr)
+                return m_node->father;
+            else {
+                node_type* temp = m_node->right;
+                while (temp->left != nullptr)
+                    temp = temp->left;
+                return temp;
+            }
+        }
+        // m_node is right child
+        else {
+            if (m_node->right != nullptr)
+                return m_node->right;
+            else {
+                // grand father node
+                node_type* gf = f->father;
+                if (gf == nullptr)
+                    ;  // TODO gf is null
+
+                if (gf->left == f)
+                    return gf;
+                else
+                    return nullptr;
+            }
+        }
+    }
+    node_type* getPrev() {}
 };
 
 template <typename TKEY, typename TVAL>
@@ -33,7 +73,10 @@ class map {
     typedef __map_node<TKEY, TVAL> node_type;
 
     node_type nil;
-    node_type* head;
+    node_type* root;
+    // root's left points to the most left node whitch is the first node in LDR
+    // root's right points to the most right node whitch is the last node in LDR
+    // root's father points to the top node
     unsigned int _size;
 
     void __insert(node_type*);
@@ -48,7 +91,7 @@ class map {
   public:
     typedef __map_iterator<TKEY, TVAL> iterator;
 
-    map(/* args */) {}
+    map();
     //~map();
 
     // TVAL& operator[](const TKEY& key) { return __search(key)->val; }
@@ -65,8 +108,11 @@ class map {
     void clear();
     bool empty();
 
-    iterator begin() { return iterator(head); }
+    iterator begin() { return iterator(root->left); }
+    iterator end() { return iterator(root->right); }
 };
+template <typename TKEY, typename TVAL>
+map<TKEY, TVAL>::map() : root(&nil), _size(int()) {}
 
 template <typename TKEY, typename TVAL>
 void map<TKEY, TVAL>::insert(const TKEY& _key, const TVAL& _val) {
@@ -77,11 +123,11 @@ void map<TKEY, TVAL>::insert(const TKEY& _key, const TVAL& _val) {
 
 template <typename TKEY, typename TVAL>
 __map_node<TKEY, TVAL>* map<TKEY, TVAL>::__search(TKEY _key, bool _gnf) {  //_gnf: if nullptr then get father node
-    if (head == nullptr)
-        return (_gnf ? head : nullptr);
+    if (root == nullptr)
+        return (_gnf ? root : nullptr);
 
     node_type* f;
-    node_type* _p = this->head;
+    node_type* _p = this->root;
 
     do {
         if (_p->val.first == _key)
@@ -100,7 +146,7 @@ template <typename TKEY, typename TVAL>
 void map<TKEY, TVAL>::__insert(node_type* _node) {
     // 1.empty tree
     if (!this->_size) {
-        head = _node;
+        root = _node;
         _node->isRed = false;  // new _node must be red,turn it to black
         _size = 1;
         return;
@@ -185,7 +231,7 @@ void map<TKEY, TVAL>::__left_rotate(node_type* _node) {
 
     r_son->father = _node->father;
     if (_node->father == nullptr)
-        this->head = r_son;
+        this->root = r_son;
     else if (_node == _node->father->left)
         _node->father->left = r_son;
     else
@@ -205,7 +251,7 @@ void map<TKEY, TVAL>::__right_rotate(node_type* _node) {
 
     l_son->father = _node->father;
     if (_node->father == nullptr)
-        this->head = l_son;
+        this->root = l_son;
     else if (_node == _node->father->left)
         _node->father->left = l_son;
     else
