@@ -3,16 +3,17 @@
  * @LastEditTime: 2022-01-02 19:24:30
  */
 #include "MMU\buddy.h"
+#include "io.h"
 
 int buddy_slab_objCnt;
 Slab buddy_slab;
-__list_node<Slab *> iBuddy_Slab_lnode;
+__list_node<Slab*> iBuddy_Slab_lnode;
 Slab_cache buddy_node_cache;
 
-list<__buddy_node *> blist[11];
+list<__buddy_node*> blist[11];
 
 void create_buddy_node(uint8_t _flags, uint64_t _paddr, BUDDY_NODE_LEN len) {
-    __buddy_node *temp = (__buddy_node *)buddy_node_cache.__alloc(1);
+    __buddy_node* temp = (__buddy_node*)buddy_node_cache.__alloc(1);
     temp->flags = _flags;
     temp->paddr = _paddr;
 
