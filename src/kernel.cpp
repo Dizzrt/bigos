@@ -1,8 +1,3 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2022-01-03 11:46:52
- */
-
 #include "KTL\map.h"
 #include "MMU\memory.h"
 #include "dev\svga.h"
@@ -19,9 +14,6 @@ void Kernel() {
     init_kernel();
 
     map<int, int> mp;
-    mp[0] = 2;
-    int temp = mp.find(0);
-    printk_svga("%d\n", temp);
 
     while (true) {
         asm volatile("hlt");

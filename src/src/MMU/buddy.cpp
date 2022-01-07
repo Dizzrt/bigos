@@ -1,7 +1,3 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2022-01-02 19:24:30
- */
 #include "MMU\buddy.h"
 #include "io.h"
 

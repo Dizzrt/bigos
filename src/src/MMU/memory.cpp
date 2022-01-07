@@ -1,8 +1,3 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2022-01-02 21:05:12
- */
-
 #include "MMU\memory.h"
 #include "MMU\buddy.h"
 #include "MMU\slab.h"

@@ -1,8 +1,3 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2022-01-03 16:07:37
- */
-
 #ifndef __BIG_MAP_H__
 #define __BIG_MAP_H__
 #include "MMU\memory.h"
@@ -14,9 +9,9 @@ struct __map_node {
     bool isRed = true;
     pair<const TKEY, TVAL> val;
 
-    __map_node* left = nullptr;
-    __map_node* right = nullptr;
-    __map_node* father = nullptr;
+    __map_node* left;
+    __map_node* right;
+    __map_node* father;
 };
 
 template <typename TKEY, typename TVAL>
@@ -42,9 +37,12 @@ struct __map_iterator {
                 m_node = m_node->left;
         } else {
             node_type* f = m_node->father;
+            printk_svga("0x%llx--0x%llx\n", m_node, f);
             while (m_node == f->right) {
                 m_node = f;
                 f = f->father;
+
+                printk_svga("0x%llx--0x%llx\n", m_node, f);
             }
             if (m_node->right != f)
                 m_node = f;
@@ -103,7 +101,6 @@ class map {
 
     node_type* root;
 
-    node_type* nil;
     node_type nilNode;
     // root's left points to the most left node whitch is the first node in LDR
     // root's right points to the most right node whitch is the last node in LDR
@@ -123,26 +120,24 @@ class map {
     void __fixup(node_type*);
 
   public:
+    node_type* nil;
     typedef __map_iterator<TKEY, TVAL> iterator;
 
     map();
     //~map();
 
     TVAL& operator[](const TKEY& key) {
-        asm volatile("nop\nnop\nnop\nnop");
-
-        printk_svga("%d\n", key);
-
         node_type* ret = __search(key);
-        asm volatile("nop\nnop\nnop\nnop");
-        if (ret != nil) {
-            asm volatile("nop\nnop\nnop\nnop");
-            printk_svga("here\n");
-            return ret->val.second;
+        if (ret == nil) {
+            ret = (node_type*)kmalloc(sizeof(node_type));
+            const_cast<TKEY&>(ret->val.first) = key;
+            ret->val.second = TVAL();
+            ret->isRed = true;
+            ret->left = ret->right = nil;
+
+            __insert(ret);
         }
 
-        ret = (node_type*)kmalloc(sizeof(node_type));
-        __insert(ret);
         return ret->val.second;
     }
 
