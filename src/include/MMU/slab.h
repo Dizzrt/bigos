@@ -1,7 +1,3 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2021-12-29 17:59:25
- */
 #ifndef __BIG_SLAB_H__
 #define __BIG_SLAB_H__
 
@@ -19,17 +15,23 @@ struct Slab {
     uint16_t objFree;
 
     Slab();
-    Slab(uint8_t, uint32_t, uint64_t, uint8_t *);
+    Slab(uint8_t, uint32_t, uint64_t, uint8_t*);
 };
 
 struct Slab_cache {
-    void *__alloc(uint16_t);
+    void* __alloc(uint16_t);
 
     uint32_t objSize;
-    list<Slab *> slabs_full;
-    list<Slab *> slabs_available;
+    list<Slab*> slabs_full;
+    list<Slab*> slabs_available;
 };
 
-void Slab_free(Slab *, uint32_t, uint32_t);
+struct SlabAllocHeader {
+    Slab* slab;
+    uint32_t len;
+    uint32_t flags;
+};
+
+void Slab_free(Slab*, uint32_t, uint32_t);
 
 #endif

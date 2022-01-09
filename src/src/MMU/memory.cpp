@@ -101,18 +101,28 @@ void memory_init() {
 }
 
 void* kmalloc(uint64_t len) {
-    if (len < 4096)
-        return common_cache.__alloc(len);
-    else {
+    if (len > 4096) {
         // TODO get page from buddy
         return nullptr;
     }
+
+    void* ret = common_cache.__alloc(len + sizeof(SlabAllocHeader));
+    ret = (void*)((uint64_t)ret + sizeof(SlabAllocHeader));
+    return ret;
 }
 
 void kfree(const void* p) {
-    list<Slab*>::iterator iter = common_cache.slabs_full.begin();
+    uint64_t addr = (uint64_t)p;
 
-    // TODO
+    uint32_t flags = *((uint32_t*)(addr - 4));
+    if (true /*TODO slab flag*/) {
+        SlabAllocHeader* header = (SlabAllocHeader*)(addr - sizeof(SlabAllocHeader));
+        uint64_t _offset = (uint64_t)p - header->slab->vaddr;
+        bitmap_update(&header->slab->bitmap, _offset, header->len, false);
+        header->slab->objFree += header->len;
+    } else {
+        // TODO pages free
+    }
 }
 
 void* get_one_page() {
