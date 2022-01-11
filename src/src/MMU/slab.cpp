@@ -5,8 +5,8 @@
 Slab iSlab_0;
 Slab iSlab_1;
 
-__list_node<Slab*> iSlab_lnode_0;
-__list_node<Slab*> iSlab_lnode_1;
+linked_container<Slab*> iSlab_lnode_0;
+linked_container<Slab*> iSlab_lnode_1;
 
 Slab_cache common_cache;
 //-------------------
@@ -32,7 +32,7 @@ void* Slab_cache::__alloc(uint16_t len) {
         _slab->objFree -= len;
         if (_slab->objFree == 0) {
             slabs_available.__list_rm(iter);
-            slabs_full.__list_add(iter.node, slabs_full.end());
+            slabs_full.__list_add(iter.m_node, slabs_full.end());
         }
         return (void*)(_slab->vaddr + objSize * offset);
 

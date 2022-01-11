@@ -1,6 +1,8 @@
 #ifndef __BIG_MMU_H__
 #define __BIG_MMU_H__
 
+#include "stdint.h"
+
 struct AMS  // available memory segment
 {
     uint64_t base;

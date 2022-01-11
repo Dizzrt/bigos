@@ -1,78 +1,29 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2022-01-03 15:47:14
- */
-
 #ifndef __BIG_LIST_H__
 #define __BIG_LIST_H__
+
+#include "KTL\linked_container.h"
 #include "MMU\memory.h"
 #include "stdint.h"
 
 template <typename T>
-struct __list_node {
-    T val;
-    __list_node<T>* prev;
-    __list_node<T>* next;
-
-    __list_node() { prev = next = this; }
-};
-
-template <typename T>
-struct __list_iterator {
-    __list_node<T>* node;
-
-    __list_iterator(__list_node<T>* _node) : node(_node) {}
-
-    // iter++
-    __list_iterator<T> operator++(int) {
-        __list_iterator<T> temp = *this;
-        node = node->next;
-        return temp;
-    }
-
-    //++iter
-    __list_iterator<T> operator++() {
-        node = node->next;
-        return *this;
-    }
-
-    // iter--
-    __list_iterator<T> operator--(int) {
-        __list_iterator<T> temp = *this;
-        node = node->prev;
-        return temp;
-    }
-
-    //--iter
-    __list_iterator<T> operator--() {
-        node = node->prev;
-        return *this;
-    }
-
-    T& operator*() const { return node->val; }
-    bool operator==(const __list_iterator& x) { return this->node == x.node; }
-    bool operator!=(const __list_iterator& x) { return this->node != x.node; }
-};
-
-template <typename T>
 class list {
   private:
-    __list_node<T> _head;
-    __list_node<T>* _list;
+    linked_container<T> _head;
+    linked_container<T>* _list;
 
     uint32_t _size;
 
-    typedef __list_node<T>* link_type;
+    typedef linked_container<T>* link_type;
     link_type creat_node(const T& x) {
-        link_type node = (link_type)kmalloc(sizeof(__list_node<T>));
-        node->next = node->prev = node;
-        node->val = x;
+        link_type m_node = (link_type)kmalloc(sizeof(linked_container<T>));
+        m_node->next = m_node->prev = m_node;
+        m_node->val = x;
 
-        return node;
+        return m_node;
     }
 
   public:
-    typedef __list_iterator<T> iterator;
+    typedef linked_container_iterator<T> iterator;
 
     iterator begin() { return iterator(_list->next); }
     iterator end() { return iterator(_list); }
@@ -105,18 +56,18 @@ list<T>::list() {
 
 template <typename T>
 void list<T>::__list_add(link_type _node, const iterator& position) {
-    position.node->prev->next = _node;
-    _node->prev = position.node->prev;
-    position.node->prev = _node;
-    _node->next = position.node;
+    position.m_node->prev->next = _node;
+    _node->prev = position.m_node->prev;
+    position.m_node->prev = _node;
+    _node->next = position.m_node;
 
     _size++;
 }
 
 template <typename T>
 void list<T>::__list_rm(const iterator& x) {
-    x.node->prev->next = x.node->next;
-    x.node->next->prev = x.node->prev;
+    x.m_node->prev->next = x.m_node->next;
+    x.m_node->next->prev = x.m_node->prev;
 
     _size--;
 }
@@ -142,8 +93,8 @@ void list<T>::erase(const iterator& x, const iterator& y) {
         _t++;
     _size -= _t;
 
-    x.node->prev->next = y.node->next;
-    y.node->next->prev = x.node->prev;
+    x.m_node->prev->next = y.m_node->next;
+    y.m_node->next->prev = x.m_node->prev;
 
     // TODO kfree
 }

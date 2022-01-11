@@ -34,8 +34,8 @@ struct SlabAllocHeader {
 extern Slab iSlab_0;
 extern Slab iSlab_1;
 
-extern __list_node<Slab*> iSlab_lnode_0;
-extern __list_node<Slab*> iSlab_lnode_1;
+extern linked_container<Slab*> iSlab_lnode_0;
+extern linked_container<Slab*> iSlab_lnode_1;
 
 extern Slab_cache common_cache;
 

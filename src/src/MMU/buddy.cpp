@@ -3,7 +3,7 @@
 
 int buddy_slab_objCnt;
 Slab buddy_slab;
-__list_node<Slab*> iBuddy_Slab_lnode;
+linked_container<Slab*> iBuddy_Slab_lnode;
 Slab_cache buddy_node_cache;
 
 list<__buddy_node*> blist[11];
