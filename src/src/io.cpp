@@ -1,8 +1,3 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2021-12-17 21:09:08
- */
-
 #include "io.h"
 #include "dev/svga.h"
 #include "string.h"
@@ -19,13 +14,13 @@ void __outb__(uint16_t port, uint8_t value) {
     return;
 }
 
-static inline uint8_t *__getSvagPointer() {
-    return (uint8_t *)(long long)((svga_GetCursorPos() << 1) + 0xffff8000000b8000);
+static inline uint8_t* __getSvagPointer() {
+    return (uint8_t*)(long long)((svga_GetCursorPos() << 1) + 0xffff8000000b8000);
 }
 
 static inline void __tab() { return svga_MoveCursor(TAB_WIDTH, true); }
 
-static inline uint8_t *__enter() {
+static inline uint8_t* __enter() {
     uint16_t pos = svga_GetCursorPos();
     pos /= resolution_x;
     pos = (pos + 1) * resolution_x;
@@ -39,7 +34,7 @@ void putk_svag(char val) {
     else if (val == '\t')
         __tab();
     else {
-        uint8_t *p = __getSvagPointer();
+        uint8_t* p = __getSvagPointer();
         *p = val;
         *(p + 1) = 0x0f;
         svga_MoveCursor(1, true);
@@ -47,9 +42,9 @@ void putk_svag(char val) {
     return;
 }
 
-void putsk_svga(const char *str) {
+void putsk_svga(const char* str) {
     uint16_t curPosDelta = 0;
-    uint8_t *p = __getSvagPointer();
+    uint8_t* p = __getSvagPointer();
 
     while (*str != 0) {
         if (*str == '\n')
@@ -71,7 +66,7 @@ void putsk_svga(const char *str) {
     return;
 }
 
-static uint8_t updateBuffer(char *buffer, char *val, uint8_t offset) {
+static uint8_t updateBuffer(char* buffer, char* val, uint8_t offset) {
     uint32_t val_offset = 0;
     uint32_t val_l = strlen(val);
 
@@ -93,7 +88,7 @@ static uint8_t updateBuffer(char *buffer, char *val, uint8_t offset) {
     return ret;
 }
 
-void printk_svga(const char *fmt, ...) {
+void printk_svga(const char* fmt, ...) {
     va_list valist;
     va_start(valist, fmt);
 
@@ -108,9 +103,9 @@ void printk_svga(const char *fmt, ...) {
                 p[0] = va_arg(valist, int);
                 ptr = updateBuffer(buffer, p, ptr);
             } else if (*(fmt + 1) == 's') {
-                char *p = (char *)va_arg(valist, long long);
+                char* p = (char*)va_arg(valist, long long);
                 ptr = updateBuffer(buffer, p, ptr);
-            } else { // maby a num
+            } else {  // maby a num
                 if (*(fmt + 1) == 'l' && *(fmt + 2) == 'l') {
                     ll_flag = true;
                     fmt += 2;

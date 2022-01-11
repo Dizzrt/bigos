@@ -1,19 +1,25 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2021-12-29 18:06:07
- */
-
 #include "MMU\slab.h"
+#include "MMU\buddy.h"
 
-void *Slab_cache::__alloc(uint16_t len) {
+//----static slab----
+Slab iSlab_0;
+Slab iSlab_1;
+
+__list_node<Slab*> iSlab_lnode_0;
+__list_node<Slab*> iSlab_lnode_1;
+
+Slab_cache common_cache;
+//-------------------
+
+void* Slab_cache::__alloc(uint16_t len) {
     if (slabs_available.empty()) {
         // TODO get new slab
         return nullptr;
     }
 
-    list<Slab *>::iterator iter = slabs_available.begin();
+    list<Slab*>::iterator iter = slabs_available.begin();
     do {
-        Slab *_slab = *iter;
+        Slab* _slab = *iter;
 
         if (_slab->objFree < len)
             continue;
@@ -28,7 +34,7 @@ void *Slab_cache::__alloc(uint16_t len) {
             slabs_available.__list_rm(iter);
             slabs_full.__list_add(iter.node, slabs_full.end());
         }
-        return (void *)(_slab->vaddr + objSize * offset);
+        return (void*)(_slab->vaddr + objSize * offset);
 
     } while (++iter != slabs_available.end());
 
@@ -43,7 +49,7 @@ Slab::Slab() {
     this->bitmap.bits = nullptr;
 }
 
-Slab::Slab(uint8_t _flag, uint32_t _objSize, uint64_t _vaddr, uint8_t *_bp) {
+Slab::Slab(uint8_t _flag, uint32_t _objSize, uint64_t _vaddr, uint8_t* _bp) {
     this->flags = _flag;
     this->objFree = 4096 / _objSize;
     this->vaddr = _vaddr;
@@ -52,7 +58,7 @@ Slab::Slab(uint8_t _flag, uint32_t _objSize, uint64_t _vaddr, uint8_t *_bp) {
     this->bitmap.bits = _bp;
 }
 
-void Slab_free(Slab *_slab, uint32_t offset, uint32_t len) {
+void Slab_free(Slab* _slab, uint32_t offset, uint32_t len) {
     bitmap_update(&_slab->bitmap, offset, len, false);
     _slab->objFree += len;
 

@@ -1,5 +1,5 @@
 #include "KTL\map.h"
-#include "MMU\memory.h"
+#include "MMU\MMU.h"
 #include "dev\svga.h"
 #include "dev\timer.h"
 #include "interrupt.h"
