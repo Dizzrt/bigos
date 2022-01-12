@@ -78,7 +78,3 @@ void memory_init() {
 
     return;
 }
-
-#include "buddy.cpp"
-#include "memory.cpp"
-#include "slab.cpp"
