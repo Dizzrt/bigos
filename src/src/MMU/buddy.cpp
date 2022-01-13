@@ -66,7 +66,7 @@ void __buddy_free(void* p) {
     if (!__buddy_map.count(p))
         return;
 
-    __buddy_free((uint64_t)p, __buddy_map[p]);
+        __buddy_free((uint64_t)p, __buddy_map[p]);
     __buddy_map.erase(p);
 }
 

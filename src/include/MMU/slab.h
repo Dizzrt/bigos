@@ -3,6 +3,7 @@
 
 #include "KTL\list.h"
 #include "bitmap.h"
+#include "kmem.h"
 
 #define SLAB_PERMANENT 0b10000000
 
@@ -18,11 +19,12 @@ struct Slab {
 };
 
 struct Slab_cache {
-    void* __alloc(uint16_t);
-
     uint32_t objSize;
     list<Slab*> slabs_full;
     list<Slab*> slabs_available;
+
+    void* __alloc(uint16_t, bool = false);
+    void __free(Slab*, uint64_t, uint16_t len);
 };
 
 struct SlabAllocHeader {
@@ -38,7 +40,10 @@ extern linked_container<Slab*> iSlab_lnode_0;
 extern linked_container<Slab*> iSlab_lnode_1;
 
 extern Slab_cache common_cache;
+extern Slab_cache __Slab_cache;
 
-void Slab_free(Slab*, uint32_t, uint32_t);
+void __slab_free(Alloc_Header*);
+
+Slab* alloc_slab(uint8_t, uint32_t);
 
 #endif

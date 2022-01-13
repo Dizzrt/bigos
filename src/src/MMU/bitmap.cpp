@@ -1,12 +1,7 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2021-12-13 22:14:43
- */
-
 #include "MMU\bitmap.h"
 
-uint64_t bitmap_scan(BitMap *bitmap, uint64_t cnt) {
-    uint8_t *pointer = bitmap->bits;
+uint64_t bitmap_scan(BitMap* bitmap, uint64_t cnt) {
+    uint8_t* pointer = bitmap->bits;
 
     for (uint64_t p = 0; p < bitmap->len; p++) {
         // find the first byte which not 0x00
@@ -66,19 +61,18 @@ uint64_t bitmap_scan(BitMap *bitmap, uint64_t cnt) {
     return -1;
 }
 
-void bitmap_init(BitMap *bitmap) { memset(bitmap->bits, 0xff, bitmap->len / 8); }
+void bitmap_init(BitMap* bitmap) { memset(bitmap->bits, 0xff, bitmap->len / 8); }
 
 // bit==1 => page available / bit==0 => page used
 // isSet => make page used(set bit to 0)
-void bitmap_update(BitMap *bitmap, uint64_t offset, uint64_t len, bool isSet) {
-
+void bitmap_update(BitMap* bitmap, uint64_t offset, uint64_t len, bool isSet) {
     uint8_t count, mask;
     uint8_t xoff = offset % 8;
-    uint8_t *p = bitmap->bits;
+    uint8_t* p = bitmap->bits;
 
     p += offset / 8;
-    if (xoff != 0) {      // byte alignment
-        count = 9 - xoff; // here is bits count
+    if (xoff != 0) {       // byte alignment
+        count = 9 - xoff;  // here is bits count
         if (len >= count)
             len -= count;
         else
@@ -97,8 +91,8 @@ void bitmap_update(BitMap *bitmap, uint64_t offset, uint64_t len, bool isSet) {
         p++;
     }
 
-    count = len / 8;  // here is byte count
-    len -= count * 8; // the count of remaining bytes
+    count = len / 8;   // here is byte count
+    len -= count * 8;  // the count of remaining bytes
 
     while (count--) {
         if (isSet)
