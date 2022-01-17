@@ -23,6 +23,8 @@ struct Slab_cache {
     list<Slab*> slabs_full;
     list<Slab*> slabs_available;
 
+    void get_slab();
+
     void* __alloc(uint16_t, bool = false);
     void __free(Slab*, uint64_t, uint16_t len);
 };

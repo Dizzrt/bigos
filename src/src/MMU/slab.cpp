@@ -11,6 +11,7 @@ linked_container<Slab*> iSlab_lnode_1;
 Slab_cache common_cache;
 Slab_cache __Slab_cache;
 //-------------------
+void Slab_cache::get_slab() {}
 
 void* Slab_cache::__alloc(uint16_t len, bool hasHeader) {
     if (slabs_available.empty()) {
