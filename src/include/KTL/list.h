@@ -40,6 +40,9 @@ class list {
     void pop_back() { erase(--end()); }
     void pop_front() { erase(begin()); }
 
+    T& front() { return *begin(); }
+    T& back() { return *(--end()) }
+
     // add a list_node to the list
     void __list_add(link_type, const iterator&);
     void __list_rm(const iterator&);
