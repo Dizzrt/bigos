@@ -4,15 +4,14 @@
 #include "MMU\memory.h"
 #include "stdint.h"
 
-template <size_t __Size>
 class bitset {
   private:
     uint8_t* _bp;  // bit pointer
     uint64_t _size;
 
   public:
-    bitset() : _size(__Size) { resize(_size); };
-    bitset(uint8_t* bp) : _bp(bp), _size(__Size){};
+    bitset() : _size(8) { resize(_size); };
+    bitset(uint8_t* bp, uint64_t __Size) : _bp(bp), _size(__Size){};
     //~bitset(); //MARKER destructor
 
     void set(uint64_t);
@@ -28,24 +27,21 @@ class bitset {
     uint64_t scan(uint64_t size);
 };
 
-template <size_t __Size>
-void bitset<__Size>::set(uint64_t _i) {
+void bitset::set(uint64_t _i) {
     uint8_t* bp = _bp + _i / 8;
     uint8_t mask = 0x80 >> (_i % 8);
 
     *bp |= mask;
 }
 
-template <size_t __Size>
-void bitset<__Size>::reset(uint64_t _i) {
+void bitset::reset(uint64_t _i) {
     uint8_t* bp = _bp + _i / 8;
     uint8_t mask = 0x80 >> (_i % 8);
 
     *bp &= ~mask;
 }
 
-template <size_t __Size>
-void bitset<__Size>::set(uint64_t begin, uint64_t size) {
+void bitset::set(uint64_t begin, uint64_t size) {
     uint8_t* bp = _bp + begin / 8;
 
     uint8_t _s = begin % 8;
@@ -69,8 +65,7 @@ void bitset<__Size>::set(uint64_t begin, uint64_t size) {
     }
 }
 
-template <size_t __Size>
-void bitset<__Size>::reset(uint64_t begin, uint64_t size) {
+void bitset::reset(uint64_t begin, uint64_t size) {
     uint8_t* bp = _bp + begin / 8;
 
     uint8_t _s = begin % 8;
@@ -94,16 +89,14 @@ void bitset<__Size>::reset(uint64_t begin, uint64_t size) {
     }
 }
 
-template <size_t __Size>
-void bitset<__Size>::resize(uint64_t _Size) {
+void bitset::resize(uint64_t _Size) {
     kfree(_bp);
     _bp = (uint8_t*)kmalloc(_Size);
 
     _size = _Size;
 }
 
-template <size_t __Size>
-uint64_t bitset<__Size>::scan(uint64_t _Size) {
+uint64_t bitset::scan(uint64_t _Size) {
     uint8_t* bp = _bp;
 
     uint64_t _xSize;
