@@ -5,11 +5,12 @@
 #include "stdint.h"
 
 class bitset {
-  private:
+  protected:
     uint8_t* _bp;  // bit pointer
     uint64_t _size;
 
   public:
+    bitset() = default;
     bitset() : _size(8) { resize(_size); };
     bitset(uint8_t* bp, uint64_t __Size) : _bp(bp), _size(__Size){};
     //~bitset(); //MARKER destructor
