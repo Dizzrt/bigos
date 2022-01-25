@@ -1,8 +1,9 @@
 #ifndef __BIG_KMEM_H__
 #define __BIG_KMEM_H__
 
-#include "KTL\list.h"
-#include "KTL\map.h"
+// #include "KTL\list.h"
+// #include "KTL\map.h"
+#include "buddy.h"
 #include "slab.h"
 #include "stdint.h"
 
@@ -14,24 +15,16 @@
 // void* p2v(uint64_t);
 
 extern Cache common_cache;
-extern Slab common_cache_slab_0;
-extern Slab common_cache_slab_1;
-extern linked_container<Slab*> common_cache_slab_node_0;
-extern linked_container<Slab*> common_cache_slab_node_1;
+extern linked_container<Slab> common_cache_slab_node_0;
+extern linked_container<Slab> common_cache_slab_node_1;
 
 extern Cache buddy_cache;
-extern Slab buddy_cache_slab_0;
-extern Slab buddy_cache_slab_1;
-extern linked_container<Slab*> buddy_cache_slab_node_0;
-extern linked_container<Slab*> buddy_cache_slab_node_1;
-
-extern Cache cache_cache;
+extern linked_container<Slab> buddy_cache_slab_node_0;
+// extern linked_container<Slab*> buddy_cache_slab_node_1;
 
 extern Cache slab_cache;
-extern Slab slab_cache_slab_0;
-extern Slab slab_cache_slab_1;
-extern linked_container<Slab*> slab_cache_slab_node_0;
-extern linked_container<Slab*> slab_cache_slab_node_1;
+extern linked_container<Slab> slab_cache_slab_node_0;
+extern linked_container<Slab> slab_cache_slab_node_1;
 
 struct AMS  // available memory segment
 {
@@ -49,6 +42,6 @@ struct Alloc_Header {
 };
 
 void kmeminit();
-extern map<const void*, Alloc_Header*> alloc_mp;
+// extern map<const void*, Alloc_Header*> alloc_mp;
 
 #endif

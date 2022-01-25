@@ -1,14 +1,9 @@
-/*
- * @Author: Dizzrt
- * @LastEditTime: 2021-12-17 21:22:59
- */
-
 #include "interrupt.h"
 #include "io.h"
 
 void reg_intrs() {
-    intr_register_handler(0x20, intr_timer);    // IRQ0----时钟中断
-    intr_register_handler(0x21, intr_keyboard); // IRQ1----键盘中断
+    intr_register_handler(0x20, intr_timer);     // IRQ0----时钟中断
+    intr_register_handler(0x21, intr_keyboard);  // IRQ1----键盘中断
 }
 
 void intr_init() {
@@ -18,18 +13,18 @@ void intr_init() {
 
     reg_intrs();
 
-    pic_init(0xfc, 0xff); //初始化中断代理芯片
+    pic_init(0xfc, 0xff);  //初始化中断代理芯片
     intr_Set(intr_status::INTR_ON);
 }
 
-void pic_init(uint8_t OCW1_m, uint8_t OCW1_s) // for 8259A
+void pic_init(uint8_t OCW1_m, uint8_t OCW1_s)  // for 8259A
 {
     //主片
-    __outb__(0x20, 0x11);   // ICW1----级联、边沿触发
-    __outb__(0x21, 0x20);   // ICW2----起始中断号
-    __outb__(0x21, 0x04);   // ICW3----IR2接从片
-    __outb__(0x21, 0x01);   // ICW4----
-    __outb__(0x21, OCW1_m); // OCW1----中断屏蔽字
+    __outb__(0x20, 0x11);    // ICW1----级联、边沿触发
+    __outb__(0x21, 0x20);    // ICW2----起始中断号
+    __outb__(0x21, 0x04);    // ICW3----IR2接从片
+    __outb__(0x21, 0x01);    // ICW4----
+    __outb__(0x21, OCW1_m);  // OCW1----中断屏蔽字
 
     //从片
     __outb__(0xa0, 0x11);
@@ -44,8 +39,8 @@ void intr_register_handler(uint8_t vnum, intr_handler handler) {
     return;
 }
 
-static void inline intr_register_entry(uint8_t vnum, void *entry) {
-    uint64_t *p = (uint64_t *)0xffff800000000000ull;
+static void inline intr_register_entry(uint8_t vnum, void* entry) {
+    uint64_t* p = (uint64_t*)0xffff800000000000ull;
     p += vnum * 2;
 
     uint64_t addr_low = (uint64_t)entry & 0x000000000000ffffull;
@@ -65,9 +60,10 @@ static void inline intr_register_entry(uint8_t vnum, void *entry) {
 
 intr_status intr_Get() {
     uint64_t flags;
-    asm volatile("pushf\n"
-                 "pop %0"
-                 : "=g"(flags));
+    asm volatile(
+        "pushf\n"
+        "pop %0"
+        : "=g"(flags));
 
     flags &= 0x200;
     if (flags == 0x200)

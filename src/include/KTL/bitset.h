@@ -1,7 +1,6 @@
 #ifndef __BIG_BITSET_H__
 #define __BIG_BITSET_H__
 
-#include "MMU\memory.h"
 #include "stdint.h"
 
 class bitset {
@@ -91,8 +90,8 @@ void bitset::reset(uint64_t begin, uint64_t size) {
 }
 
 void bitset::resize(uint64_t _Size) {
-    kfree(_bp);
-    _bp = (uint8_t*)kmalloc(_Size);
+    // kfree(_bp);
+    //_bp = (uint8_t*)kmalloc(_Size); //TODO memory
 
     _size = _Size;
 }

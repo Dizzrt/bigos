@@ -1,6 +1,4 @@
 #include "MMU\memory.h"
-#include "MMU\buddy.h"
-#include "MMU\slab.h"
 
 MemoryInfo memInfo;
 
@@ -8,7 +6,12 @@ void* kmalloc(uint64_t len) {
     if (len > 4096)
         return __buddy_alloc(len / 4096 + (len % 4096 == 0 ? 0 : 1));
 
-    return common_cache.__alloc(len + sizeof(SlabAllocHeader), true);
+    // return common_cache.__alloc(len + sizeof(SlabAllocHeader), true);
+    SlabAllocHeader* ret = (SlabAllocHeader*)common_cache.alloc_(len + sizeof(SlabAllocHeader));
+    // TODO slab alloc header
+    new (ret) SlabAllocHeader(len + sizeof(SlabAllocHeader));
+
+    return (void*)((uint64_t)ret + sizeof(SlabAllocHeader));
 }
 
 void kfree(const void* p) {
