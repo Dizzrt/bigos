@@ -14,6 +14,8 @@ struct linked_container {
 template <typename T>
 struct linked_container_iterator {
     linked_container<T>* m_node;
+
+    linked_container_iterator() = default;
     linked_container_iterator(linked_container<T>* _node) : m_node(_node) {}
 
     // iter++
