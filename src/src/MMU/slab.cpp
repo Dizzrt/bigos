@@ -6,6 +6,8 @@ extern Cache common_cache;
 
 extern void* __buddy_alloc(int = 1);
 extern void __buddy_free(void*);
+extern void* kmalloc(uint32_t, uint8_t = 0);
+extern void kfree(const void*);
 
 /**
  * @description:
@@ -15,7 +17,7 @@ extern void __buddy_free(void*);
  * @param {uint8_t*} bitset pointer
  */
 Slab::Slab(uint8_t flags, uint16_t objCnt, uint64_t page, uint8_t* bp)
-    : bitset((bp == nullptr ? (uint8_t*)__common_alloc(sizeof(objCnt)) : bp), objCnt) {
+    : bitset((bp == nullptr ? (uint8_t*)kmalloc(sizeof(objCnt)) : bp), objCnt) {
     __flags = flags;
     __free_obj_cnt = objCnt;
 
@@ -37,7 +39,7 @@ void Slab::__free(uint16_t _offset, uint16_t obj_cnt) {
     __free_obj_cnt += obj_cnt;
 }
 
-void* Cache::alloc_(uint16_t obj_cnt, uint8_t flags) {
+void* Cache::alloc_(uint16_t obj_cnt, uint8_t flags, bool isCommon) {
     // TODO alloc_ flags
     Slab* _slab;
     if (partial.empty()) {
@@ -60,17 +62,22 @@ void* Cache::alloc_(uint16_t obj_cnt, uint8_t flags) {
         }
 
         uint64_t ret = _slab->__alloc(obj_cnt);
-        if (ret != -1)
-            return reinterpret_cast<void*>(ret * __obj_size + _slab->__page);
+        if (ret != -1) {
+            ret = ret * __obj_size + _slab->__page;
+
+            if (isCommon) {
+                new ((Common_Cache_Header*)ret) Common_Cache_Header(_slab, obj_cnt);
+                ret -= sizeof(Common_Cache_Header);
+            }
+
+            return (void*)ret;
+        }
     }
 
     return nullptr;
 }
 
 void Cache::free_(const void*) {}
-
-void* __common_alloc(uint16_t len);
-void __common_free(void*);
 
 slab_container* __alloc_slab_container(uint8_t flags, uint16_t objCnt) {
     slab_container* sc = (slab_container*)slab_cache.alloc_(1);

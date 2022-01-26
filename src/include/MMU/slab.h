@@ -36,17 +36,17 @@ struct Cache {
     klist<Slab> empty;
     klist<Slab> partial;
 
-    void* alloc_(uint16_t, uint8_t = 0);
+    void* alloc_(uint16_t, uint8_t = 0, bool = false);
     void free_(const void*);
 };
 
 struct Common_Cache_Header {
-    uint32_t len;
-    char magic[6] = "_SLAB";
-};
+    Slab* slab;
+    uint16_t len;
+    const char magic[6] = "_SLAB";
 
-void* __common_alloc(uint16_t len);
-void __common_free(void*);
+    Common_Cache_Header(Slab* _slab, uint16_t _len) : slab(_slab), len(_len) {}
+};
 
 typedef linked_container<Slab> slab_container;
 slab_container* __alloc_slab_container(uint8_t, uint16_t);

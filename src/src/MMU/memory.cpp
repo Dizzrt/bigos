@@ -1,38 +1,27 @@
 #include "MMU\memory.h"
 
 MemoryInfo memInfo;
+extern int strcmp(const char*, const char*);
 
-void* kmalloc(uint64_t len) {
-    if (len > 4096)
-        return __buddy_alloc(len / 4096 + (len % 4096 == 0 ? 0 : 1));
+void* kmalloc(uint32_t len, uint8_t flags) {
+    uint32_t xlen = len + sizeof(Common_Cache_Header);
 
-    // return common_cache.__alloc(len + sizeof(SlabAllocHeader), true);
-    SlabAllocHeader* ret = (SlabAllocHeader*)common_cache.alloc_(len + sizeof(SlabAllocHeader));
-    // TODO slab alloc header
-    new (ret) SlabAllocHeader(len + sizeof(SlabAllocHeader));
+    if (xlen > 4096)
+        return alloc_pages(len / 4096 + (len % 4096 == 0 ? 0 : 1));
 
-    return (void*)((uint64_t)ret + sizeof(SlabAllocHeader));
+    return common_cache.alloc_(xlen, flags, true);
 }
 
 void kfree(const void* p) {
-    SlabAllocHeader* sheader = (SlabAllocHeader*)((uint64_t)p - sizeof(SlabAllocHeader));
+    uint64_t pp = (uint64_t)p + sizeof(Common_Cache_Header);
+    Common_Cache_Header* header = (Common_Cache_Header*)pp;
 
-    // small memory allocated by kmalloc
-    if (!strcmp("_SLAB", sheader->magic)) {
-        common_cache.__free(sheader->slab, (uint64_t)sheader, sheader->len);
-        return;
-    }
+    if (!strcmp("_SLAB", header->magic))
+        header->slab->__free(pp - header->slab->__page, header->len);
 
-    if (!alloc_mp.count(p))  // not a valid memory
-        return;
-
-    Alloc_Header* header = alloc_mp[p];
-    if (header->isPages)
-        free_pages(p);
-    else
-        __slab_free(header);  // small memory, but not allocated by kmalloc
+    // TODO free pages
 }
 
-void* alloc_pages(unsigned int pages) { return __buddy_alloc(pages); }
+void* alloc_pages(uint32_t pages) { return __buddy_alloc(pages); }
 void free_pages(const void* p) { free_pages(p, alloc_mp[p]); }
 void free_pages(const void* p, Alloc_Header* header) { __buddy_free((uint64_t)p, header->len); }
