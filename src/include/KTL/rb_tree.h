@@ -1,0 +1,240 @@
+#ifndef __BIG_RBTREE_H__
+#define __BIG_RBTREE_H__
+
+#include "new.h"
+#include "pair.h"
+
+template <typename TKEY, typename TVAL>
+struct _rb_tree_node {
+    bool isRed = true;
+    pair<const TKEY, TVAL> val;
+
+    _rb_tree_node* left;
+    _rb_tree_node* right;
+    _rb_tree_node* father;
+};
+
+template <typename TKEY, typename TVAL>
+class _rb_tree {
+  private:
+    unsigned int _node_count;
+
+  protected:
+    typedef _rb_tree_node<TKEY, TVAL> node_type;
+
+    node_type* nil;
+    node_type* root;
+    node_type nilNode;
+
+    void __left_rotate(node_type*);
+    void __right_rotate(node_type*);
+    void __fixup(node_type*);
+
+    void __leftmost();
+    void __rightmost();
+
+    void __insert(node_type*);
+    void __remove(const TKEY&);
+
+    node_type* __search(TKEY, bool = false);
+
+  public:
+    _rb_tree(/* args */);
+    ~_rb_tree() = default;
+
+    bool empty();
+    unsigned int size() { return _node_count; }
+
+    // get a value by key
+    TVAL& find(const TKEY&);
+    bool count(const TKEY&);
+};
+
+template <typename TKEY, typename TVAL>
+_rb_tree<TKEY, TVAL>::_rb_tree() {
+    root = nil = &nilNode;
+    new (nil) node_type();
+
+    nilNode.father = &nilNode;
+    nilNode.isRed = false;
+}
+
+template <typename TKEY, typename TVAL>
+_rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__search(TKEY _key, bool noNil) {
+    // if we find nil and noNil==true,then return the previous node
+
+    if (root == nil)
+        return root;
+
+    node_type* previous_node;
+    node_type* _node = this->root;
+
+    do {
+        previous_node = _node;
+
+        if (_node->val.first == _key)
+            break;
+
+        if (_node->val.first > _key)
+            _node = _node->left;
+        else
+            _node = _node->right;
+    } while (_node != nil);
+
+    return (noNil ? previous_node : _node);
+}
+
+template <typename TKEY, typename TVAL>
+void _rb_tree<TKEY, TVAL>::__left_rotate(node_type* _node) {
+    node_type* r_son = _node->right;
+
+    _node->right = r_son->left;
+    if (r_son->left != nil)
+        r_son->left->father = _node;
+
+    r_son->father = _node->father;
+    if (_node->father == nil)
+        this->root = r_son;
+    else if (_node == _node->father->left)
+        _node->father->left = r_son;
+    else
+        _node->father->right = r_son;
+
+    r_son->left = _node;
+    _node->father = r_son;
+}
+
+template <typename TKEY, typename TVAL>
+void _rb_tree<TKEY, TVAL>::__right_rotate(node_type* _node) {
+    node_type* l_son = _node->left;
+
+    _node->left = l_son->right;
+    if (l_son->right != nil)
+        l_son->right->father = _node;
+
+    l_son->father = _node->father;
+    if (_node->father == nil)
+        this->root = l_son;
+    else if (_node == _node->father->left)
+        _node->father->left = l_son;
+    else
+        _node->father->right = l_son;
+
+    l_son->right = _node;
+    _node->father = l_son;
+}
+
+template <typename TKEY, typename TVAL>
+void _rb_tree<TKEY, TVAL>::__leftmost() {
+    node_type* l = root;
+
+    while (l->left != nil)
+        l = l->left;
+
+    return l;
+}
+
+template <typename TKEY, typename TVAL>
+void _rb_tree<TKEY, TVAL>::__rightmost() {
+    node_type* r = root;
+
+    while (r->right != nil)
+        r = r->right;
+
+    return r;
+}
+
+template <typename TKEY, typename TVAL>
+void _rb_tree<TKEY, TVAL>::__fixup(node_type* _node) {
+    node_type* father_node = _node->father;
+    node_type* grandfather_node;
+    node_type* uncle_node;
+
+    if (father_node != nil)
+        grandfather_node = father_node->father;
+
+    if (grandfather_node != nil)
+        if (grandfather_node->left == father_node)
+            uncle_node = grandfather_node->right;
+        else
+            uncle_node = grandfather_node->left;
+
+    // 4-1.uncle node is exists and is red
+    if (uncle_node != nil && uncle_node->isRed) {
+        uncle_node->isRed = false;
+        father_node->isRed = false;
+        grandfather_node->isRed = true;
+        __fixup(grandfather_node);
+    }
+
+    // 4-2.uncle node is not exists or is black
+    if (uncle_node == nil || !uncle_node->isRed) {
+        // 4-2-1.the father node is the left child of grandfather node
+        if (father_node == grandfather_node->left) {
+            if (father_node->left == _node) {
+                father_node->isRed = false;
+                grandfather_node->isRed = true;
+                __right_rotate(grandfather_node);
+            } else {
+                __left_rotate(father_node);
+                __fixup(father_node);
+            }
+        }
+        // 4-2-2.the father node is the right child of grandfather node
+        else {
+            if (father_node->right == _node) {
+                father_node->isRed = false;
+                grandfather_node->isRed = true;
+                __left_rotate(grandfather_node);
+            } else {
+                __right_rotate(father_node);
+                __fixup(father_node);
+            }
+        }
+    }
+}
+
+template <typename TKEY, typename TVAL>
+void _rb_tree<TKEY, TVAL>::__insert(node_type* _node) {
+    // 1.empty tree
+    if (!this->_size) {
+        root = _node;
+        _node->isRed = false;  // root must be black
+        _size = 1;
+        return;
+    }
+
+    node_type* f = __search(_node->val.first, true);
+
+    // 2.key already exists
+    if (f->val.first == _node->val.first) {
+        f->val.second = _node->val.second;
+        return;
+    }
+
+    // 3.the f is a black node
+    _node->father = f;
+    if (f->val.first < _node->val.first)
+        f->right = _node;
+    else
+        f->left = _node;
+
+    // 4.the f is a red node
+    if (f->isRed)
+        __fixup(_node);
+
+    nil->father = root;
+    nil->left = __leftmost();
+    nil->right = __rightmost();
+}
+
+template <typename TKEY, typename TVAL>
+void _rb_tree<TKEY, TVAL>::__remove(const TKEY& _key) {
+    node_type* t_node = __search(_key);
+    if (t_node == nil)
+        return;  // the target node is not exist
+
+    // TODO remove node
+}
+
+#endif
