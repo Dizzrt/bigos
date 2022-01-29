@@ -1,6 +1,7 @@
 #ifndef __BIG_RBTREE_H__
 #define __BIG_RBTREE_H__
 
+#include "io.h"
 #include "new.h"
 #include "pair.h"
 
@@ -12,6 +13,9 @@ struct _rb_tree_node {
     _rb_tree_node* left;
     _rb_tree_node* right;
     _rb_tree_node* father;
+
+    _rb_tree_node() = default;
+    _rb_tree_node(const TKEY& key, const TKEY& val) : val(make_pair<const TKEY, TVAL>(key, val)) {}
 };
 
 template <typename TKEY, typename TVAL>
@@ -30,37 +34,36 @@ class _rb_tree {
     void __right_rotate(node_type*);
     void __fixup(node_type*);
 
-    void __leftmost();
-    void __rightmost();
-
-    void __insert(node_type*);
-    void __remove(const TKEY&);
+    node_type* __leftmost();
+    node_type* __rightmost();
 
     node_type* __search(TKEY, bool = false);
 
   public:
+    void __insert(node_type*);
+    void __remove(const TKEY&);
+
     _rb_tree(/* args */);
     ~_rb_tree() = default;
 
-    bool empty();
+    bool empty() { return nil->left == nil; };
     unsigned int size() { return _node_count; }
 
-    // get a value by key
-    TVAL& find(const TKEY&);
-    bool count(const TKEY&);
+    bool count(const TKEY& key) { return __search(key) != nil; };
+    TVAL& find(const TKEY& key) { return __search(key)->val.second; };
+
+    node_type* ts() { return root; }  // TEMP
 };
 
 template <typename TKEY, typename TVAL>
 _rb_tree<TKEY, TVAL>::_rb_tree() {
     root = nil = &nilNode;
-    new (nil) node_type();
-
-    nilNode.father = &nilNode;
     nilNode.isRed = false;
+    nil->father = nil->left = nil->right = nil;
 }
 
 template <typename TKEY, typename TVAL>
-_rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__search(TKEY _key, bool noNil) {
+_rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__search(TKEY key, bool noNil) {
     // if we find nil and noNil==true,then return the previous node
 
     if (root == nil)
@@ -70,12 +73,12 @@ _rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__search(TKEY _key, bool noNil)
     node_type* _node = this->root;
 
     do {
-        previous_node = _node;
-
-        if (_node->val.first == _key)
+        if (_node->val.first == key)
             break;
 
-        if (_node->val.first > _key)
+        previous_node = _node;
+
+        if (_node->val.first > key)
             _node = _node->left;
         else
             _node = _node->right;
@@ -125,7 +128,7 @@ void _rb_tree<TKEY, TVAL>::__right_rotate(node_type* _node) {
 }
 
 template <typename TKEY, typename TVAL>
-void _rb_tree<TKEY, TVAL>::__leftmost() {
+_rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__leftmost() {
     node_type* l = root;
 
     while (l->left != nil)
@@ -135,7 +138,7 @@ void _rb_tree<TKEY, TVAL>::__leftmost() {
 }
 
 template <typename TKEY, typename TVAL>
-void _rb_tree<TKEY, TVAL>::__rightmost() {
+_rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__rightmost() {
     node_type* r = root;
 
     while (r->right != nil)
@@ -146,61 +149,82 @@ void _rb_tree<TKEY, TVAL>::__rightmost() {
 
 template <typename TKEY, typename TVAL>
 void _rb_tree<TKEY, TVAL>::__fixup(node_type* _node) {
+    if (_node == nil)
+        return;
+
     node_type* father_node = _node->father;
-    node_type* grandfather_node;
-    node_type* uncle_node;
+    node_type* grandfather_node = nil;
+    node_type* uncle_node = nil;
 
     if (father_node != nil)
         grandfather_node = father_node->father;
+    else
+        return;
 
-    if (grandfather_node != nil)
-        if (grandfather_node->left == father_node)
-            uncle_node = grandfather_node->right;
-        else
-            uncle_node = grandfather_node->left;
+    if (grandfather_node == nil)
+        return;
+    else if (grandfather_node->left == father_node)
+        uncle_node = grandfather_node->right;
+    else
+        uncle_node = grandfather_node->left;
 
     // 4-1.uncle node is exists and is red
     if (uncle_node != nil && uncle_node->isRed) {
         uncle_node->isRed = false;
         father_node->isRed = false;
+
+        if (grandfather_node == root)
+            return;
+
         grandfather_node->isRed = true;
         __fixup(grandfather_node);
+        return;
     }
-
-    // 4-2.uncle node is not exists or is black
-    if (uncle_node == nil || !uncle_node->isRed) {
-        // 4-2-1.the father node is the left child of grandfather node
-        if (father_node == grandfather_node->left) {
-            if (father_node->left == _node) {
-                father_node->isRed = false;
-                grandfather_node->isRed = true;
-                __right_rotate(grandfather_node);
-            } else {
-                __left_rotate(father_node);
-                __fixup(father_node);
-            }
+    // 4-2.uncle node is not exists or is black,and the father is left child of grandfather
+    else if (grandfather_node->left == father_node) {
+        // 4-2-1._node is left child of its father node
+        if (father_node->left == _node) {
+            father_node->isRed = false;
+            grandfather_node->isRed = true;
+            __right_rotate(grandfather_node);
+            return;
         }
-        // 4-2-2.the father node is the right child of grandfather node
+        // 4-2-2._node is right child of its father node
         else {
-            if (father_node->right == _node) {
-                father_node->isRed = false;
-                grandfather_node->isRed = true;
-                __left_rotate(grandfather_node);
-            } else {
-                __right_rotate(father_node);
-                __fixup(father_node);
-            }
+            __left_rotate(father_node);
+            __fixup(father_node);
+            return;
+        }
+    }
+    // 4-3.uncle node is not exists or is black,and the father is right child of grandfather
+    else {
+        // 4-3-1._node is right child of its father node
+        if (father_node->right == _node) {
+            father_node->isRed = false;
+            grandfather_node->isRed = true;
+            __left_rotate(grandfather_node);
+            return;
+        }
+        // 4-3-2._node is left child of its father node
+        else {
+            __right_rotate(father_node);
+            __fixup(father_node);
+            return;
         }
     }
 }
 
 template <typename TKEY, typename TVAL>
 void _rb_tree<TKEY, TVAL>::__insert(node_type* _node) {
+    _node->left = _node->right = nil;  // TEMP
+
     // 1.empty tree
-    if (!this->_size) {
-        root = _node;
+    if (!this->_node_count) {
         _node->isRed = false;  // root must be black
-        _size = 1;
+        _node_count = 1;
+
+        _node->father = nil;
+        root = nil->father = nil->left = nil->right = _node;
         return;
     }
 
@@ -212,15 +236,19 @@ void _rb_tree<TKEY, TVAL>::__insert(node_type* _node) {
         return;
     }
 
-    // 3.the f is a black node
+    // insert
     _node->father = f;
     if (f->val.first < _node->val.first)
         f->right = _node;
     else
         f->left = _node;
+    _node_count++;
 
+    // 3.the f is a black node
+    if (!f->isRed)
+        return;
     // 4.the f is a red node
-    if (f->isRed)
+    else
         __fixup(_node);
 
     nil->father = root;
@@ -229,12 +257,13 @@ void _rb_tree<TKEY, TVAL>::__insert(node_type* _node) {
 }
 
 template <typename TKEY, typename TVAL>
-void _rb_tree<TKEY, TVAL>::__remove(const TKEY& _key) {
-    node_type* t_node = __search(_key);
+void _rb_tree<TKEY, TVAL>::__remove(const TKEY& key) {
+    node_type* t_node = __search(key);
     if (t_node == nil)
         return;  // the target node is not exist
 
-    // TODO remove node
+    node_type* f = t_node->father;
+    node_type** fp = f->left == t_node ? f->left : f->right;
 }
 
 #endif
