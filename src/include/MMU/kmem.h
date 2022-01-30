@@ -1,8 +1,6 @@
 #ifndef __BIG_KMEM_H__
 #define __BIG_KMEM_H__
 
-// #include "KTL\list.h"
-// #include "KTL\map.h"
 #include "buddy.h"
 #include "slab.h"
 #include "stdint.h"
@@ -14,17 +12,10 @@
 // void* p2v(void*);
 // void* p2v(uint64_t);
 
-extern Cache common_cache;
-extern linked_container<Slab> common_cache_slab_node_0;
-extern linked_container<Slab> common_cache_slab_node_1;
-
-extern Cache buddy_cache;
-extern linked_container<Slab> buddy_cache_slab_node_0;
-// extern linked_container<Slab*> buddy_cache_slab_node_1;
-
 extern Cache slab_cache;
-extern linked_container<Slab> slab_cache_slab_node_0;
-extern linked_container<Slab> slab_cache_slab_node_1;
+extern Cache buddy_cache;
+extern Cache common_cache;
+extern Cache buddyMapNode_cache;
 
 struct AMS  // available memory segment
 {

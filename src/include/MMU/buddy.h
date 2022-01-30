@@ -2,7 +2,7 @@
 #define __BIG_BUDDY_H__
 
 #include "KTL\klist.h"
-//#include "KTL\map.h"
+#include "KTL\rb_tree.h"
 #include "slab.h"
 #include "stdint.h"
 
@@ -13,12 +13,13 @@ struct __buddy_node {
     uint64_t paddr;
 };
 
-// extern list<__buddy_node*> blist[11];
 extern klist<__buddy_node> blist[11];
 
 void* __buddy_alloc(int = 1);
 void __buddy_free(void*);
 void __buddy_free(uint64_t, uint32_t);
+
+typedef _rb_tree_node<void*, uint32_t> buddyMapNode;
 
 typedef linked_container<__buddy_node> buddy_container;
 buddy_container* __alloc_buddy_container();
