@@ -133,7 +133,7 @@ class map {
             const_cast<TKEY&>(ret->val.first) = key;
             ret->val.second = TVAL();
             ret->isRed = true;
-            ret->left = ret->right = nil;
+            ret->left = ret->right = nil;  // MARKER new node's l and r is nil
 
             __insert(ret);
         }

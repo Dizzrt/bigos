@@ -24,7 +24,7 @@ class klist {
 
     void reverse();
     T& front() { return *begin(); }
-    T& back() { return *(--end()) }
+    T& back() { return *(--end()); }
 
     void __list_insert(link_type, const iterator&);
     T& __list_remove(const iterator&);

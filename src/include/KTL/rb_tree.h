@@ -15,7 +15,7 @@ struct _rb_tree_node {
     _rb_tree_node* father;
 
     _rb_tree_node() = default;
-    _rb_tree_node(const TKEY& key, const TKEY& val) : val(make_pair<const TKEY, TVAL>(key, val)) {}
+    _rb_tree_node(const TKEY& key, const TVAL& val) : val(make_pair<const TKEY, TVAL>(key, val)) {}
 };
 
 template <typename TKEY, typename TVAL>
@@ -216,7 +216,7 @@ void _rb_tree<TKEY, TVAL>::__fixup(node_type* _node) {
 
 template <typename TKEY, typename TVAL>
 void _rb_tree<TKEY, TVAL>::__insert(node_type* _node) {
-    _node->left = _node->right = nil;  // TEMP
+    _node->left = _node->right = nil;
 
     // 1.empty tree
     if (!this->_node_count) {
@@ -262,8 +262,7 @@ void _rb_tree<TKEY, TVAL>::__remove(const TKEY& key) {
     if (t_node == nil)
         return;  // the target node is not exist
 
-    node_type* f = t_node->father;
-    node_type** fp = f->left == t_node ? f->left : f->right;
+    // TODO rb tree remove node
 }
 
 #endif

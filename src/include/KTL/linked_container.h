@@ -8,7 +8,8 @@ struct linked_container {
     linked_container<T>* prev;
     linked_container<T>* next;
 
-    linked_container() { prev = next = this; }
+    linked_container(const T& _val) : val(_val) { prev = next = this; }
+    linked_container() : linked_container(T()) {}
 };
 
 template <typename T>
