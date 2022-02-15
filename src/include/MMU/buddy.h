@@ -15,7 +15,7 @@ struct __buddy_node {
 
 extern klist<__buddy_node> blist[11];
 
-void* __buddy_alloc(int = 1);
+void* __buddy_alloc(uint32_t = 1);
 void __buddy_free(void*);
 void __buddy_free(uint64_t, uint32_t);
 
@@ -23,6 +23,5 @@ typedef _rb_tree_node<void*, uint32_t> buddyMapNode;
 
 typedef linked_container<__buddy_node> buddy_container;
 buddy_container* __alloc_buddy_container();
-void __free_buddy_container(buddy_container*);
 
 #endif

@@ -31,7 +31,7 @@ struct Alloc_Header {
     void* _allocator;
 };
 
-void kmeminit();
+void memInit();
 // extern map<const void*, Alloc_Header*> alloc_mp;
 
 #endif

@@ -4,7 +4,7 @@
 extern Cache slab_cache;
 extern Cache common_cache;
 
-extern void* __buddy_alloc(int = 1);
+extern void* __buddy_alloc(uint32_t = 1);
 extern void __buddy_free(void*);
 extern void* kmalloc(uint32_t, uint8_t = 0);
 extern void kfree(const void*);
@@ -56,13 +56,26 @@ void* Cache::_alloc() {
     return (void*)(ret + sizeof(SlabHeader));
 }
 
-slab_container* __alloc_slab_container(uint8_t flags, uint16_t objCnt) {
-    slab_container* sc = (slab_container*)slab_cache.alloc_(1);
-    new (&sc->val) Slab(flags, objCnt);
-    return sc;
-}
+// slab_container* __alloc_slab_container(uint8_t flags, uint16_t objCnt) {
+//     slab_container* sc = (slab_container*)slab_cache.alloc_(1);
+//     new (&sc->val) Slab(flags, objCnt);
+//     return sc;
+// }
 
-void __free_slab_container(slab_container*) {
-    // TODO free slab container
-    //
+// void __free_slab_container(slab_container*) {
+//     // TODO free slab container
+//     //
+// }
+
+void* CacheChain::alloc(uint16_t objSize) {
+    klist<Cache>::iterator iter = _caList.begin();
+    while (iter != _caList.end()) {
+        if ((*iter)._objSize >= objSize)
+            return (*iter)._alloc();
+
+        iter++;
+    }
+
+    // TODO cache alloc
+    return nullptr;
 }

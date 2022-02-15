@@ -16,7 +16,6 @@ class Slab : protected bitset {
 
     // uint16_t _objSize;
 
-    Slab() = default;
     Slab(uint8_t = 0, uint16_t = 0x1000, uint64_t = -1, uint8_t* = nullptr);
 
     // obj_size
@@ -52,35 +51,13 @@ struct CacheChain {
 
     // Cache& GetCacheBySize(uint64_t _size) { return GetCacheByObjSize(_size - sizeof(SlabHeader)); }
     // MS=>the slab's objSize and target objSize must be same
-    Cache& GetCacheByObjSize(uint64_t _objSize, bool MS = false) {
-        klist<Cache>::iterator iter = _caList.begin();
-        klist<Cache>::iterator minIter = iter;
+    // Cache& GetCacheByObjSize(uint64_t _objSize, bool MS = false);
 
-        while (iter != _caList.end()) {
-            Cache& temp = *iter;
-            if (temp._objSize == _objSize)
-                return temp;
-
-            if (temp._objSize > _objSize && temp._objSize < (*minIter)._objSize)
-                minIter = iter;
-
-            iter++;
-        }
-
-        if (MS) {
-            // TODO create new slab
-        } else
-            return *minIter;
-    }
-
-    void* alloc(uint64_t _objSize) {
-        Cache _tempCa = GetCacheByObjSize(_objSize);
-        //_tempCa.alloc_()
-    }
+    void* alloc(uint16_t);
 };
 
 typedef linked_container<Slab> slab_container;
-slab_container* __alloc_slab_container(uint8_t, uint16_t);
-void __free_slab_container(slab_container*);
+// slab_container* __alloc_slab_container(uint8_t, uint16_t);
+// void __free_slab_container(slab_container*);
 
 #endif

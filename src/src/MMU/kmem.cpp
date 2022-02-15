@@ -35,7 +35,7 @@ CACHE(buddyMapNode)
 
 CacheChain kmem_cache;
 
-void kmeminit() {
+void memInit() {
     kmem_cache._caList.__list_insert(&canode_16, kmem_cache._caList.end());
     kmem_cache._caList.__list_insert(&canode_32, kmem_cache._caList.end());
     kmem_cache._caList.__list_insert(&canode_64, kmem_cache._caList.end());

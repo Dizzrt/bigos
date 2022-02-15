@@ -1,7 +1,7 @@
 #include "MMU\buddy.h"
 
-extern Cache buddy_cache;
-extern Cache buddyMapNode_cache;
+extern Cache cache_buddy;
+extern Cache cache_buddyMapNode;
 
 klist<__buddy_node> blist[11];
 static _rb_tree<void*, uint32_t> __buddy_map;
@@ -22,7 +22,7 @@ void* __buddy_alloc(uint32_t pages) {
     void* ret = (void*)_bnode.paddr;
     _bnode.paddr += pages * 0x1000;
 
-    buddyMapNode* mNode = (buddyMapNode*)buddyMapNode_cache.alloc_(1);
+    buddyMapNode* mNode = (buddyMapNode*)cache_buddyMapNode._alloc();
     new (mNode) buddyMapNode(ret, pages);
     __buddy_map.__insert(mNode);
 
@@ -63,11 +63,4 @@ void __buddy_free(void* p) {
     //__buddy_map.__remove(p); //MARKER map remove
 }
 
-buddy_container* __alloc_buddy_container() { return (buddy_container*)buddy_cache.alloc_(1); }
-void __free_buddy_container(buddy_container* _node) {
-    // MARKER optimize
-
-    // Slab* _slab;  // TODO free buddy container
-
-    // list<Slab*>::iterator iter = buddy_cache.
-}
+buddy_container* __alloc_buddy_container() { return (buddy_container*)cache_buddy._alloc(); }

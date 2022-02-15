@@ -14,6 +14,5 @@ void kfree(const void*);
 
 void* alloc_pages(uint32_t = 1);
 void free_pages(const void*);
-// void free_pages(const void*, Alloc_Header*);
 
 #endif
