@@ -5,17 +5,16 @@
 #include "slab.h"
 #include "stdint.h"
 
-// virtual address to physical address
-// void* v2p(void*);
-// void* v2p(uint64_t);
+extern Cache cache_16;
+extern Cache cache_32;
+extern Cache cache_64;
+extern Cache cache_128;
+extern Cache cache_256;
+extern Cache cache_512;
+extern Cache cache_1024;
+extern Cache cache_2048;
 
-// void* p2v(void*);
-// void* p2v(uint64_t);
-
-extern Cache slab_cache;
-extern Cache buddy_cache;
-extern Cache common_cache;
-extern Cache buddyMapNode_cache;
+extern CacheChain kmem_cache;
 
 struct AMS  // available memory segment
 {
