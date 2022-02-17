@@ -8,13 +8,15 @@
 
 #define SLAB_PERMANENT 0b10000000
 
+extern uint64_t slabHeaderMagic;
+
 class Slab : protected bitset {
   public:
     uint8_t __flags;
     uint64_t __page;
     uint16_t __free_obj_cnt;
 
-    // uint16_t _objSize;
+    uint16_t _objSize;
 
     Slab(uint8_t = 0, uint16_t = 0x1000, uint64_t = -1, uint8_t* = nullptr);
 
@@ -23,6 +25,7 @@ class Slab : protected bitset {
     //~Slab();
 
     uint64_t __alloc();
+    void __free(const void*);
 };
 
 struct SlabHeader {
@@ -30,7 +33,7 @@ struct SlabHeader {
     const uint64_t magic;
 
     // TODO magic
-    SlabHeader(Slab* _slab = nullptr) : slab(_slab), magic(1) {}
+    SlabHeader(Slab* _slab = nullptr) : slab(_slab), magic(slabHeaderMagic) {}
 };
 
 struct Cache {

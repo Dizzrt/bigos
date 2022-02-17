@@ -9,6 +9,8 @@ extern void __buddy_free(void*);
 extern void* kmalloc(uint32_t, uint8_t = 0);
 extern void kfree(const void*);
 
+uint64_t slabHeaderMagic = 0xa3188ec947cb43f8;  // TODO update slab header magic
+
 /**
  * @description:
  * @param {uint8_t} flags
@@ -34,6 +36,12 @@ uint64_t Slab::__alloc() {
     return offset;
 }
 
+void Slab::__free(const void* p) {
+    uint64_t offset = ((uint64_t)p - __page) / _objSize;
+    reset(offset, 1);
+    __free_obj_cnt++;
+}
+
 void* Cache::_alloc() {
     if (partial.empty())
         if (empty.empty()) {
@@ -55,17 +63,6 @@ void* Cache::_alloc() {
     new ((SlabHeader*)ret) SlabHeader(&(*iter));
     return (void*)(ret + sizeof(SlabHeader));
 }
-
-// slab_container* __alloc_slab_container(uint8_t flags, uint16_t objCnt) {
-//     slab_container* sc = (slab_container*)slab_cache.alloc_(1);
-//     new (&sc->val) Slab(flags, objCnt);
-//     return sc;
-// }
-
-// void __free_slab_container(slab_container*) {
-//     // TODO free slab container
-//     //
-// }
 
 void* CacheChain::alloc(uint16_t objSize) {
     klist<Cache>::iterator iter = _caList.begin();
