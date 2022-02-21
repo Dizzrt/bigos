@@ -20,7 +20,7 @@ void Kernel() {
 }
 
 static void init_kernel() {
-    memInit();
+    // memInit();
 
     pt_init(0x34, (CLOCK_TICK_RATE + HZ / 2) / HZ);  // 1193=1193180/中断频率(100)
     intr_init();

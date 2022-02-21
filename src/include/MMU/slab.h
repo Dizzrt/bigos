@@ -14,11 +14,11 @@ class Slab : protected bitset {
   public:
     uint8_t __flags;
     uint64_t __page;
-    uint16_t __free_obj_cnt;
 
-    uint16_t _objSize;
+    uint16_t freeCnt;
+    uint16_t offsetSize;
 
-    Slab(uint8_t = 0, uint16_t = 0x1000, uint64_t = -1, uint8_t* = nullptr);
+    Slab(uint8_t = 0, uint16_t = 1, uint64_t = -1, uint8_t* = nullptr);
 
     // obj_size
     // Slab(uint16_t, uint8_t, )
@@ -35,6 +35,7 @@ struct SlabHeader {
     // TODO magic
     SlabHeader(Slab* _slab = nullptr) : slab(_slab), magic(slabHeaderMagic) {}
 };
+#define SLABHEADERSIZE sizeof(SlabHeader)
 
 struct Cache {
     uint16_t _objSize;
