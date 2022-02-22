@@ -67,10 +67,10 @@ void* Cache::_alloc() {
 }
 
 void* CacheChain::alloc(uint16_t objSize) {
-    klist<Cache>::iterator iter = _caList.begin();
+    klist<Cache*>::iterator iter = _caList.begin();
     while (iter != _caList.end()) {
-        if ((*iter)._objSize >= objSize)
-            return (*iter)._alloc();
+        if ((*iter)->_objSize >= objSize)
+            return (*iter)->_alloc();
 
         iter++;
     }

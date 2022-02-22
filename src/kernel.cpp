@@ -1,6 +1,6 @@
 //#include "KTL\klist.h"
 //#include "KTL\rb_tree.h"
-#include "MMU\kmem.h"
+//#include "MMU\kmem.h"
 #include "dev\svga.h"
 #include "dev\timer.h"
 #include "interrupt.h"

@@ -51,7 +51,7 @@ struct Cache {
 };
 
 struct CacheChain {
-    klist<Cache> _caList;
+    klist<Cache*> _caList;
 
     // Cache& GetCacheBySize(uint64_t _size) { return GetCacheByObjSize(_size - sizeof(SlabHeader)); }
     // MS=>the slab's objSize and target objSize must be same

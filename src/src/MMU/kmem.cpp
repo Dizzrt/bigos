@@ -14,7 +14,7 @@
 
 #define CACHE(NAME)     \
     Cache cache_##NAME; \
-    linked_container<Cache> canode_##NAME;
+    linked_container<Cache*> canode_##NAME(&cache_##NAME);
 
 STATIC_SLAB(Slab_0, sizeof(slab_container))
 STATIC_SLAB(Slab_1, sizeof(slab_container))
@@ -22,13 +22,13 @@ STATIC_SLAB(Buddy, sizeof(buddy_container))
 STATIC_SLAB(BuddyMap_0, sizeof(buddyMapNode))
 STATIC_SLAB(BuddyMap_1, sizeof(buddyMapNode))
 
-CACHE(16)
-CACHE(32)
-CACHE(64)
-CACHE(128)
-CACHE(256)
-CACHE(512)
-CACHE(1024)
+// CACHE(16)
+// CACHE(32)
+// CACHE(64)
+// CACHE(128)
+// CACHE(256)
+// CACHE(512)
+// CACHE(1024)
 CACHE(slab)
 CACHE(buddy)
 CACHE(buddyMapNode)
@@ -36,15 +36,16 @@ CACHE(buddyMapNode)
 CacheChain kmem_cache;
 
 void memInit() {
-    kmem_cache._caList.__list_insert(&canode_16, kmem_cache._caList.end());
-    kmem_cache._caList.__list_insert(&canode_32, kmem_cache._caList.end());
-    kmem_cache._caList.__list_insert(&canode_64, kmem_cache._caList.end());
-    kmem_cache._caList.__list_insert(&canode_128, kmem_cache._caList.end());
-    kmem_cache._caList.__list_insert(&canode_256, kmem_cache._caList.end());
-    kmem_cache._caList.__list_insert(&canode_512, kmem_cache._caList.end());
-    kmem_cache._caList.__list_insert(&canode_1024, kmem_cache._caList.end());
+    // kmem_cache._caList.__list_insert(&canode_16, kmem_cache._caList.end());
+    // kmem_cache._caList.__list_insert(&canode_32, kmem_cache._caList.end());
+    // kmem_cache._caList.__list_insert(&canode_64, kmem_cache._caList.end());
+    // kmem_cache._caList.__list_insert(&canode_128, kmem_cache._caList.end());
+    // kmem_cache._caList.__list_insert(&canode_256, kmem_cache._caList.end());
+    // kmem_cache._caList.__list_insert(&canode_512, kmem_cache._caList.end());
+    // kmem_cache._caList.__list_insert(&canode_1024, kmem_cache._caList.end());
     kmem_cache._caList.__list_insert(&canode_slab, kmem_cache._caList.end());
     kmem_cache._caList.__list_insert(&canode_buddy, kmem_cache._caList.end());
+    kmem_cache._caList.__list_insert(&canode_buddyMapNode, kmem_cache._caList.end());
 
     cache_buddy.partial.__list_insert(&StaticSlab_Buddy, cache_buddy.partial.end());
     cache_buddyMapNode.partial.__list_insert(&StaticSlab_BuddyMap_0, cache_buddyMapNode.partial.end());
