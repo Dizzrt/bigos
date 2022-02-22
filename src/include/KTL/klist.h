@@ -26,6 +26,7 @@ class klist {
     T& front() { return *begin(); }
     T& back() { return *(--end()); }
 
+    void __list_insert(link_type);
     void __list_insert(link_type, const iterator&);
     T& __list_remove(const iterator&);
 
@@ -46,6 +47,11 @@ void klist<T>::__list_insert(link_type _node, const iterator& position) {
     _node->next = position.m_node;
 
     _size++;
+}
+
+template <typename T>
+void klist<T>::__list_insert(link_type _node) {
+    __list_insert(_node, this->end());
 }
 
 template <typename T>
