@@ -13,6 +13,8 @@ void Kernel() {
     svga_SetCursorPos(0, 1);
     init_kernel();
 
+    printk_svga("%d\n", sizeof(long));
+
     while (true) {
         asm volatile("hlt");
     }

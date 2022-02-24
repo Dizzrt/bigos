@@ -3,16 +3,16 @@
 
 #include "ktl\bitset.h"
 #include "ktl\klist.h"
+#include "stdint.h"
 
-uint64_t SH_magic;
+#define SLAB_PERMANENT 0b10000000
 
-struct SlabHeader {
-    Slab* slab;
-    const uint64_t magic;
+// get a new slab by buddy system instead of cache_slab
+//#define CACHE_AUTONOMY 0b10000000
 
-    SlabHeader(Slab* _slab) : slab(_slab), magic(SH_magic) {}
-};
-#define SHSIZE sizeof(SlabHeader)
+#define LONG_ALIGN(SIZE) ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
+
+extern uint64_t SH_magic;
 
 class Slab : public bitset {
   private:
@@ -25,12 +25,21 @@ class Slab : public bitset {
 
     void* __alloc();
 
-    Slab(/* args */) = default;
+    Slab(uint8_t = 0, uint16_t = 1, uint64_t = -1, uint8_t* = nullptr);
     ~Slab() = default;
 };
 
+struct SlabHeader {
+    Slab* slab;
+    const uint64_t magic;
+
+    SlabHeader(Slab* _slab) : slab(_slab), magic(SH_magic) {}
+};
+#define SHSIZE sizeof(SlabHeader)
+
 class Cache {
   public:
+    // uint8_t flags;
     uint16_t objSize;
 
     klist<Slab*> full;
@@ -39,7 +48,7 @@ class Cache {
 
     void* _alloc();
 
-    Cache(/* args */) = default;
+    Cache(uint16_t);
     ~Cache() = default;
 };
 
