@@ -3,8 +3,9 @@
 #include "dev\timer.h"
 #include "interrupt.h"
 #include "io.h"
+#include "ktl\bitset.h"
 #include "ktl\klist.h"
-
+#include "mmu\kmem.h"
 extern "C" void Kernel();
 static void init_kernel();
 
@@ -13,7 +14,7 @@ void Kernel() {
     svga_SetCursorPos(0, 1);
     init_kernel();
 
-    printk_svga("%d\n", sizeof(long));
+    kmemInit();
 
     while (true) {
         asm volatile("hlt");

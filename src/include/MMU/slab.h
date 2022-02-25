@@ -1,6 +1,7 @@
 #ifndef __BIG_SLAB_H__
 #define __BIG_SLAB_H__
 
+#include "io.h"
 #include "ktl\bitset.h"
 #include "ktl\klist.h"
 #include "stdint.h"
@@ -9,6 +10,7 @@
 
 // get a new slab by buddy system instead of cache_slab
 //#define CACHE_AUTONOMY 0b10000000
+#define CACHE_NONEMPTY 0b10000000
 
 #define LONG_ALIGN(SIZE) ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
 
@@ -39,7 +41,7 @@ struct SlabHeader {
 
 class Cache {
   public:
-    // uint8_t flags;
+    uint8_t flags;
     uint16_t objSize;
 
     klist<Slab*> full;
@@ -48,7 +50,7 @@ class Cache {
 
     void* _alloc();
 
-    Cache(uint16_t);
+    Cache(uint8_t, uint16_t);
     ~Cache() = default;
 };
 

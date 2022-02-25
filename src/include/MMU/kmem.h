@@ -5,13 +5,14 @@
 
 #define SLAB_OBJ_CNT(OBJSIZE) 0x1000 / LONG_ALIGN(OBJSIZE + SHSIZE)
 #define SLAB_BP_SIZE(OBJSIZE) SLAB_OBJ_CNT(OBJSIZE) / 8 + (SLAB_OBJ_CNT(OBJSIZE) % 8 == 0 ? 0 : 1)
-#define STATIC_SLAB_FLAGS(NAME, OBJSIZE, FLAGS)             \
-    static uint8_t ___slabPage_##NAME[0x1000];              \
-    static uint8_t ___slabBP_##NAME[SLAB_BP_SIZE(OBJSIZE)]; \
-    static Slab slab_##NAME(FLAGS, OBJSIZE, (uint64_t)___slabPage_##NAME, ___slabBP_##NAME);
-#define STATIC_SLAB(NAME, OBJSIZE) STATIC_SLAB_FLAGS(NAME, OBJSIZE, 128)
+#define STATIC_SLAB(NAME, FLAGS, OBJSIZE)                                                       \
+    static uint8_t ___slabPage_##NAME[0x1000];                                                  \
+    static uint8_t ___slabBP_##NAME[SLAB_BP_SIZE(OBJSIZE)];                                     \
+    static Slab ___slab_##NAME(FLAGS, OBJSIZE, (uint64_t)___slabPage_##NAME, ___slabBP_##NAME); \
+    static linked_container<Slab*> ___slabLC_##NAME(&___slab_##NAME);
+#define CACHE(NAME, FLAGS, OBJSIZE) Cache cache_##NAME(FLAGS, OBJSIZE);
 
-#define CACHE(NAME, OBJSIZE) Cache cache_##NAME(OBJSIZE);
+extern CacheChain kmem_cache;
 
 void kmemInit();
 
