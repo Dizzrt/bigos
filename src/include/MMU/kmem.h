@@ -10,7 +10,9 @@
     static uint8_t ___slabBP_##NAME[SLAB_BP_SIZE(OBJSIZE)];                                     \
     static Slab ___slab_##NAME(FLAGS, OBJSIZE, (uint64_t)___slabPage_##NAME, ___slabBP_##NAME); \
     static linked_container<Slab*> ___slabLC_##NAME(&___slab_##NAME);
-#define CACHE(NAME, FLAGS, OBJSIZE) Cache cache_##NAME(FLAGS, OBJSIZE);
+#define CACHE(NAME, FLAGS, OBJSIZE, ISLABSIZE, ...)               \
+    Cache cache_##NAME(FLAGS, OBJSIZE, ISLABSIZE, ##__VA_ARGS__); \
+    static linked_container<Cache*> ___cacheLC_##NAME(&cache_##NAME);
 
 extern CacheChain kmem_cache;
 

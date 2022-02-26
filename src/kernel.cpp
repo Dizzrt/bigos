@@ -3,8 +3,6 @@
 #include "dev\timer.h"
 #include "interrupt.h"
 #include "io.h"
-#include "ktl\bitset.h"
-#include "ktl\klist.h"
 #include "mmu\kmem.h"
 extern "C" void Kernel();
 static void init_kernel();

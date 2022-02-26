@@ -1,7 +1,6 @@
 #ifndef __BIG_SLAB_H__
 #define __BIG_SLAB_H__
 
-#include "io.h"
 #include "ktl\bitset.h"
 #include "ktl\klist.h"
 #include "stdint.h"
@@ -50,7 +49,7 @@ class Cache {
 
     void* _alloc();
 
-    Cache(uint8_t, uint16_t);
+    Cache(uint8_t, uint16_t, uint8_t, ...);
     ~Cache() = default;
 };
 

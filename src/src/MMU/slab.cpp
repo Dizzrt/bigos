@@ -1,5 +1,6 @@
 #include "mmu\slab.h"
 #include "new.h"
+#include "stdarg.h"
 
 extern Cache cache_slab;
 extern Cache cache_lcPointer;
@@ -12,7 +13,15 @@ Slab::Slab(uint8_t _flags, uint16_t _objSize, uint64_t _page, uint8_t* _bp)
     page = _page;
 }
 
-Cache::Cache(uint8_t _flags, uint16_t _objSize) : flags(_flags), objSize(_objSize) {}
+Cache::Cache(uint8_t _flags, uint16_t _objSize, uint8_t islabSize, ...) : flags(_flags), objSize(_objSize) {
+    va_list vlist;
+    va_start(vlist, islabSize);
+    while (islabSize--) {
+        linked_container<Slab*>* _slc = va_arg(vlist, linked_container<Slab*>*);
+        empty.__list_insert(_slc);
+    }
+    va_end(vlist);
+}
 
 void* Slab::__alloc() {
     uint64_t offset = scan(1);

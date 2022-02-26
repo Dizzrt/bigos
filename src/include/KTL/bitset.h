@@ -5,13 +5,13 @@
 
 class bitset {
   protected:
-    uint8_t* _bp;  // bit pointer
-    uint64_t _size;
+    uint8_t* _bp;    // bit pointer
+    uint64_t _size;  // max count
 
   public:
     uint64_t _fc;  // free count
 
-    bitset(uint8_t* bp, uint64_t __size) : _bp(bp), _size(__size){};
+    bitset(uint8_t* bp, uint64_t __size) : _bp(bp), _size(__size), _fc(_size){};
     bitset(uint64_t __size) { resize(__size); };
     bitset() : bitset(8){};
     //~bitset(); //MARKER destructor

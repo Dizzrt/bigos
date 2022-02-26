@@ -5,6 +5,7 @@ void bitset::set(uint64_t _i) {
     uint8_t mask = 0x80 >> (_i % 8);
 
     *bp |= mask;
+    _fc--;
 }
 
 void bitset::reset(uint64_t _i) {
@@ -12,6 +13,7 @@ void bitset::reset(uint64_t _i) {
     uint8_t mask = 0x80 >> (_i % 8);
 
     *bp &= ~mask;
+    _fc++;
 }
 
 void bitset::set(uint64_t begin, uint64_t size) {
@@ -36,6 +38,8 @@ void bitset::set(uint64_t begin, uint64_t size) {
         *bp = 0xff;
         bp++;
     }
+
+    _fc -= size;
 }
 
 void bitset::reset(uint64_t begin, uint64_t size) {
@@ -60,13 +64,15 @@ void bitset::reset(uint64_t begin, uint64_t size) {
         *bp = 0;
         bp++;
     }
+
+    _fc += size;
 }
 
 void bitset::resize(uint64_t _Size) {
     // kfree(_bp);
     //_bp = (uint8_t*)kmalloc(_Size); //TODO memory
 
-    _size = _Size;
+    _fc = _size = _Size;
 }
 
 uint64_t bitset::scan(uint64_t _Size) {
