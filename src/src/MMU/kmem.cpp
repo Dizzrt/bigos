@@ -15,19 +15,19 @@ void kmemInit() {
     kmem_cache.insert(&___cacheLC_slab);
     kmem_cache.insert(&___cacheLC_lcPointer);
 
-    printk_svga("cache_slab.empty.size= %d\n", cache_slab.empty.size());
-    printk_svga("cache_lcPointer.empty.size= %d\n", cache_lcPointer.empty.size());
-
     void* test = kmem_cache.alloc(sizeof(long));
-    printk_svga("kmem_cache.alloc = 0x%llx\n", test);
+    printk_svga("test = 0x%llx\n", test);
 
     Slab* s = ((SlabHeader*)((uint64_t)test - SHSIZE))->slab;
-    printk_svga("freeObjs= %d\n", s->freeObjs);
+    void* test2 = s->__alloc();
+    printk_svga("test2 = 0x%llx\n", test2);
 
-    printk_svga("0x%llx\n", s->__alloc());
     printk_svga("freeObjs= %d\n", s->freeObjs);
-    printk_svga("cache_slab.empty.size= %d\n", cache_slab.empty.size());
-    printk_svga("cache_lcPointer.empty.size= %d\n", cache_lcPointer.empty.size());
-
-    printk_svga("cache_lcPointer.partial.size= %d\n", cache_lcPointer.partial.size());
+    s->__free(test);
+    test = nullptr;
+    printk_svga("test = 0x%llx\n", test);
+    printk_svga("freeObjs= %d\n", s->freeObjs);
+    test = s->__alloc();
+    printk_svga("freeObjs= %d\n", s->freeObjs);
+    printk_svga("0x%llx\n", test);
 }

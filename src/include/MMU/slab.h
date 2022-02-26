@@ -7,8 +7,6 @@
 
 #define SLAB_PERMANENT 0b10000000
 
-// get a new slab by buddy system instead of cache_slab
-//#define CACHE_AUTONOMY 0b10000000
 #define CACHE_NONEMPTY 0b10000000
 
 #define LONG_ALIGN(SIZE) ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
@@ -25,6 +23,8 @@ class Slab : public bitset {
     const uint64_t& freeObjs = _fc;
 
     void* __alloc();
+    void __free(uint64_t);
+    void __free(void*);
 
     Slab(uint8_t = 0, uint16_t = 1, uint64_t = -1, uint8_t* = nullptr);
     ~Slab() = default;

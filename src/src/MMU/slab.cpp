@@ -1,4 +1,5 @@
 #include "mmu\slab.h"
+#include "io.h"
 #include "new.h"
 #include "stdarg.h"
 
@@ -23,8 +24,27 @@ Cache::Cache(uint8_t _flags, uint16_t _objSize, uint8_t islabSize, ...) : flags(
     va_end(vlist);
 }
 
+void Slab::__free(uint64_t p) {
+    if (p < page || p > page + 0x1000)
+        return;
+
+    if (((SlabHeader*)p)->magic != SH_magic)
+        return;
+
+    uint64_t offset = (p - page) / offsetSize;
+
+    printk_svga("----------------------\n");
+    printk_svga("offset=%lld\n", offset);
+    printk_svga("----------------------\n");
+
+    reset(offset);
+}
+
+void Slab::__free(void* p) { __free((uint64_t)p - SHSIZE); }
+
 void* Slab::__alloc() {
     uint64_t offset = scan(1);
+    printk_svga("scan offset=%lld\n", offset);
     set(offset);
 
     offset = offset * offsetSize + page;

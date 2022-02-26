@@ -76,41 +76,18 @@ void bitset::resize(uint64_t _Size) {
 }
 
 uint64_t bitset::scan(uint64_t _Size) {
+    // TODO scan
+
+    // single scan for now
     uint8_t* bp = _bp;
-
-    uint64_t _xSize;
-    while (true) {
-    __LOOP_FIND:
-        _xSize = _Size;
-
-        while (*bp == 0xff)
-            bp++;
-
-        uint64_t _ret = 0;
-        uint8_t mask = 0xff;
-        while (mask & *bp != 0 && _xSize != 0)
-            mask >>= 1, _xSize--, _ret++;
-
-        uint64_t ret = (uint64_t)(bp - _bp) * 8 + _ret;
-        if (!_xSize)
-            return ret;
-
-        uint64_t temp = _xSize / 8;
-        while (temp--) {
-            bp++;
-            if (*bp != 0)
-                goto __LOOP_FIND;
-        }
-
+    while (*bp == 0xff)
         bp++;
-        mask = 0x80;
-        temp = _xSize % 8;
-        while (temp--) {
-            if (*bp & mask != 0)
-                goto __LOOP_FIND;
-            mask >>= 1;
-        }
 
-        return ret;
-    }
+    uint64_t _ret = 0;
+    uint8_t mask = 0x80;
+
+    while (mask & *bp)
+        mask >>= 1, _ret++;
+
+    return (bp - _bp) * 8 + _ret;
 }
