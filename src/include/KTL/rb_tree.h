@@ -33,11 +33,14 @@ class _rb_tree {
     void __left_rotate(node_type*);
     void __right_rotate(node_type*);
     void __fixup(node_type*);
+    void __delfixup(node_type*);
 
     node_type* __leftmost();
     node_type* __rightmost();
 
     node_type* __search(TKEY, bool = false);
+    node_type* __successor(node_type*);
+    node_type* __precursor(node_type*);
 
   public:
     void __insert(node_type*);
@@ -85,6 +88,48 @@ _rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__search(TKEY key, bool noNil) 
     } while (_node != nil);
 
     return (noNil ? previous_node : _node);
+}
+
+template <typename TKEY, typename TVAL>
+_rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__successor(node_type* _node) {
+    if (_node->right != nil) {
+        _node = _node->right;
+        while (_node->left != nil)
+            _node = _node->left;
+
+    } else {
+        node_type* f = _node->father;
+        while (_node == f->right) {
+            _node = f;
+            f = f->father;
+        }
+        if (_node->right != f)
+            _node = f;
+    }
+
+    return _node;
+}
+
+template <typename TKEY, typename TVAL>
+_rb_tree_node<TKEY, TVAL>* _rb_tree<TKEY, TVAL>::__precursor(node_type* _node) {
+    if (_node->isRed && _node->father->father == _node)
+        _node = _node->right;
+    else if (_node->left != nil) {
+        node_type* temp = _node->left;
+        while (temp->right != nil)
+            temp = temp->right;
+        _node = temp;
+
+    } else {
+        node_type* f = _node->father;
+        while (_node == f->left) {
+            _node = f;
+            f = f->father;
+        }
+        _node = f;
+    }
+
+    return _node;
 }
 
 template <typename TKEY, typename TVAL>
@@ -215,6 +260,9 @@ void _rb_tree<TKEY, TVAL>::__fixup(node_type* _node) {
 }
 
 template <typename TKEY, typename TVAL>
+void _rb_tree<TKEY, TVAL>::__delfixup(node_type* _node) {}
+
+template <typename TKEY, typename TVAL>
 void _rb_tree<TKEY, TVAL>::__insert(node_type* _node) {
     _node->left = _node->right = nil;
 
@@ -262,7 +310,36 @@ void _rb_tree<TKEY, TVAL>::__remove(const TKEY& key) {
     if (t_node == nil)
         return;  // the target node is not exist
 
-    // TODO rb tree remove node
+    // 1. has no children
+    if (t_node->left == nil && t_node->right == nil) {
+        // 1-1. t_node is red
+        if (t_node->isRed) {
+            if (t_node->father->left == t_node)
+                t_node->father->left = nil;
+            else
+                t_node->father->right = nil;
+        }
+        // 1-2. t_node is black
+        else {
+            // TODO delfixup
+        }
+    }
+    // 2. has two children
+    else if (t_node->left != nil && t_node->right != nil) {
+        node_type* successor = __successor(t_node);
+
+    }
+    // 3. has one child
+    else {
+        node_type* child = t_node->left == nil ? t_node->right : t_node->left;
+
+        if (t_node->father->left == t_node)
+            t_node->father->left = child;
+        else
+            t_node->father->right = child;
+
+        child->isRed = false;
+    }
 }
 
 #endif
