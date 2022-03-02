@@ -24,6 +24,11 @@ inline bool operator==(const pair<T1, T2>& x, const pair<T1, T2>& y) {
 }
 
 template <typename T1, typename T2>
+inline bool operator==(const pair<T1, T2>& x, const T1& key) {
+    return x.first == key;
+}
+
+template <typename T1, typename T2>
 inline bool operator<(const pair<T1, T2>& x, const pair<T1, T2>& y) {
     return x.first < y.first || (!(y.first < x.first) && x.second > y.second);
 }
