@@ -1,44 +1,121 @@
 #ifndef __BIG_RBTREE_H__
 #define __BIG_RBTREE_H__
 
+#include "pair.h"
+#include "io.h"
+#include "new.h"
+
 template <typename _Key, typename _Val>
 struct _rb_tree_node {
-    bool isRed = false;
+    bool isRed = true;
 
-    _Key key;
+    const _Key key;
     _Val val;
 
     _rb_tree_node* left;
     _rb_tree_node* right;
     _rb_tree_node* father;
 
-    _rb_tree_node() = default;
-    _rb_tree_node(const _Key& t) : val(t) {}
+    _rb_tree_node(const _Key& _key, const _Val _val) : key(_key), val(_val) {}
+    _rb_tree_node(const _Key& _key) : _rb_tree_node(_key, _Val()) {}
+    _rb_tree_node() :_rb_tree_node(_Key(), _Val()) {}
 };
 
-// template <typename _Key, typename _Val>
-// class _rb_tree;
+template <typename _Key, typename _Val>
+class _rb_tree;
 
-// template <typename _Key, typename _Val>
-// struct _rb_tree_iterator {
-//   private:
-//     typedef _rb_tree_node<_Key, _Val> node_type;
-//     node_type* nil;
+template <typename _Key, typename _Val>
+struct _rb_tree_iterator {
+private:
+    typedef _rb_tree_node<_Key, _Val> node_type;
+    typedef _rb_tree_iterator<_Key, _Val> iterator;
 
-//   public:
-//     node_type* m_node;
+    node_type* nil;
+    void __precursor();
+    void __successor();
+public:
+    node_type* m_node;
+    _rb_tree_iterator() = default;
+    _rb_tree_iterator(node_type* _node, node_type* _nil) :m_node(_node), nil(_nil) {}
+    _rb_tree_iterator(node_type* _node) :m_node(_node) {
+        if ((_node->father)->father == _node)
+            nil = _node->father;
+        else nil = _node->left;
+    }
 
-//     _rb_tree_iterator() = default;
-//     _rb_tree_iterator(node_type*);
-// };
+
+    iterator operator++(int) {
+        iterator temp = *this;
+        __successor();
+        return temp;
+    }
+
+    iterator operator++() {
+        __successor();
+        return *this;
+    }
+
+    iterator operator--(int) {
+        iterator temp = *this;
+        __precursor();
+        return temp;
+    }
+
+    iterator operator--() {
+        __precursor();
+        return *this;
+    }
+
+    _Val operator*() const { return m_node->val; }
+    bool operator==(const iterator& x) { return this->m_node == x.m_node; }
+    bool operator!=(const iterator& x) { return this->m_node != x.m_node; }
+    bool operator<(const iterator& x) { return m_node->val < x.m_node->val; }
+};
+
+template <typename _Key, typename _Val>
+void _rb_tree_iterator<_Key, _Val>::__successor() {
+    if (m_node->right != nil) {
+        m_node = m_node->right;
+        while (m_node->left != nil)
+            m_node = m_node->left;
+    }
+    else {
+        node_type* f = m_node->father;
+        while (f != nil && m_node == f->right) {
+            m_node = f;
+            f = f->father;
+        }
+        m_node = f;
+    }
+}
+
+template <typename _Key, typename _Val>
+void _rb_tree_iterator<_Key, _Val>::__precursor() {
+    if (m_node->isRed && m_node->father->father == m_node)
+        m_node = m_node->right;
+    else if (m_node->left != nil) {
+        node_type* temp = m_node->left;
+        while (temp->right != nil)
+            temp = temp->right;
+        m_node = temp;
+    }
+    else {
+        node_type* f = m_node->father;
+        while (m_node == f->left) {
+            m_node = f;
+            f = f->father;
+        }
+        m_node = f;
+    }
+}
 
 template <typename _Key, typename _Val>
 class _rb_tree {
-  private:
+private:
     typedef _rb_tree_node<_Key, _Val> node_type;
     unsigned long __nodeCount;
 
-  protected:
+protected:
     const unsigned long& nodeCount = __nodeCount;
 
     node_type* nil;
@@ -53,12 +130,10 @@ class _rb_tree {
 
     node_type* __minimum(node_type*);
     node_type* __maximum(node_type*);
-    node_type* __precursor(node_type*);
-    node_type* __successor(node_type*);
 
     node_type* __search(const _Key&, bool = false);
 
-  public:
+public:
     void insert(node_type*);
     void remove(const _Key&);
 
@@ -67,9 +142,21 @@ class _rb_tree {
 
     unsigned int size();
 
-    _rb_tree(){};
-    ~_rb_tree(){};
+    typedef _rb_tree_iterator<_Key, _Val> iterator;
+
+    iterator begin() { return iterator(nil->left); }
+    iterator end() { return iterator(nil); }
+
+    _rb_tree();
+    ~_rb_tree() = default;
 };
+
+template <typename _Key, typename _Val>
+_rb_tree<_Key, _Val>::_rb_tree() {
+    nil = &nilNode;
+    nil->isRed = false;
+    nil->father = nil->left = nil->right = nil;
+}
 
 template <typename _Key, typename _Val>
 void _rb_tree<_Key, _Val>::__left_rotate(node_type* _node) {
@@ -129,8 +216,8 @@ void _rb_tree<_Key, _Val>::__rebalance(node_type* _node) {
         return;
     else
         uncle_node =
-            (grandfather_node->left == father_node ? grandfather_node->right
-                                                   : grandfather_node->left);
+        (grandfather_node->left == father_node ? grandfather_node->right
+            : grandfather_node->left);
 
     // 4-1. uncle node is exists and is read
     if (uncle_node != nil && uncle_node->isRed) {
@@ -162,6 +249,7 @@ void _rb_tree<_Key, _Val>::__rebalance(node_type* _node) {
         }
     }
 }
+
 template <typename _Key, typename _Val>
 void _rb_tree<_Key, _Val>::__delRebalance(node_type* _node) {}
 
@@ -177,48 +265,6 @@ template <typename _Key, typename _Val>
 _rb_tree_node<_Key, _Val>* _rb_tree<_Key, _Val>::__maximum(node_type* _node) {
     while (_node->right != nil)
         _node = _node->right;
-
-    return _node;
-}
-
-template <typename _Key, typename _Val>
-_rb_tree_node<_Key, _Val>* _rb_tree<_Key, _Val>::__successor(node_type* _node) {
-    if (_node->right != nil) {
-        _node = _node->right;
-        while (_node->left != nil)
-            _node = _node->left;
-
-    } else {
-        node_type* f = _node->father;
-        while (_node == f->right) {
-            _node = f;
-            f = f->father;
-        }
-        if (_node->right != f)
-            _node = f;
-    }
-
-    return _node;
-}
-
-template <typename _Key, typename _Val>
-_rb_tree_node<_Key, _Val>* _rb_tree<_Key, _Val>::__precursor(node_type* _node) {
-    if (_node->isRed && _node->father->father == _node)
-        _node = _node->right;
-    else if (_node->left != nil) {
-        node_type* temp = _node->left;
-        while (temp->right != nil)
-            temp = temp->right;
-        _node = temp;
-
-    } else {
-        node_type* f = _node->father;
-        while (_node == f->left) {
-            _node = f;
-            f = f->father;
-        }
-        _node = f;
-    }
 
     return _node;
 }
@@ -252,7 +298,7 @@ void _rb_tree<_Key, _Val>::insert(node_type* _node) {
     _node->left = _node->right = nil;
 
     // 1. empty tree
-    if (this->empty) {
+    if (this->empty()) {
         _node->isRed = false;
         __nodeCount = 1;
 
@@ -277,10 +323,9 @@ void _rb_tree<_Key, _Val>::insert(node_type* _node) {
         f->left = _node;
     __nodeCount++;
 
-    // 3. f is a black node
-    if (!f->isRed)
-        return;
-    else  // 4. f is a red node, need rebalance
+    // 3. f is a black node, do nothing
+    // 4. f is a red node, need rebalance
+    if (f->isRed)
         __rebalance(_node);
 
     nil->father = root;
