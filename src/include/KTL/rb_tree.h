@@ -1,10 +1,6 @@
 #ifndef __BIG_RBTREE_H__
 #define __BIG_RBTREE_H__
 
-#include "pair.h"
-#include "io.h"
-#include "new.h"
-
 template <typename _Key, typename _Val>
 struct _rb_tree_node {
     bool isRed = true;
@@ -38,8 +34,8 @@ public:
     _rb_tree_iterator() = default;
     _rb_tree_iterator(node_type* _node, node_type* _nil) :m_node(_node), nil(_nil) {}
     _rb_tree_iterator(node_type* _node) :m_node(_node) {
-        if ((_node->father)->father == _node)
-            nil = _node->father;
+        if (_node == _node->father->father)
+            nil = _node;
         else nil = _node->left;
     }
 
@@ -74,7 +70,9 @@ public:
 
 template <typename _Key, typename _Val>
 void _rb_tree_iterator<_Key, _Val>::__successor() {
-    if (m_node->right != nil) {
+    if (m_node == nil)
+        m_node = nil->left;
+    else if (m_node->right != nil) {
         m_node = m_node->right;
         while (m_node->left != nil)
             m_node = m_node->left;
@@ -91,21 +89,24 @@ void _rb_tree_iterator<_Key, _Val>::__successor() {
 
 template <typename _Key, typename _Val>
 void _rb_tree_iterator<_Key, _Val>::__precursor() {
-    if (m_node->isRed && m_node->father->father == m_node)
-        m_node = m_node->right;
-    else if (m_node->left != nil) {
+    if (m_node == nil) { // end()
+        m_node = nil->right;
+        return;
+    }
+
+    if (m_node->left != nil) {
         node_type* temp = m_node->left;
         while (temp->right != nil)
             temp = temp->right;
         m_node = temp;
     }
     else {
-        node_type* f = m_node->father;
-        while (m_node == f->left) {
-            m_node = f;
-            f = f->father;
+        node_type* temp = m_node->father;
+        while (m_node == temp->left) {
+            m_node = temp;
+            temp = temp->father;
         }
-        m_node = f;
+        m_node = temp;
     }
 }
 
@@ -214,8 +215,7 @@ void _rb_tree<_Key, _Val>::__rebalance(node_type* _node) {
 
     if (grandfather_node == nil)
         return;
-    else
-        uncle_node =
+    else uncle_node =
         (grandfather_node->left == father_node ? grandfather_node->right
             : grandfather_node->left);
 
@@ -231,27 +231,41 @@ void _rb_tree<_Key, _Val>::__rebalance(node_type* _node) {
         __rebalance(grandfather_node);
         return;
     }
-    // 4-2. uncle node is not exists or is black, and the father is left child
-    // of grandfather
-    else if (grandfather_node->left == father_node) {
-        // 4-2-1. _node is left child of its father node
-        if (father_node->left == _node) {
+    // 4-2|3. uncle node is not exists or is black
+    // 4-2. father node is the left child of grandfather node
+    else if (father_node == grandfather_node->left) {
+        // 4-2-1. the _node is left child of father
+        if (_node == father_node->left) {
             father_node->isRed = false;
             grandfather_node->isRed = true;
             __right_rotate(grandfather_node);
-            return;
         }
-        // 4-2-2. _node is right child of its father
+        // 4-2-2. the _node is right child of father
         else {
             __left_rotate(father_node);
             __rebalance(father_node);
-            return;
+        }
+    }
+    // 4-3. father node is the right child of grandfather node
+    else {
+        // 4-3-1. the _node is left child of father
+        if (_node == father_node->left) {
+            __right_rotate(father_node);
+            __rebalance(father_node);
+        }
+        // 4-3-2. the _node is right child of father
+        else {
+            father_node->isRed = false;
+            grandfather_node->isRed = true;
+            __left_rotate(grandfather_node);
         }
     }
 }
 
 template <typename _Key, typename _Val>
-void _rb_tree<_Key, _Val>::__delRebalance(node_type* _node) {}
+void _rb_tree<_Key, _Val>::__delRebalance(node_type* _node) {
+    //TODO delRebalance
+}
 
 template <typename _Key, typename _Val>
 _rb_tree_node<_Key, _Val>* _rb_tree<_Key, _Val>::__minimum(node_type* _node) {
@@ -334,7 +348,9 @@ void _rb_tree<_Key, _Val>::insert(node_type* _node) {
 }
 
 template <typename _Key, typename _Val>
-void _rb_tree<_Key, _Val>::remove(const _Key&) {}
+void _rb_tree<_Key, _Val>::remove(const _Key&) {
+    //TODO remove
+}
 
 template <typename _Key, typename _Val>
 bool _rb_tree<_Key, _Val>::empty() {
