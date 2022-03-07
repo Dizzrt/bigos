@@ -4,7 +4,6 @@
 #include "pair.h"
 #include "algorithem.h"
 
-
 template <typename _Key, typename _Val>
 struct _rb_tree_node {
     bool isRed = true;
@@ -157,6 +156,7 @@ public:
     bool count(const _Key&);
 
     unsigned int size();
+    _Val& find(const _Key&);
 
     typedef _rb_tree_iterator<_Key, _Val> iterator;
 
@@ -166,6 +166,11 @@ public:
     _rb_tree();
     ~_rb_tree() = default;
 };
+
+template <typename _Key, typename _Val>
+_Val& _rb_tree<_Key, _Val>::find(const _Key& key) {
+    return __search(key)->val.second;
+}
 
 template <typename _Key, typename _Val>
 _rb_tree<_Key, _Val>::_rb_tree() {
@@ -279,27 +284,8 @@ void _rb_tree<_Key, _Val>::__rebalance(node_type* _node) {
 
 template <typename _Key, typename _Val>
 void _rb_tree<_Key, _Val>::__delRebalance(node_type* _node) {
-    // at here => _node is a black node, has no more than one child,
-    // and the only child must be a red node
-    if (_node->left != nil) {
-        if (_node->father->left == _node)
-            _node->father->left = _node->left;
-        else _node->father->right = _node->left;
-
-        _node->left->father = _node->father;
-        _node->left->isRed = _node->isRed;
+    if (_node == root)
         return;
-    }
-    else if (_node->right != nil) {
-        if (_node->father->left == _node)
-            _node->father->left = _node->right;
-        else _node->father->right = _node->right;
-
-        _node->right->father = _node->father;
-        _node->right->isRed = _node->isRed;
-        return;
-    }
-
     // here => _node must be a black leaf node
     // S => brother node
     // SL => brother node's left child
@@ -340,13 +326,13 @@ void _rb_tree<_Key, _Val>::__delRebalance(node_type* _node) {
                 swap<bool>(f->isRed, bro->isRed);
                 __left_rotate(f);
                 bro->right->isRed = false;
-                f->left = nil;
+                //f->left = nil;
                 return;
             }
             // 2-1-2. the nearer nephew is red
             else if (bro->left->isRed) {
-                __right_rotate(bro->left);
                 swap<bool>(bro->isRed, bro->left->isRed);
+                __right_rotate(bro);
                 __delRebalance(_node);
                 return;
             }
@@ -358,13 +344,13 @@ void _rb_tree<_Key, _Val>::__delRebalance(node_type* _node) {
                 swap<bool>(f->isRed, bro->isRed);
                 __right_rotate(f);
                 bro->left->isRed = false;
-                f->right = nil;
+                //f->right = nil;
                 return;
             }
             // 2-2-2. the nearer nephew is red
             else if (bro->right->isRed) {
-                __left_rotate(bro->right);
                 swap<bool>(bro->isRed, bro->right->isRed);
+                __left_rotate(bro);
                 __delRebalance(_node);
                 return;
             }
@@ -376,10 +362,6 @@ void _rb_tree<_Key, _Val>::__delRebalance(node_type* _node) {
     if (f->isRed) {
         f->isRed = false;
         bro->isRed = true;
-
-        if (_nodeIsLeft)
-            f->left = nil;
-        else f->right = nil;
     }
     // 4. F is black
     else {
@@ -472,57 +454,33 @@ template <typename _Key, typename _Val>
 void _rb_tree<_Key, _Val>::__swapNode(node_type* _node, node_type* _suc) {
     if (_node == root) {
         root = _suc;
-        if (_node->right == _suc) {
-            nil->father = _suc;
-            _suc->father = nil;
-            _node->father = _suc;
+        nil->father = _suc;
+    }
+    else if (_node == _node->father->left)
+        _node->father->left = _suc;
+    else _node->father->right = _suc;
 
-            _node->right = _suc->right;
-            _suc->right = _node;
-
-        }
-        else {
-            nil->father = _suc;
-            _node->father = _suc->father;
-            if (_suc->father->left == _suc)
-                _suc->father->left = _node;
-            else _suc->father->right = _node;
-            _suc->father = nil;
-
-            swap<node_type*>(_node->right, _node->right);
-            _suc->right->father = _suc;
-        }
+    if (_suc == _node->right) {
+        _suc->father = _node->father;
+        _node->father = _suc;
+        _node->right = _suc->right;
+        _suc->right = _node;
     }
     else {
-        if (_node->right == _suc) {
-            if (_node->father->left == _node)
-                _node->father->left = _suc;
-            else _node->father->right = _suc;
+        if (_suc == _suc->father->left)
+            _suc->father->left = _node;
+        else _suc->father->right = _node;
 
-            _suc->father = _node->father;
-            _node->father = _suc;
+        swap<node_type*>(_node->father, _suc->father);
+        swap<node_type*>(_node->right, _suc->right);
 
-            _node->right = _suc->right;
-            _suc->right = _node;
-        }
-        else {
-            if (_node->father->left == _node)
-                _node->father->left = _suc;
-            else _node->father->right = _suc;
-
-            if (_suc->father->left == _suc)
-                _suc->father->left = _node;
-            else _suc->father->right = _node;
-
-            swap<node_type*>(_node->father, _suc->father);
-            swap<node_type*>(_node->right, _suc->right);
-
+        if (_suc->right != nil)
             _suc->right->father = _suc;
-        }
     }
 
     _suc->left = _node->left;
-    _suc->left->father = _suc;
+    if (_suc->left != nil)
+        _suc->left->father = _suc;
     _node->left = nil;
 
     if (_node->right != nil)
@@ -530,6 +488,7 @@ void _rb_tree<_Key, _Val>::__swapNode(node_type* _node, node_type* _suc) {
 
     swap<bool>(_node->isRed, _suc->isRed);
 }
+
 template <typename _Key, typename _Val>
 void _rb_tree<_Key, _Val>::remove(const _Key& key) {
     node_type* _node = __search(key);
@@ -541,7 +500,7 @@ void _rb_tree<_Key, _Val>::remove(const _Key& key) {
 
 template <typename _Key, typename _Val>
 void _rb_tree<_Key, _Val>::remove(node_type* _node) {
-    if (_node->left != nil && _node->left != nil)
+    if (_node->left != nil && _node->right != nil)
         __swapNode(_node, __successor(_node, nil));
 
     if (_node->isRed)
@@ -550,7 +509,34 @@ void _rb_tree<_Key, _Val>::remove(node_type* _node) {
             _node->father->left = nil;
         else _node->father->right = nil;
     }
-    else __delRebalance(_node);
+    // at here => _node is a black node, has no more than one child,
+    // and the only child must be a red node
+    else if (_node->left != nil) {
+        if (_node->father->left == _node)
+            _node->father->left = _node->left;
+        else _node->father->right = _node->left;
+
+        _node->left->father = _node->father;
+        _node->left->isRed = _node->isRed;
+    }
+    else if (_node->right != nil) {
+        if (_node->father->left == _node)
+            _node->father->left = _node->right;
+        else _node->father->right = _node->right;
+
+        _node->right->father = _node->father;
+        _node->right->isRed = _node->isRed;
+    }
+    else {
+        __delRebalance(_node);
+        if (_node == _node->father->left)
+            _node->father->left = nil;
+        else _node->father->right = nil;
+    }
+
+    //if _node still the root after rebalance, then _node must the last node of this tree
+    if (_node == root)
+        root = nil;
 
     __nodeCount--;
 
