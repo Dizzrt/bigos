@@ -2,6 +2,7 @@
 #define __BIG_KMEM_H__
 
 #include "mmu\slab.h"
+#include "mmu\buddy.h"
 
 #define SLAB_OBJ_CNT(OBJSIZE) 0x1000 / LONG_ALIGN(OBJSIZE + SHSIZE)
 #define SLAB_BP_SIZE(OBJSIZE) SLAB_OBJ_CNT(OBJSIZE) / 8 + (SLAB_OBJ_CNT(OBJSIZE) % 8 == 0 ? 0 : 1)
@@ -16,6 +17,8 @@
 
 extern CacheChain kmem_cache;
 
+_rb_buddyBlock* getRB_buddyBlock();
 void kmemInit();
+
 
 #endif

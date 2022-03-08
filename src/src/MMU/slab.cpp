@@ -33,10 +33,6 @@ void Slab::__free(uint64_t p) {
 
     uint64_t offset = (p - page) / offsetSize;
 
-    printk_svga("----------------------\n");
-    printk_svga("offset=%lld\n", offset);
-    printk_svga("----------------------\n");
-
     reset(offset);
 }
 
@@ -44,7 +40,6 @@ void Slab::__free(void* p) { __free((uint64_t)p - SHSIZE); }
 
 void* Slab::__alloc() {
     uint64_t offset = scan(1);
-    printk_svga("scan offset=%lld\n", offset);
     set(offset);
 
     offset = offset * offsetSize + page;

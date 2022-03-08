@@ -14,55 +14,57 @@
 extern uint64_t SH_magic;
 
 class Slab : public bitset {
-  private:
-    uint64_t page;
-    uint16_t offsetSize;
+private:
+  uint64_t page;
+  uint16_t offsetSize;
 
-  public:
-    uint8_t flags;
-    const uint64_t& freeObjs = _fc;
+public:
+  uint8_t flags;
+  const uint64_t& freeObjs = _fc;
 
-    void* __alloc();
-    void __free(uint64_t);
-    void __free(void*);
+  void* __alloc();
+  void __free(uint64_t);
+  void __free(void*);
 
-    Slab(uint8_t = 0, uint16_t = 1, uint64_t = -1, uint8_t* = nullptr);
-    ~Slab() = default;
+  Slab(uint8_t = 0, uint16_t = 1, uint64_t = -1, uint8_t* = nullptr);
+  ~Slab() = default;
 };
 
 struct SlabHeader {
-    Slab* slab;
-    const uint64_t magic;
+  Slab* slab;
+  const uint64_t magic;
 
-    SlabHeader(Slab* _slab) : slab(_slab), magic(SH_magic) {}
+  SlabHeader(Slab* _slab) : slab(_slab), magic(SH_magic) {}
 };
 #define SHSIZE sizeof(SlabHeader)
 
 class Cache {
-  public:
-    uint8_t flags;
-    uint16_t objSize;
+public:
+  uint8_t flags;
+  uint16_t objSize;
 
-    klist<Slab*> full;
-    klist<Slab*> empty;
-    klist<Slab*> partial;
+  klist<Slab*> full;
+  klist<Slab*> empty;
+  klist<Slab*> partial;
 
-    void* _alloc();
+  void* _alloc();
 
-    Cache(uint8_t, uint16_t, uint8_t, ...);
-    ~Cache() = default;
+  Cache(uint8_t, uint16_t, uint8_t, ...);
+  ~Cache() = default;
 };
 
 class CacheChain {
-  private:
-    klist<Cache*> _caList;
+private:
+  klist<Cache*> _caList;
 
-  public:
-    void insert(linked_container<Cache*>*);
-    void* alloc(uint64_t);
+public:
+  void insert(linked_container<Cache*>*);
+  void* alloc(uint64_t);
 
-    CacheChain(/* args */) = default;
-    ~CacheChain() = default;
+  CacheChain(/* args */) = default;
+  ~CacheChain() = default;
 };
+
+
 
 #endif
