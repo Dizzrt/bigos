@@ -12,9 +12,10 @@ DiskAddressPacket:
     .word 1         #BlockCount
     .word 0x7e00    #BufferOffset
     .word 0         #BufferSegment
-    .long 0         #BlockLow
+    .long 8         #BlockLow
     .long 0         #BlockHigh
 
+.global mbr
 mbr:
     xor %ax,%ax
     movw %ax,%ds
@@ -27,7 +28,7 @@ mbr:
     movw $0x55aa,%bx
     movb $0x80,%dl
     int $0x13
-    cmp $0x55aa,%bx
+    cmp $0xaa55,%bx
     movb $0x30,(error_code)
     jnz error
 
@@ -65,14 +66,30 @@ UniqueDiskID: .long 0
 Reserved: .word 0
 
 #Partition table entries
-Pt1:.quad 0
-    .quad 0
-Pt2:.quad 0 
-    .quad 0
-Pt3:.quad 0 
-    .quad 0
-Pt4:.quad 0 
-    .quad 0
+#debug only
+Pt1:.byte 0x80 #activity
+    #start CHS
+    .word 0 
+    .byte 0
+    #---------
+    .byte 0x0c #type FAT32
+    #end CHS
+    .word 0
+    .byte 0
+    #---------
+    .long 0x00000009 #LBA of partition start
+    .long 0x000027f8 # Number of sectors in partition
+# Pt2:.quad 0 
+#     .quad 0
+# Pt3:.quad 0 
+#     .quad 0
+# Pt4:.quad 0 
+#     .quad 0
+.fill 0x1fe - (. - head) ,1,0
 
 #BootSignature
 .word 0xaa55
+
+
+#debug only--------------
+.fill 0xe00,1,0

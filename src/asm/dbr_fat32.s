@@ -7,7 +7,7 @@ head:
     .ascii "BIGOSFAT" #identifier
     .word 0x200 #number of bytes per sector
     .byte 8 #number of sectors per cluster
-    .word 1 #number of reserved sectors
+    .word 8 #number of reserved sectors
     .byte 2 #number of FATs
     .word 0 #must 0 in FAT32
     .word 0 #must 0 in FAT32
@@ -15,7 +15,7 @@ head:
     .word 0 #must 0 in FAT32
     .word 0x003f #number of sectors per track
     .word 0x00ff #number of heads
-    .long 0 #number of hidden sectors. (i.e. the LBA of the beginning of the partition.)
+    .long 8 #number of hidden sectors. (i.e. the LBA of the beginning of the partition.)
     #Large sector count. This field is set if there are more than 65535 sectors in the volume, 
     #resulting in a value which does not fit in the Number of Sectors entry at 0x13.
     .long 0
@@ -45,6 +45,7 @@ DiskAddressPacket:
 
 .include "error.s"
 
+.global dbr
 dbr:
     movw $0x7e00,%di
     xor %ebx,%ebx
@@ -68,6 +69,7 @@ AddFatSize:
     jnz error
     #read end
     movw $0x1000,%di
+    movb $0x33,(error_code)
 SeekBoot:
     #search BOOT.BIN
     cmpl $0x544f4f42,(%di) # BOOT
@@ -118,3 +120,6 @@ NoRemainder:
 .fill 0x1fe-(. - head),1,0
 #BootSignature
 .word 0xaa55
+
+#debug only-----------------
+.fill 0xe00,1,0
