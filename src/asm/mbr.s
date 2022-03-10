@@ -49,11 +49,12 @@ apFound:
     movl %ebx,(DiskAddressPacket+8)
     movb $0x42,%ah
     movb $0x80,%dl
-    mov $DiskAddressPacket,%di
+    mov $DiskAddressPacket,%si
     int $0x13
     test %ah,%ah
     movb $0x32,(error_code)
     jnz error
+    ljmp $0,$0x7e00
 
 #fills to 440 bytes
 .fill 0x1b8-(. - head),1,0
