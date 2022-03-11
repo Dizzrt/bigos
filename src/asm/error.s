@@ -2,9 +2,11 @@ msg_error: .ascii "error code: "
 error_code: .word 0 
 
 # 0 ==> not support int 0x13 extension APIs
-# 1 ==> not no active partition was found
+# 1 ==> no active partition was found
 # 2 ==> Int 0x13 Read error
 # 3 ==> BOOT.BIN not exists
+# 4 ==> detect memory error
+# 5 ==> KERNEL not exists
 
 error:
     movw $msg_error,%si

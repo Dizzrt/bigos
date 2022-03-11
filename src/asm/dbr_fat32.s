@@ -6,8 +6,8 @@ head:
     jmp dbr
     .ascii "BIGOSFAT" #identifier
     .word 0x200 #number of bytes per sector
-    .byte 8 #number of sectors per cluster
-    .word 8 #number of reserved sectors
+    .byte 1 #number of sectors per cluster
+    .word 0x20 #number of reserved sectors
     .byte 2 #number of FATs
     .word 0 #must 0 in FAT32
     .word 0 #must 0 in FAT32
@@ -18,20 +18,20 @@ head:
     .long 8 #number of hidden sectors. (i.e. the LBA of the beginning of the partition.)
     #Large sector count. This field is set if there are more than 65535 sectors in the volume, 
     #resulting in a value which does not fit in the Number of Sectors entry at 0x13.
-    .long 0
-    .long 0 #sectors per FAT
+    .long 0x0001fff8
+    .long 0x000003f0 #sectors per FAT
     .word 0 #flags
     .word 0 #version
     .long 2 #the cluster number of the root directory
     .word 1 #the sector number of the FSInfo structure
-    .word 0 #the sector number of the backup boot sector
+    .word 6 #the sector number of the backup boot sector
     .quad 0 #reserved
-    .long #reserved
+    .long 0 #reserved
     .byte 0x80 #drive number, floppy:0 ,hard disk:0x80
     .byte 0 #reserved
     .byte 0x29 #signature (must 0x28 or 0x29)
-    .long 0 #volume id
-    .ascii "           " #volume label
+    .long 0x7755f338 #volume id
+    .ascii "NO NAME    " #volume label
     .ascii "FAT32   " #identifiler, must "FAT32   "
 
 DiskAddressPacket:
@@ -54,7 +54,7 @@ dbr:
     addl %eax,%ebx #start position of FAT1
     movl 0x24(%di),%eax#size of FAT
     xor %cx,%cx
-    mov 0x10(%di),%cl #num of FAT
+    movb 0x10(%di),%cl #num of FAT
 AddFatSize:
     addl %eax,%ebx #start position of data area
     loop AddFatSize
@@ -63,7 +63,7 @@ AddFatSize:
     movb $0x42,%ah
     movb $0x80,%dl
     movw $DiskAddressPacket,%si
-    int $0x13
+    int $0x13 #read directories
     test %ah,%ah
     movb $0x32,(error_code)
     jnz error
@@ -79,8 +79,7 @@ SeekBoot:
     cmpw $0x4942,8(%di) #BI
     jne NextFile
     cmpb $0x4e,10(%di) #N
-    jne NextFile
-    jmp BootFound
+    je BootFound
 NextFile:
     cmpw $0x2000,%di
     ja error # not find
@@ -97,12 +96,16 @@ BootFound:
 NoRemainder:
     movw %ax,(DiskAddressPacket+2) #Block Count
     #calculate start position
+
     movw 0x14(%di),%ax
     shl $0x10,%eax
     movw 0x1a(%di),%ax
     subl $2,%eax
-    movl $8,%ebx
+    xor %ebx,%ebx
+    movb (head+0x0d),%bl
     mull %ebx
+    addl (DiskAddressPacket+8),%eax
+    
     movl %edx,(DiskAddressPacket+12)
     movl %eax,(DiskAddressPacket+8)
     #read
@@ -121,5 +124,30 @@ NoRemainder:
 #BootSignature
 .word 0xaa55
 
-#debug only-----------------
-.fill 0xe00,1,0
+
+#debug only 
+# FSInfo:
+#     .long 0x41615252
+#     .fill 0x1e0,1,0
+#     .long 0x61417272
+#     .long 0x0001f7f6
+#     .long 0x00000004
+#     .fill 0xe,1,0
+#     .word 0xaa55
+
+# .fill 0x3c00,1,0
+# FAT1:
+#     .long 0x0ffffff8
+#     .long 0xffffffff
+#     .long 0x0fffffff
+#     .long 0x0fffffff
+#     .long 0x0fffffff
+#     .fill 0x200 - (. - FAT1),1,0
+#     .fill 0x3ef,1,0
+#     .long 0xffffffff
+# FAT2:
+#     .long 0x0ffffff8
+#     .long 0xffffffff
+#     .long 0x0fffffff
+#     .long 0x0fffffff
+#     .long 0x0fffffff

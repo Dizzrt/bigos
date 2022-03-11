@@ -69,16 +69,16 @@ Reserved: .word 0
 #debug only
 Pt1:.byte 0x80 #activity
     #start CHS
-    .word 0 
+    .word 0x0900
     .byte 0
     #---------
     .byte 0x0c #type FAT32
     #end CHS
-    .word 0
-    .byte 0
+    .word 0x3ffe
+    .byte 0x07
     #---------
-    .long 0x00000009 #LBA of partition start
-    .long 0x000027f8 # Number of sectors in partition
+    .long 0x00000008 #LBA of partition start
+    .long 0x0001fff8 # Number of sectors in partition
 # Pt2:.quad 0 
 #     .quad 0
 # Pt3:.quad 0 
