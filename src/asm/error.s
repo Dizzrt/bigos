@@ -8,6 +8,8 @@ error_code: .word 0
 # 4 ==> detect memory error
 # 5 ==> KERNEL not exists
 
+# a ==> kernel is too big
+
 error:
     movw $msg_error,%si
 print:
