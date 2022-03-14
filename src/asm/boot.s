@@ -35,7 +35,7 @@ gdt_attribute_x64:
     .quad 0xffff800000000300
 
 idt_attribute:
-    .word 0x12c
+    .word 0x300
     .quad 0xffff800000000000
 
 .global boot
@@ -375,7 +375,6 @@ PIO:
     cmpq $0,%r8
     jne loadKernel
 
-    jmp .
     #enter kernel
     movabsq $0xffff800000200000,%rax
     jmp *%rax

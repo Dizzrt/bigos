@@ -1,12 +1,3 @@
-/*
- * @Author: Dizzrt
- * @Date: 2021-11-02 19:54:18
- * @LastEditTime: 2021-12-06 20:55:19
- * @LastEditors: Please set LastEditors
- * @FilePath: \Big OS\src\src\dev\timer.cpp
- * @Description:
- */
-
 #include "dev/timer.h"
 #include "io.h"
 
@@ -16,7 +7,7 @@ void set_pt_value(uint8_t sc, uint8_t rw, uint16_t val) {
         case 0: port = 0x40; break;
         case 1: port = 0x41; break;
         case 2: port = 0x42; break;
-        default: break;
+        default: port = 0x40; break;
     }
 
     __outb__(port, (uint8_t)val);

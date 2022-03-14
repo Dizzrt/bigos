@@ -50,7 +50,7 @@ static void inline intr_register_entry(uint8_t vnum, void* entry) {
     addr_mid <<= 32;
     addr_high >>= 32;
 
-    uint64_t temp = addr_low | addr_mid | 0x00008e0000180000ull;
+    uint64_t temp = addr_low | addr_mid | 0x00008e0000080000ull;
 
     *p = temp;
     *(p + 1) = addr_high;
