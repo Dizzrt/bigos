@@ -293,12 +293,28 @@ long:
     movabsq $idt_attribute,%rax
     lidt (%rax)
 
-    #TODO load kernel
+    xor %rax,%rax
+    movq %rax,%r9
+    movq %rax,%rcx
+    movl (KernelSize),%eax
+    movq %rax,%r8
+    movq $0x200000,%r10
+loadKernel:
+    cmpq $0xffff,%r8
+    jbe less
+    subq $0xffff,%r8
+    movq $0xffff,%r9
+    jmp loading
+less:
+    movq %r8,%r9
+    xor %r8,%r8
+loading:
     movb $0x40,%al
     movw $0x01f6,%dx
     outb %al,%dx
 
-    movb (KernelSize+1),%al
+    movq %r9,%rax
+    shr $0x08,%rax
     movw $0x01f2,%dx
     outb %al,%dx
 
@@ -314,7 +330,7 @@ long:
     movw $0x1f5,%dx
     outb %al,%dx
 
-    movb (KernelSize),%al
+    movq %r9,%rax
     movw $0x01f2,%dx
     outb %al,%dx
 
@@ -322,11 +338,11 @@ long:
     movw $0x1f3,%dx
     outb %al,%dx
 
-    movb (KernelLBAHigh+1),%al
+    movb (KernelLBALow+1),%al
     movw $0x1f4,%dx
     outb %al,%dx
 
-    movb (KernelLBAHigh+2),%al
+    movb (KernelLBALow+2),%al
     movw $0x1f5,%dx
     outb %al,%dx
 
@@ -334,8 +350,32 @@ long:
     movw $0x01f7,%dx
     outb %al,%dx
 
-TT:
+waitDisk:
     nop
     nop
     nop
-    jmp TT
+    inb %dx,%al
+    andb $0x88,%al
+    cmpb $0x08,%al
+    jne waitDisk
+    
+    movq %r9,%rax
+    movl $0x100,%ecx
+    mull %ecx
+
+    xor %rcx,%rcx
+    movl %eax,%ecx
+    movw $0x01f0,%dx
+PIO:
+    inw %dx,%ax
+    movw %ax,(%r10)
+    addq $2,%r10
+    loop PIO
+
+    cmpq $0,%r8
+    jne loadKernel
+
+    jmp .
+    #enter kernel
+    movabsq $0xffff800000200000,%rax
+    jmp *%rax
