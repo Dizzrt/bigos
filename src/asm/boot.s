@@ -42,7 +42,7 @@ idt_attribute:
 boot:
     #detect memory
     movl $0,%ebx
-    movw $0x7010,%di
+    movw $0x580,%di
     movl $0x20,%ecx
     movb $0x34,(error_code)
     xor %si,%si
@@ -51,16 +51,16 @@ L0:
     movl $0x534d4150,%edx
     int $0x15
     jc error
-    incw %si
     movl 16(%di),%eax
     cmpl $1,%eax
     jne L1
+    incw %si
     addw $0x14,%di
 L1:
     cmpl $0,%ebx
     jne L0
     movw %si,%ax
-    movb %al,(0x7000)
+    movb %al,(0x500) 
     #----search kernel----
     #read mbr
     movb $0x42,%ah
@@ -146,6 +146,7 @@ L7: #kernel found
     incl %eax
 L8: #no ramainder
     movl %eax,(KernelSize) # serctors
+    movl %eax,(0x504)
 
     #calcutate LBA of kernel
     movw 0x14(%di),%ax
@@ -192,12 +193,12 @@ L9: #no remainder
     divl %ecx
     cmpl $0,%edx
     je L10
-    incl %eax
+    incl %eax #number of PT
 L10: #no ramainder
     incl %eax #add the low 2MB
     cmpl $0x100,%eax
     jbe L11
-    #kernel is too big 
+    #TODO kernel is too big 
     movb $0x65,(error_code)
     jmp .#error
 
