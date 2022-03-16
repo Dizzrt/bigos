@@ -14,10 +14,11 @@ Slab::Slab(uint8_t _flags, uint16_t _objSize, uint64_t _page, uint8_t* _bp)
     page = _page;
 }
 
-Cache::Cache(uint8_t _flags, uint16_t _objSize, uint8_t islabSize, ...) : flags(_flags), objSize(_objSize) {
+//scount => number of static slab
+Cache::Cache(uint8_t _flags, uint16_t _objSize, uint32_t scount, ...) : flags(_flags), objSize(_objSize) {
     va_list vlist;
-    va_start(vlist, islabSize);
-    while (islabSize--) {
+    va_start(vlist, scount);
+    while (scount--) {
         linked_container<Slab*>* _slc = va_arg(vlist, linked_container<Slab*>*);
         empty.__list_insert(_slc);
     }
@@ -55,7 +56,9 @@ void* Cache::_alloc() {
             linked_container<Slab*>* _lcs1 = (linked_container<Slab*>*)cache_lcPointer._alloc();
             Slab* _s0 = (Slab*)cache_slab._alloc();
             Slab* _s1 = (Slab*)cache_slab._alloc();
-            // TODO constuc slab
+
+            new (_s0) Slab(dffs, objSize, (uint64_t)buddy_alloc());
+            new (_s1) Slab(dffs, objSize, (uint64_t)buddy_alloc());
 
             _lcs0->val = _s0;
             _lcs1->val = _s1;
@@ -63,16 +66,25 @@ void* Cache::_alloc() {
             empty.__list_insert(_lcs0);
             partial.__list_insert(_lcs1);
 
-        } else {
+        }
+        else {
             klist<Slab*>::iterator iter = empty.begin();
             empty.__list_remove(iter);
             partial.__list_insert(iter.m_node);
 
-            if (flags & CACHE_NONEMPTY && empty.empty()) {
+            if ((flags & CACHE_NONEMPTY) && empty.empty()) {
+                putsk_svga("here\n");
+                while (true)
+                {
+                    /* code */
+                }
+
+
                 for (int i = 0; i < 2; i++) {
                     linked_container<Slab*>* _lcs = (linked_container<Slab*>*)cache_lcPointer._alloc();
                     Slab* _s = (Slab*)cache_slab._alloc();
-                    // TODO constuc slab
+
+                    new(_s) Slab(dffs, objSize, (uint64_t)buddy_alloc());
 
                     _lcs->val = _s;
                     empty.__list_insert(_lcs);

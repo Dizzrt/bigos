@@ -18,6 +18,7 @@
 extern CacheChain kmem_cache;
 
 _rb_buddyBlock* getRB_buddyBlock();
+linked_container<void*>* getLC_8B();
 void kmemInit();
 
 

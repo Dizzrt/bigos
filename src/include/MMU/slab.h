@@ -5,13 +5,15 @@
 #include "ktl\klist.h"
 #include "stdint.h"
 
-#define SLAB_PERMANENT 0b10000000
+
+#define SLAB_PERMANENT 0b10000000 
 
 #define CACHE_NONEMPTY 0b10000000
 
 #define LONG_ALIGN(SIZE) ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
 
 extern uint64_t SH_magic;
+extern void* buddy_alloc(unsigned int = 1);
 
 class Slab : public bitset {
 private:
@@ -26,6 +28,7 @@ public:
   void __free(uint64_t);
   void __free(void*);
 
+  //flags,objSize,page,bp*
   Slab(uint8_t = 0, uint16_t = 1, uint64_t = -1, uint8_t* = nullptr);
   ~Slab() = default;
 };
@@ -41,6 +44,7 @@ struct SlabHeader {
 class Cache {
 public:
   uint8_t flags;
+  uint8_t dffs;//default flags for new slab
   uint16_t objSize;
 
   klist<Slab*> full;
@@ -49,7 +53,7 @@ public:
 
   void* _alloc();
 
-  Cache(uint8_t, uint16_t, uint8_t, ...);
+  Cache(uint8_t, uint16_t, uint32_t, ...);
   ~Cache() = default;
 };
 
