@@ -51,12 +51,9 @@ L0:
     movl $0x534d4150,%edx
     int $0x15
     jc error
-    movl 16(%di),%eax
-    cmpl $1,%eax
-    jne L1
     incw %si
-    addw $0x14,%di
-L1:
+    addw $0x18,%di
+    #the last memory segment?
     cmpl $0,%ebx
     jne L0
     movw %si,%ax
@@ -73,15 +70,15 @@ L1:
     #search active partition
     movw $4,%cx
     movw $0x81be,%di
-L2: #searching
+L1: #searching
     movb (%di),%bl
     cmpb $0x80,%bl
-    je L3
+    je L2
     addw $0x10,%di
-    loop L2
+    loop L1
     movb $0x31,(error_code)
     jmp error
-L3: #dbr found
+L2: #dbr found
     movl 8(%di),%ebx #LBA of partition start
     movl %ebx,(DiskAddressPacket+8)
     movl $0x9000,%ebx #load dbr into 0x9000
@@ -105,9 +102,9 @@ L3: #dbr found
     movl 0x24(%di),%eax
     xor %cx,%cx
     movb 0x10(%di),%cl
-L4: #FAT size * FAT count
+L3: #FAT size * FAT count
     addl %eax,%ebx
-    loop L4
+    loop L3
     movl %ebx,(DiskAddressPacket+8) #LBA of data aera
     movl $0x8000,(DiskAddressPacket+4) #load data aera into 0x8000~0x8fff
     movw $0x08,(DiskAddressPacket+2)
@@ -122,29 +119,29 @@ L4: #FAT size * FAT count
     #read end
     movw $0x8000,%di
     movb $0x35,(error_code)
-L5: #searching kernel
+L4: #searching kernel
     cmpl $0x4e52454b,(%di)
-    jne L6
+    jne L5
     cmpl $0x20204c45,4(%di)
-    jne L6
+    jne L5
     cmpw $0x2020,8(%di)
-    jne L6
+    jne L5
     cmpb $0x20,10(%di)
-    je L7
-L6: #next file
+    je L6
+L5: #next file
     cmpw $0x9000,%di
     ja error
     addw $0x20,%di
-    jmp L5
-L7: #kernel found
+    jmp L4
+L6: #kernel found
     movl $0x200,%ecx
     xor %edx,%edx
     movl 0x1c(%di),%eax
     divl %ecx
     cmpl $0,%edx
-    je L8
+    je L7
     incl %eax
-L8: #no ramainder
+L7: #no ramainder
     movl %eax,(KernelSize) # serctors
     movl %eax,(0x504)
 
@@ -185,24 +182,22 @@ protected:
     movl $0x08,%ecx
     divl %ecx
     cmpl $0,%edx
-    je L9
+    je L8
     incl %eax #pages of kernel
-L9: #no remainder
+L8: #no remainder
     xor %edx,%edx
     movl $0x200,%ecx
     divl %ecx
     cmpl $0,%edx
-    je L10
+    je L9
     incl %eax #number of PT
-L10: #no ramainder
+L9: #no ramainder
     incl %eax #add the low 2MB
     cmpl $0x100,%eax
-    jbe L11
+    jbe L10
     #TODO kernel is too big 
-    movb $0x65,(error_code)
     jmp .#error
-
-L11:
+L10:
     movl $0x0000903f,(0x8000) #pml4[0]
     movl $0x00000000,(0x8004)
     movl $0x0000903f,(0x8800) #pml4[256]
@@ -215,12 +210,12 @@ L11:
     movl %eax,%ecx
     movl $0x0000a000,%ebx
     movl $0x0010003f,%edx
-L12:
+L11:
     movl %edx,(%ebx)
     movl $0x00000000,4(%ebx)
     addl $0x08,%ebx
     addl $0x1000,%edx
-    loop L12
+    loop L11
 
     #pt
     movl $0x200,%ecx
@@ -228,12 +223,12 @@ L12:
     movl %eax,%ecx
     movl $0x100000,%ebx
     movl $0x000001ff,%edx
-L13:
+L12:
     movl %edx,(%ebx)
     movl $0x00000000,4(%ebx)
     addl $0x08,%ebx
     addl $0x1000,%edx
-    loop L13
+    loop L12
 
     #enter long mod
 
