@@ -5,7 +5,7 @@
 
 class kbitset {
 private:
-  inline uint64_t isFree(uint64_t);
+  inline bool isFree(uint64_t);
 
 protected:
   uint8_t* _bp;    // bit pointer
@@ -15,7 +15,7 @@ public:
   uint64_t _fc;  // free count
 
   kbitset(uint8_t* bp, uint64_t len) : _bp(bp), _len(len), _fc(_len) {}
-  ~kbitset(); // destructor
+  ~kbitset() = default;
 
   void set(uint64_t);            // offset
   void set(uint64_t, uint64_t);  // offset length
