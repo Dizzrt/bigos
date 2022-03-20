@@ -1,21 +1,25 @@
 #ifndef __BIG_SLAB_H__
 #define __BIG_SLAB_H__
 
-#include "ktl\bitset.h"
+#include "ktl\kbitset.h"
 #include "ktl\klist.h"
 #include "stdint.h"
 
-
+//----slab flags----
 #define SLAB_PERMANENT 0b10000000 
+//----end slab flags----
 
+//----cache flags----
 #define CACHE_NONEMPTY 0b10000000
+//----end cache flags----
 
-#define LONG_ALIGN(SIZE) ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
+#define LONG_ALIGN(SIZE) \
+  ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
 
 extern uint64_t SH_magic;
-extern void* buddy_alloc(unsigned int = 1);
+extern void* buddy_alloc(unsigned int);
 
-class Slab : public bitset {
+class Slab : public kbitset {
 private:
   uint64_t page;
   uint16_t offsetSize;
@@ -26,7 +30,7 @@ public:
 
   void* __alloc();
   void __free(uint64_t);
-  void __free(void*);
+  void __free(const void*);
 
   //flags,objSize,page,bp*
   Slab(uint8_t = 0, uint16_t = 1, uint64_t = -1, uint8_t* = nullptr);
@@ -44,7 +48,7 @@ struct SlabHeader {
 class Cache {
 public:
   uint8_t flags;
-  uint8_t dffs;//default flags for new slab
+  uint8_t dffs; // default flags for new slab
   uint16_t objSize;
 
   klist<Slab*> full;
@@ -60,7 +64,6 @@ public:
 class CacheChain {
 private:
   klist<Cache*> _caList;
-
 public:
   void insert(linked_container<Cache*>*);
   void* alloc(uint64_t);
