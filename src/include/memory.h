@@ -3,7 +3,7 @@
 
 #include "mmu\kmem.h"
 
-void* kmalloc(uint64_t = 1);
-void* kfree(const void*);
+void* kmalloc(uint64_t);
+void kfree(const void*);
 
 #endif

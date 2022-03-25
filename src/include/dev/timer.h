@@ -1,12 +1,3 @@
-/*
- * @Author: Dizzrt
- * @Date: 2021-11-02 19:47:29
- * @LastEditTime: 2021-12-06 20:55:12
- * @LastEditors: Please set LastEditors
- * @FilePath: \Big OS\Source\cpp\include\dev\driver\timer.h
- * @Description:
- */
-
 #ifndef __BIG_TIMER_H__
 #define __BIG_TIMER_H__
 
