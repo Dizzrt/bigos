@@ -5,16 +5,16 @@ mSeg::mSeg(uint64_t _base, uint64_t _len, uint8_t _flags)
     : base(_base), len(_len), flags(_flags) {}
 
 void MemPool::_createSeg(uint64_t _base, uint64_t _len, uint8_t _flags) {
-    mSeg* _mSeg;//TODO alloc seg
+    mSeg* _mSeg = (mSeg*)getMSeg();
     new (_mSeg) mSeg(_base, _len, _flags);
 
-    mSegNode* _mSegNode;//TODO alloc
+    mSegNode* _mSegNode = (mSegNode*)getRbTree_8_8();
     _mSegNode->val.second = _mSeg;
 
     freeSegs.insert(_mSegNode);
 }
 
-//TODO free seg
+void MemPool::_freeSeg(const void* p) {}
 
 void* MemPool::_alloc(uint64_t pages) {
     mSeg* seg = nullptr;

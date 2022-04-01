@@ -5,6 +5,11 @@
 #include "stdint.h"
 #include "ktl\rb_tree.h"
 
+extern void* getMSeg();
+extern void* getRbTree_8_8();
+
+extern void kmem_free(const void*);
+
 struct mSeg
 {
     uint8_t flags;

@@ -16,11 +16,12 @@
     static linked_container<Cache*> ___cacheLC_##NAME(&cache_##NAME);
 
 extern CacheChain kmem_cache;
+void kmem_free(const void*);
 
-//----for buddy----
+#define SIZE_mSeg 24
+void* getMSeg();
+void* getRbTree_8_8();
 linked_container<void*>* getLC_8B();
-void freeLC_8B(const void*);
-//----end for buddy----
 
 void kmemInit();
 
