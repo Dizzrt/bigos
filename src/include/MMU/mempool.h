@@ -29,6 +29,7 @@ private:
     _rb_tree<uint64_t, mSeg*> freeSegs; // free memory segment
     _rb_tree<uint64_t, mSeg*> usedSegs;
 
+    void __merge(mSegNode*, mSegNode*);
 public:
     ~MemPool() = default;
 
