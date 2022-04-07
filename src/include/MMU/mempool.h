@@ -25,16 +25,20 @@ class MemPool {
 private:
     //memory segment node
     typedef _rb_tree_node<uint64_t, mSeg*> mSegNode;
+    typedef _rb_tree<uint64_t, mSeg*>::iterator iterator;
 
     _rb_tree<uint64_t, mSeg*> freeSegs; // free memory segment
     _rb_tree<uint64_t, mSeg*> usedSegs;
+
+    iterator __search_len(uint64_t, _rb_tree<uint64_t, mSeg*>&);
+    iterator __search_key();
 
     void __merge(mSegNode*, mSegNode*);
 public:
     ~MemPool() = default;
 
     //alloc pages
-    void* _alloc(uint64_t);
+    void* _alloc(uint64_t, uint8_t = 0);
     void _free(const void*);
 
     //base,len,flags

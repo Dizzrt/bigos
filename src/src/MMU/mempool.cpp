@@ -33,53 +33,24 @@ void MemPool::_freeSeg(const void* p) {
     }
 }
 
-void* MemPool::_alloc(uint64_t pages) {
-    mSeg* seg = nullptr;
-    mSegNode* segNode = nullptr;
-    uint64_t delta = UINT64_MAX;
+void* MemPool::_alloc(uint64_t pages, uint8_t _flags) {
+    iterator iter = __search_len(pages, freeSegs);
+    if (iter == freeSegs.end())
+        return nullptr;//TODO judge _flags
 
-    _rb_tree<uint64_t, mSeg*>::iterator iter = freeSegs.begin();
-    while (iter != freeSegs.end())
-    {
-        if ((*iter).second->len < pages) {
-            iter++;
-            continue;
-        }
+    mSegNode* p = iter.m_node;
+    mSeg* _mseg = p->val.second;
+    uint64_t xlen = _mseg->len - pages;
 
-        uint64_t temp = (*iter).second->len - pages;
-        if (temp < delta) {
-            segNode = iter.m_node;
-            seg = iter.m_node->val.second;
-            delta = temp;
+    freeSegs.remove(p);
+    usedSegs.insert(p);
 
-            if (!delta)
-                break;
-        }
-        //TODO need optimize
+    if (xlen) {
+        _mseg->len -= xlen;
+        _createSeg(_mseg->base + _mseg->len * 0x1000, xlen, _mseg->flags);
     }
 
-    if (seg == nullptr) {
-        //TODO param control
-        return nullptr;
-    }
-
-    if (delta) {
-        seg->len = pages;
-        uint64_t tbase = seg->base + pages * 0x1000;
-
-        mSeg* tseg = (mSeg*)getMSeg();
-        mSegNode* tsegNode = (mSegNode*)getRbTree_8_8();
-
-        new(tseg) mSeg(tbase, delta, seg->flags);
-        new(tsegNode)mSegNode(tbase, tseg);
-
-        freeSegs.insert(tsegNode);
-    }
-
-    freeSegs.remove(segNode);
-    usedSegs.insert(segNode);
-
-    return (void*)seg->base;
+    return (void*)_mseg->base;
 }
 
 void MemPool::_free(const void* p) {
@@ -100,6 +71,34 @@ void MemPool::_free(const void* p) {
     //TODO merge
 }
 
-void MemPool::__merge(mSegNode* sn1, mSegNode* sn2) {
+// void MemPool::__merge(mSegNode* sn1, mSegNode* sn2) {
 
+// }
+
+_rb_tree<uint64_t, mSeg*>::iterator MemPool::__search_len(uint64_t _len, _rb_tree<uint64_t, mSeg*>& segs) {
+    mSegNode* p = segs.__root().m_node;
+    mSegNode* endp = segs.end().m_node;
+
+    do {
+        if (p->val.second->len == _len)
+            return iterator(p);
+
+        if (p->val.second->len > _len) {
+            if (p->left != endp) {
+                p = p->left;
+                continue;
+            }
+            else return iterator(p);
+        }
+
+        if (p->val.second->len < _len) {
+            if (p->right != endp) {
+                p = p->right;
+                continue;
+            }
+            else return ++iterator(p);
+        }
+    } while (p != endp);
+
+    return segs.end();
 }
