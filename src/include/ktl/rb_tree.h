@@ -85,9 +85,11 @@ public:
     _rb_tree_iterator() = default;
     _rb_tree_iterator(node_type* _node, node_type* _nil) :m_node(_node), nil(_nil) {}
     _rb_tree_iterator(node_type* _node) :m_node(_node) {
-        if (_node == _node->father->father)
-            nil = _node;
-        else nil = _node->left;
+        nil = _node;
+        while (nil->father->father != nil)
+            nil = nil->father;
+            
+        nil = nil->father;
     }
 
     iterator operator++(int) {
@@ -162,6 +164,7 @@ public:
 
     iterator begin() { return iterator(nil->left); }
     iterator end() { return iterator(nil); }
+    iterator __root() { return iterator(root); }
 
     _rb_tree();
     ~_rb_tree() = default;
