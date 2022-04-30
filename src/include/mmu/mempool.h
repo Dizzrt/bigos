@@ -33,7 +33,7 @@ private:
     iterator __search_len(uint64_t, _rb_tree<uint64_t, mSeg*>&);
     iterator __search_key();
 
-    void __merge(mSegNode*, mSegNode*);
+    mSegNode* __merge(mSegNode*, mSegNode*, _rb_tree<uint64_t, mSeg*>&);
 public:
     ~MemPool() = default;
 

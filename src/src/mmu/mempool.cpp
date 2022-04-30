@@ -57,23 +57,52 @@ void MemPool::_free(const void* p) {
     uint64_t _p = (uint64_t)p;
 
     _rb_tree<uint64_t, mSeg*>::iterator iter = usedSegs.begin();
-    while (iter != usedSegs.end())
+    auto end = usedSegs.end();
+    while (iter != end)
     {
         if ((*iter).second->base == _p)
             break;
     }
 
-    if (iter == usedSegs.end())
+    //not a valid address
+    if (iter == end)
         return;
 
-    usedSegs.remove(iter.m_node);
-    freeSegs.insert(iter.m_node);
+    mSegNode* sn = iter.m_node;
+
+    usedSegs.remove(sn);
+    freeSegs.insert(sn);
     //TODO merge
+
+    iter = iterator(sn);
+
 }
 
-// void MemPool::__merge(mSegNode* sn1, mSegNode* sn2) {
+_rb_tree_node<uint64_t, mSeg*>*
+MemPool::__merge(mSegNode* sn1, mSegNode* sn2, _rb_tree<uint64_t, mSeg*>& segs) {
+    mSeg* s1 = sn1->val.second;
+    mSeg* s2 = sn2->val.second;
 
-// }
+    segs.remove(sn1);
+    segs.remove(sn2);
+
+    mSeg* s = (mSeg*)getMSeg();
+    s->base = s1->base < s2->base ? s1->base : s2->base;
+    s->len = s1->len + s2->len;
+    s->flags = s1->flags;
+
+    mSegNode* sn = (mSegNode*)getRbTree_8_8();
+    new (sn) mSegNode(s->base, s);
+
+    kmem_free(s1);
+    kmem_free(s2);
+    kmem_free(sn1);
+    kmem_free(sn2);
+
+    segs.insert(sn);
+
+    return sn;
+}
 
 _rb_tree<uint64_t, mSeg*>::iterator MemPool::__search_len(uint64_t _len, _rb_tree<uint64_t, mSeg*>& segs) {
     mSegNode* p = segs.__root().m_node;
