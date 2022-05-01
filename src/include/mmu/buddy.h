@@ -1,18 +1,26 @@
 #ifndef __BIG_BUDDY_H__
 #define __BIG_BUDDY_H__
 
-#include "ktl\klist.h"
-#include "ktl\rb_tree.h"
+#include "memdef.h"
 
-//#define RB_BUDDY_SIZE sizeof(_rb_tree_node<void*, buddyBlock>)
-//typedef _rb_tree_node<void*, buddyBlock> _rb_buddyBlock;
-//extern _rb_buddyBlock* getRB_buddyBlock();
-extern linked_container<void*>* getLC_8B();
-extern void freeLC_8B(const void*);
+class _singleton_Buddy
+{
+private:
+    _singleton_Buddy(/* args */) {};
+    ~_singleton_Buddy() {};
 
-void* buddy_alloc(unsigned int);
-void buddy_free(uint64_t, uint64_t);
+    static _singleton_Buddy instance;
 
-void buddyInit();
+public:
+    static _singleton_Buddy& Instance() { return instance; }
+
+    void* alloc_pages();
+    void free_pages();
+
+};
+_singleton_Buddy _singleton_Buddy::instance;
+
+#define Buddy _singleton_Buddy::Instance()
 
 #endif //__BIG_BUDDY_H__
+
