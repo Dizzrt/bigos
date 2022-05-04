@@ -3,24 +3,12 @@
 
 #include "memdef.h"
 
-class _singleton_Buddy
-{
-private:
-    _singleton_Buddy(/* args */) {};
-    ~_singleton_Buddy() {};
+Pfs* alloc_pages(uint64_t);
+Pfs* alloc_page(); //alloc one page
 
-    static _singleton_Buddy instance;
+Pfs* valloc_pages(uint64_t);
 
-public:
-    static _singleton_Buddy& Instance() { return instance; }
+void free_pages(Pfs*);
 
-    void* alloc_pages();
-    void free_pages();
-
-};
-_singleton_Buddy _singleton_Buddy::instance;
-
-#define Buddy _singleton_Buddy::Instance()
 
 #endif //__BIG_BUDDY_H__
-
