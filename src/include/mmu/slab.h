@@ -5,11 +5,14 @@
 #include "ktl\kbitset.h"
 #include "ktl\klist.h"
 
+#define LONG_ALIGN(SIZE) \
+  ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
+
 class Slab : public kbitset
 {
 private:
     uint64_t base;
-    uint32_t offsetStep;
+    uint64_t offsetStep;
 public:
     uint32_t flags;
     const uint64_t& freeObjs = _fc;
@@ -22,7 +25,7 @@ public:
     void free_slab(const void*);
 
     Slab(/* args */) = default;
-    Slab(uint32_t = 0, uint32_t = 1, uint64_t = 0, uint8_t* = nullptr);
+    Slab(uint32_t, uint32_t, uint64_t, uint64_t, uint8_t*);
 
 
     ~Slab() = default;
@@ -31,14 +34,24 @@ public:
 struct SlabHeader
 {
     Slab* slab;
-    const uint64_t magic; //
+    const uint64_t magic;
+
+    SlabHeader(Slab*);
 };
 #define SHSIZE sizeof(SlabHeader)
+#define SH_magic 123
 
 class Cache
 {
+private:
     uint32_t flags;
+    uint32_t _alignment_;
+
     uint32_t objSize;
+    uint32_t slabSize;
+
+    uint32_t ops; //objs per slab
+    uint32_t offsetStep;
 
     klist<Slab*> full;
     klist<Slab*> empty;
