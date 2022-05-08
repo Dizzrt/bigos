@@ -4,8 +4,8 @@
 #include "interrupt.h"
 #include "io.h"
 
-#include "mmu\kmem.h"
-#include "ktl\kbitset.h"
+// #include "mmu\kmem.h"
+// #include "ktl\kbitset.h"
 
 extern "C" void Kernel();
 static void init_kernel();
@@ -23,10 +23,10 @@ void Kernel() {
 static void init_kernel() {
     svga_Clear();
     svga_SetCursorPos(0, 0);
-    kmemInit();
+    // kmemInit();
 
 
-    // 1193=1193180/中断频率(100)
+     // 1193=1193180/中断频率(100)
     pt_init(0x34, (CLOCK_TICK_RATE + HZ / 2) / HZ);
     intr_init();
 }

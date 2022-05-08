@@ -41,6 +41,13 @@ struct SlabHeader
 #define SHSIZE sizeof(SlabHeader)
 #define SH_magic 123
 
+enum SLABSIZE {
+    x1 = 1 * 0x1000, x2 = 2 * 0x1000, x4 = 4 * 0x1000,
+    x8 = 8 * 0x1000, x16 = 16 * 0x1000, x32 = 32 * 0x1000,
+    x64 = 64 * 0x1000, x128 = 128 * 0x1000, x256 = 256 * 0x1000,
+    x512 = 512 * 0x1000, x1024 = 1024 * 0x1000
+};
+
 class Cache
 {
 private:
@@ -48,7 +55,9 @@ private:
     uint32_t _alignment_;
 
     uint32_t objSize;
-    uint32_t slabSize;
+    // uint32_t slabSize;
+    SLABSIZE slabSize;
+
 
     uint32_t ops; //objs per slab
     uint32_t offsetStep;
@@ -59,6 +68,8 @@ private:
 public:
     Cache(/* args */) = default;
     ~Cache() = default;
+
+    Cache(uint32_t, uint32_t, uint32_t);
 
     void* alloc_Cache();
 };

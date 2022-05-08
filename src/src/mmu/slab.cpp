@@ -33,6 +33,13 @@ void Slab::free_slab(const void* p) { free_slab((uint64_t)p - SHSIZE); }
 
 #pragma region Cache
 
+Cache::Cache(uint32_t Flags, uint32_t ObjSize, uint32_t SlabSize) :
+    flags(Flags), objSize(ObjSize), slabSize(SlabSize),
+    ops(SlabSize / LONG_ALIGN(ObjSize)), offsetStep(LONG_ALIGN(ObjSize))
+{
+
+}
+
 void* Cache::alloc_Cache() {
 
 }
