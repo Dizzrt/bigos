@@ -6,14 +6,14 @@
 
 template <typename T>
 class klist {
-  protected:
+protected:
     linked_container<T> _head;
     linked_container<T>* _list;
 
     uint32_t _size;
     typedef linked_container<T>* link_type;
 
-  public:
+public:
     typedef linked_container_iterator<T> iterator;
 
     iterator begin() { return iterator(_list->next); }
@@ -28,6 +28,10 @@ class klist {
 
     void __list_insert(link_type);
     void __list_insert(link_type, const iterator&);
+
+    void __list_insert(iterator);
+    void __list_insert(iterator, const iterator&);
+
     T& __list_remove(const iterator&);
 
     klist();
@@ -38,6 +42,12 @@ template <typename T>
 klist<T>::klist() {
     _list = &_head;
 }
+
+template<typename T>
+void klist<T>::__list_insert(iterator iter) { __list_insert(iter.m_node); }
+
+template<typename T>
+void klist<T>::__list_insert(iterator iter, const iterator& pos) { __list_insert(iter.m_node, pos); }
 
 template <typename T>
 void klist<T>::__list_insert(link_type _node, const iterator& position) {
