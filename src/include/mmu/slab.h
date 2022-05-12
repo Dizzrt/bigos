@@ -5,6 +5,18 @@
 #include "ktl\kbitset.h"
 #include "ktl\klist.h"
 
+#pragma region flags
+
+//slab flags
+#define SLAB_PERMANENT 0x00000001
+//slab flags end
+
+//cache flags
+#define CACHE_NOEMPTY 0x00000001
+//cache flags end
+
+#pragma endregion
+
 #define LONG_ALIGN(SIZE) \
   ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
 
@@ -41,35 +53,37 @@ struct SlabHeader
 #define SHSIZE sizeof(SlabHeader)
 #define SH_magic 123
 
-enum SLABSIZE {
+enum SlabSize {
     x1 = 1 * 0x1000, x2 = 2 * 0x1000, x4 = 4 * 0x1000,
     x8 = 8 * 0x1000, x16 = 16 * 0x1000, x32 = 32 * 0x1000,
     x64 = 64 * 0x1000, x128 = 128 * 0x1000, x256 = 256 * 0x1000,
     x512 = 512 * 0x1000, x1024 = 1024 * 0x1000
 };
 
+
 class Cache
 {
 private:
-    uint32_t flags;
-    uint32_t _alignment_;
+    klist<Slab*> full;
+    klist<Slab*> empty;
+    klist<Slab*> partial;
 
+    uint32_t _alignment_;
+public:
+    uint32_t flags;
     uint32_t objSize;
     // uint32_t slabSize;
-    SLABSIZE slabSize;
+    SlabSize slabSize;
 
 
     uint32_t ops; //objs per slab
     uint32_t offsetStep;
 
-    klist<Slab*> full;
-    klist<Slab*> empty;
-    klist<Slab*> partial;
-public:
+
     Cache(/* args */) = default;
     ~Cache() = default;
 
-    Cache(uint32_t, uint32_t, uint32_t);
+    Cache(uint32_t, uint32_t, SlabSize, uint32_t, ...);
 
     void* alloc_Cache();
 };
