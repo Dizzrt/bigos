@@ -7,12 +7,29 @@
 // #include "mmu\kmem.h"
 // #include "ktl\kbitset.h"
 
+#include "ktl\klist.h"
+#include "new.h"
 extern "C" void Kernel();
 static void init_kernel();
+
+klist<int> t;
+
+linked_container<int> t1(1);
+linked_container<int> t2(2);
+linked_container<int> t3(3);
 
 void Kernel() {
     init_kernel();
     //----------------//
+
+    t.__list_insert(&t1);
+    t.__list_insert(&t3);
+
+    t.__list_insert(&t2, t.begin());
+
+    for (auto i : t)
+        printk_svga("%d\n", i);
+
 
     //----------------//
     while (true) {

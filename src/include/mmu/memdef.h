@@ -10,23 +10,41 @@ struct Pfs // page frames
     uint32_t len;
     uint32_t flags;
 
-    Pfs* next;
+    Pfs* next = nullptr;
 
     Pfs() = default;
     Pfs(uint64_t _base = 0, uint32_t _len = 0, uint32_t _flags = 0) {}
 };
 
-struct MSeg
+struct PfsHeader
 {
-    //klist<Pfs*> pm_list; //physical memory
-    Pfs* pm_list;
-
-
-    uint64_t base;
-    uint32_t len;
-    uint32_t flags;
+    uint32_t cnt;
+    Pfs* pfs_list;
 };
 
+
+// struct MSeg
+// {
+//     //klist<Pfs*> pm_list; //physical memory
+//     Pfs* pm_list;
+
+
+//     uint64_t base;
+//     uint32_t len;
+//     uint32_t flags;
+// };
+
+struct VPfs // virtual page frames
+{
+    uint64_t base; // virtual address
+    uint32_t len;
+
+    uint32_t flags;
+
+    PfsHeader* pfs;
+
+    VPfs(uint64_t base, uint32_t len = 1, uint32_t flags = 0, pfs = nullptr);
+};
 
 
 
