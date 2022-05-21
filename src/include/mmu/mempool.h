@@ -26,9 +26,10 @@ struct VirtualPool
 {
     klist<VirtualSeg*> segs;
 
-    //vseg_free(uint64 base,uint64 len)
-    void vseg_free(uint64_t, uint64_t);
-    void vseg_alloc(uint32_t len);
+    //vseg_free(uint64 base,uint32 len)
+    //void vseg_free(uint64_t, uint32_t);
+    VirtualSeg* vseg_alloc(uint32_t);
+    void vseg_free(VirtualSeg*);
 };
 
 struct AvailablePool

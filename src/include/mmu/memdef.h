@@ -43,7 +43,8 @@ struct VPfs // virtual page frames
 
     PfsHeader* pfs;
 
-    VPfs(uint64_t base, uint32_t len = 1, uint32_t flags = 0, pfs = nullptr);
+
+    VPfs(uint64_t base, uint32_t len = 1, uint32_t flags = 0, PfsHeader* = nullptr);
 };
 
 
