@@ -15,7 +15,7 @@ void __outb__(uint16_t port, uint8_t value) {
 }
 
 static inline uint8_t* __getSvagPointer() {
-    return (uint8_t*)(long long)((svga_GetCursorPos() << 1) + 0xffff8000000b8000);
+    return (uint8_t*)(long long)((svga_GetCursorPos() << 1) + 0xffffffff800b8000);
 }
 
 static inline void __tab() { return svga_MoveCursor(TAB_WIDTH, true); }
@@ -93,46 +93,51 @@ void printk_svga(const char* fmt, ...) {
     va_start(valist, fmt);
 
     uint8_t ptr = 0;
-    char buffer[256] = {0};
+    char buffer[256] = { 0 };
 
     bool ll_flag = false;
     while (*fmt != 0) {
         if (*fmt == '%') {
             if (*(fmt + 1) == 'c') {
-                char p[2] = {0};
+                char p[2] = { 0 };
                 p[0] = va_arg(valist, int);
                 ptr = updateBuffer(buffer, p, ptr);
-            } else if (*(fmt + 1) == 's') {
+            }
+            else if (*(fmt + 1) == 's') {
                 char* p = (char*)va_arg(valist, long long);
                 ptr = updateBuffer(buffer, p, ptr);
-            } else {  // maby a num
+            }
+            else {  // maby a num
                 if (*(fmt + 1) == 'l' && *(fmt + 2) == 'l') {
                     ll_flag = true;
                     fmt += 2;
                 }
 
                 if (*(fmt + 1) == 'd') {
-                    char tmp[20] = {0};
+                    char tmp[20] = { 0 };
                     if (ll_flag)
                         itoa(va_arg(valist, int64_t), tmp, 10), ll_flag = false;
                     else
                         itoa(va_arg(valist, int32_t), tmp, 10);
                     ptr = updateBuffer(buffer, tmp, ptr);
-                } else if (*(fmt + 1) == 'x') {
-                    char tmp[20] = {0};
+                }
+                else if (*(fmt + 1) == 'x') {
+                    char tmp[20] = { 0 };
                     if (ll_flag)
                         itoa(va_arg(valist, int64_t), tmp, 16), ll_flag = false;
                     else
                         itoa(va_arg(valist, int32_t), tmp, 16);
                     ptr = updateBuffer(buffer, tmp, ptr);
-                } else {
+                }
+                else {
                     fmt++;
                     goto normalC;
                 }
             }
 
             fmt += 2;
-        } else {
+        }
+        else {
         normalC:
             if (ptr < 255)
                 buffer[ptr++] = *fmt++;

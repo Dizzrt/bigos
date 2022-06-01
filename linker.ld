@@ -7,7 +7,7 @@ SEARCH_DIR("C:/Users/forty/Desktop/bigos/lib");
 
 SECTIONS
 {
-  . = 0xffff800000200000;
+  . = 0xffffffff80200000;
 
   .bigos          :
   {

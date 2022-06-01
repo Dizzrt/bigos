@@ -32,11 +32,11 @@ gdt_32bit:
 
 gdt_attribute_x64:
     .word 0xff
-    .quad 0xffff800000000300
+    .quad 0xffffffff80000300
 
 idt_attribute:
     .word 0x300
-    .quad 0xffff800000000000
+    .quad 0xffffffff80000000
 
 .global boot
 boot:
@@ -200,11 +200,21 @@ L9: #no ramainder
 L10:
     movl $0x0000903f,(0x8000) #pml4[0]
     movl $0x00000000,(0x8004)
-    movl $0x0000903f,(0x8800) #pml4[256]
-    movl $0x00000000,(0x8804)
 
     movl $0x0000a03f,(0x9000) #pdpt[0]
     movl $0x00000000,(0x9004)
+
+    movl $0x0000903f,(0x8ff8) #pml4[511] => pdpt
+    movl $0x00000000,(0x8ffc)
+    
+    movl $0x0000a03f,(0x9ff0) #pdpt[510] => pd
+    movl $0x00000000,(0x9ff4)
+
+    # movl $0x0000903f,(0x8800) #pml4[256]
+    # movl $0x00000000,(0x8804)
+
+    # movl $0x0000a03f,(0x9000) #pdpt[0]
+    # movl $0x00000000,(0x9004)
     
     #pd
     movl %eax,%ecx
@@ -280,7 +290,8 @@ long_gate:
 long:
     movw $SELECTOR_STACK_x64,%ax
     movw %ax,%ss
-    movq $0xffff800000006fff,%rsp
+    # movq $0xffff800000006fff,%rsp
+    movq $0xffffffff80006fff,%rsp
 
     movw $SELECTOR_DATA_x64,%ax
     movw %ax,%ds
@@ -372,5 +383,5 @@ PIO:
     jne loadKernel
 
     #enter kernel
-    movabsq $0xffff800000200000,%rax
+    movabsq $0xffffffff80200000,%rax
     jmp *%rax

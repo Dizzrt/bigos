@@ -1,12 +1,3 @@
-/*
- * @Author: Dizzrt
- * @Date: 2021-11-03 10:59:30
- * @LastEditTime: 2021-12-17 21:09:39
- * @LastEditors: Please set LastEditors
- * @FilePath: \Big OS\src\src\dev\svga.cpp
- * @Description: svga driver
- */
-
 #include "dev/svga.h"
 #include "io.h"
 
@@ -52,7 +43,8 @@ void svga_MoveCursor(uint16_t offset, bool forward) {
 }
 
 void svga_Clear() {
-    char *p = (char *)0xffff8000000b8000;
+    char* p = (char*)0xffffffff800b8000;
+
     for (int i = 0; i < 2000; i++) {
         *p = 0x00;
         *(p + 1) = 0x0f;

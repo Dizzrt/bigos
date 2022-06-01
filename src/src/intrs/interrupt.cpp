@@ -40,7 +40,7 @@ void intr_register_handler(uint8_t vnum, intr_handler handler) {
 }
 
 static void inline intr_register_entry(uint8_t vnum, void* entry) {
-    uint64_t* p = (uint64_t*)0xffff800000000000ull;
+    uint64_t* p = (uint64_t*)0xffffffff80000000ull;
     p += vnum * 2;
 
     uint64_t addr_low = (uint64_t)entry & 0x000000000000ffffull;

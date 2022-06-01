@@ -1,12 +1,3 @@
-/*
- * @Author: Dizzrt
- * @Date: 2021-11-03 10:50:28
- * @LastEditTime: 2021-12-06 20:58:14
- * @LastEditors: Please set LastEditors
- * @FilePath: \Big OS\src\include\dev\svga.h
- * @Description:
- */
-
 #ifndef __BIG_SVGA_H__
 #define __BIG_SVGA_H__
 
