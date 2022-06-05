@@ -4,6 +4,19 @@
 #include "stdint.h"
 //#include "ktl\klist.h"
 
+#define PAGE_SIZE 0x1000
+#define MAX_BUDDY_ORDER 10
+#define BUDDY_ORDER_CNT MAX_BUDDY_ORDER+1
+
+struct MSeg
+{
+    uint64_t base;
+    uint64_t pages;
+
+    void* Zone_ptr;
+};
+
+
 struct Pfs // page frames
 {
     uint64_t base;
