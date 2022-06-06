@@ -5,8 +5,9 @@
 //#include "ktl\klist.h"
 
 #define PAGE_SIZE 0x1000
-#define MAX_BUDDY_ORDER 10
-#define BUDDY_ORDER_CNT MAX_BUDDY_ORDER+1
+#define BUDDY_MAX_ORDER 10
+#define BUDDY_ORDER_CNT BUDDY_MAX_ORDER+1
+#define BUDDY_MAX_PAGES 1<<BUDDY_MAX_ORDER
 
 struct MSeg
 {

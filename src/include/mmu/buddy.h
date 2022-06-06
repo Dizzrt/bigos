@@ -7,7 +7,6 @@
 #define GFP_DMA 0b01u
 #define GFP_DMA32 0b10u
 #define GFP_NORMAL 0b100u
-#define GFP_
 
 struct Zone
 {
