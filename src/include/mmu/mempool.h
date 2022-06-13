@@ -3,53 +3,24 @@
 
 #include "memdef.h"
 #include "ktl\klist.h"
-#include "ktl\rb_tree.h"
+// #include "ktl\rb_tree.h"
 
-// struct MSeg
-// {
-//     uint32_t flags;
-//     uint32_t segCnt;
-
-//     klist<Pfs*> segs;
-
-//     Pfs* allocSeg();
-//     void freeSeg(Pfs*);
-// };
-
-struct VirtualSeg // virtual memory segment
+class MemPool
 {
-    uint64_t base;
-    uint64_t len;
+private:
+    typedef klist<VMSeg*>::iterator VMSeg_iter;
+public:
+    klist<VMSeg*> unmapped_VMSeg; // unmapped
+    klist<VMSeg*> mapped_VMSeg; // mapped but not used
+    klist<VMSeg*> used_VMSeg; // mapped and used
+
+    uint64_t maxPages_mapped;
+
+    void* alloc(uint32_t gfp_flags = 0, uint32_t pages = 1);
+    void* alloc(uint32_t pages = 1);
+
+    MemPool(/* args */) = default;
+    ~MemPool() = default;
 };
-
-struct VirtualPool
-{
-    klist<VirtualSeg*> segs;
-
-    //vseg_free(uint64 base,uint32 len)
-    //void vseg_free(uint64_t, uint32_t);
-    VirtualSeg* vseg_alloc(uint32_t);
-    void vseg_free(VirtualSeg*);
-};
-
-struct AvailablePool
-{
-    klist<VPfs*> segs_free;
-    _rb_tree<void*, VPfs*> segs_using;
-
-    void* aseg_alloc(uint32_t);
-};
-
-struct MemPool
-{
-    VirtualPool vpool;
-    AvailablePool apool;
-
-    void* mpool_alloc(uint32_t);
-    void mpool_free(void*);
-};
-
-
-
 
 #endif //__BIG_MEMPOOL_H__

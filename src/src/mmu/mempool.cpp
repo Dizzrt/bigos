@@ -1,43 +1,54 @@
 #include "mmu\mempool.h"
+#include "mmu\buddy.h"
 #include "new.h"
 
-VirtualSeg* VirtualPool::vseg_alloc(uint32_t len) {
-    VirtualSeg* ret = nullptr;
+void* MemPool::alloc(uint32_t gfp_flags, uint32_t pages) {
+    void* ret = nullptr;
+    //TODO alloc ret
 
-    for (auto seg : segs)
-        if (seg->len >= len) {
-            //TODO alloc mem for ret
-            ret->base = seg->base;
-            ret->len = len;
+    if (pages > maxPages_mapped) {
+        // TODO alloc by buddy
+    }
+    else {
+        // alloc by mapped_VMSeg
 
-            if (seg->len > len) {
-                seg->base += 0x1000 * len;
-                seg->len -= len;
+        VMSeg_iter iter = mapped_VMSeg.begin();
+
+        VMSeg* seg = nullptr;
+        while (iter != mapped_VMSeg.end())
+        {
+            if ((*iter)->pages >= pages) {
+                seg = *iter;
+                break;
+            }
+            else iter++;
+        }
+
+        ret = (void*)seg->base; // alloc address
+
+        if (seg->pages == pages) {
+            mapped_VMSeg.__list_remove(iter);
+
+            if (used_VMSeg.empty())
+                used_VMSeg.__list_insert(iter);
+            else {
+                for (VMSeg_iter i = used_VMSeg.begin();i != used_VMSeg.end();i++) {
+                    if ((*i)->base > seg->base) {
+                        used_VMSeg.__list_insert(iter, i);
+                        break;
+                    }
+                }
             }
         }
+        else {
+            //TODO divide vmseg
+        }
+    }
 
     return ret;
 }
 
-void VirtualPool::vseg_free(VirtualSeg* seg) {
-    linked_container<VirtualSeg*>* lseg;//TODO alloc lseg
-    new(lseg) linked_container<VirtualSeg*>(seg);
-
-    if (segs.empty()) {
-        segs.__list_insert(lseg);
-        return;
-    }
-
-    klist<VirtualSeg*>::iterator iter = segs.begin();
-    klist<VirtualSeg*>::iterator iend = segs.end();
-
-    while (iter != iend)
-    {
-        if ((*iter)->base > seg->base)
-        {
-
-        }
-    }
-
-
+void* MemPool::alloc(uint32_t pages) {
+    //TODO default flags
+    return alloc(0, pages);
 }
