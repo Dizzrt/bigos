@@ -58,16 +58,23 @@ MSeg* alloc_pages(uint32_t gfp_flags, uint32_t pages) {
 
     ret = *iter;
 
+    long long tbase = ret->base + 0x1000 * pages;
     if (xpages) {
-        //TODO 
+        int t = BUDDY_MAX_ORDER;
+        for (;t >= 0;t--) {
+            while (xpages >= buddyChunkSize[t])
+            {
+                //TODO new chunck
+
+                xpages -= buddyChunkSize[t];
+                tbase += 0x1000 * buddyChunkSize[t];
+            }
+        }
     }
 
     return ret;
 }
 
 MSeg* alloc_page(uint32_t gfp_flags) {
-
-
-    MSeg* ret = nullptr;
-    return ret;
+    return alloc_pages(gfp_flags, 1);
 }
