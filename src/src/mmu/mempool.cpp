@@ -42,6 +42,26 @@ void* MemPool::alloc(uint32_t gfp_flags, uint32_t pages) {
         }
         else {
             //TODO divide vmseg
+            VMSeg* _vmseg = nullptr; //TODO alloc by slab
+
+            _vmseg->base = seg->base + pages * 0x1000;
+            _vmseg->pages = seg->pages - pages;
+
+            int tpage = pages;
+            klist<MSeg*>::iterator iter = seg->pm_segs.begin();
+            while (iter != seg->pm_segs.end())
+            {
+                if (tpage >= (*iter)->pages) {
+                    tpage -= (*iter)->pages;
+                    iter++;
+                }
+                else {
+                    if (tpage == 0) {
+
+                    }
+                }
+            }
+
         }
     }
 
