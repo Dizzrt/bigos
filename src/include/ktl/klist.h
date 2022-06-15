@@ -32,7 +32,8 @@ public:
     void __list_insert(iterator);
     void __list_insert(iterator, const iterator&);
 
-    T& __list_remove(const iterator&);
+    void __list_remove(const T&);
+    void __list_remove(const iterator&);
 
     klist();
     ~klist() = default;
@@ -65,12 +66,32 @@ void klist<T>::__list_insert(link_type _node) {
 }
 
 template <typename T>
-T& klist<T>::__list_remove(const iterator& x) {
-    x.m_node->prev->next = x.m_node->next;
-    x.m_node->next->prev = x.m_node->prev;
+void klist<T>::__list_remove(const T& obj) {
+    iterator iter = begin();
+    iterator __end = end();
+
+    while (iter != __end)
+    {
+        if ((*iter) == obj)
+            break;
+        else iter++;
+    }
+
+    if (iter == __end)
+        return;
+
+    iter.m_node->prev->next = iter.m_node->next;
+    iter.m_node->next->prev = iter.m_node->prev;
 
     _size--;
-    return *x;
+}
+
+template <typename T>
+void klist<T>::__list_remove(const iterator& iter) {
+    iter.m_node->prev->next = iter.m_node->next;
+    iter.m_node->next->prev = iter.m_node->prev;
+
+    _size--;
 }
 
 template <typename T>
