@@ -46,22 +46,51 @@ void* MemPool::alloc(uint32_t gfp_flags, uint32_t pages) {
 
             _vmseg->base = seg->base + pages * 0x1000;
             _vmseg->pages = seg->pages - pages;
+            // seg->pages = pages;
 
             int tpage = pages;
+
+            //divide vmseg's pm_segs
+            bool notHead = false;
+            MSeg* mseg_t = nullptr;
             klist<MSeg*>::iterator iter = seg->pm_segs.begin();
             while (iter != seg->pm_segs.end())
             {
-                if (tpage >= (*iter)->pages) {
-                    tpage -= (*iter)->pages;
-                    iter++;
+                mseg_t = *iter;
+                if (tpage >= mseg_t->pages) {
+                    tpage -= mseg_t->pages;
                 }
                 else {
-                    if (tpage == 0) {
+                    if (tpage == 0)
+                        _vmseg->pm_segs.__list_insert(iter);
+                    else {
+                        MSeg* _mseg = nullptr;//TODO alloc
+                        linked_container<MSeg*>* _mseg_lc = nullptr;//TODO alloc
 
+                        _mseg->Zone_ptr = mseg_t->Zone_ptr;
+                        _mseg->pages = mseg_t->pages - tpage;
+                        _mseg->base = mseg_t->base + tpage * 0x1000;
+
+                        mseg_t->pages = tpage;
+                        tpage = 0;
+
+                        new (_mseg_lc) linked_container<MSeg*>(_mseg);
+                        _vmseg->pm_segs.__list_insert(_mseg_lc);
+
+                        notHead = true;
                     }
                 }
+
+                iter++;
             }
 
+            //remove pm_segs from seg
+            iter = _vmseg->pm_segs.begin();
+            if (notHead)
+                iter++;
+
+            while (iter != _vmseg->pm_segs.end())
+                seg->pm_segs.__list_remove(*iter);
         }
     }
 
