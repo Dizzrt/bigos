@@ -78,3 +78,18 @@ MSeg* alloc_pages(uint32_t gfp_flags, uint32_t pages) {
 MSeg* alloc_page(uint32_t gfp_flags) {
     return alloc_pages(gfp_flags, 1);
 }
+
+static bool buddy_init_complete = false;
+void buddy_init() {
+    if (buddy_init_complete)
+        return;
+
+    uint32_t ARDSCount = *((uint32_t*)0x500);
+    ARDS* ards_list = (ARDS*)0x580;
+
+    for (uint32_t i = 0;i < ARDSCount;i++) {
+        //TODO init
+    }
+
+    buddy_init_complete = true;
+}

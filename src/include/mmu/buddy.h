@@ -23,4 +23,6 @@ extern Zone Zone_Normal;
 MSeg* alloc_page(uint32_t gfp_flags = 0);
 MSeg* alloc_pages(uint32_t gfp_flags = 0, uint32_t pages = 1);
 
+void buddy_init();
+
 #endif //__BIG_BUDDY_H__

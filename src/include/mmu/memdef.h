@@ -2,13 +2,32 @@
 #define __BIG_MEMDEF_H__
 
 #include "stdint.h"
-//#include "ktl\klist.h"
+#include "ktl\klist.h"
 
 #define PAGE_SIZE 0x1000
 #define BUDDY_MAX_ORDER 10
 #define BUDDY_ORDER_CNT BUDDY_MAX_ORDER+1
 #define BUDDY_MAX_PAGES 1<<BUDDY_MAX_ORDER
 
+//Address Range Descriptor Structure
+struct ARDS
+{
+    uint64_t base;
+    uint64_t length;
+    uint32_t type;
+    /*
+     * Type 1: Usable (normal) RAM
+     * Type 2: Reserved - unusable
+     * Type 3: ACPI reclaimable memory
+     * Type 4: ACPI NVS memory
+     * Type 5: Area containing bad memory
+    */
+
+    uint32_t ACPI_exAttributes;
+};
+
+
+//physical memory segment
 struct MSeg
 {
     uint64_t base;
@@ -17,49 +36,15 @@ struct MSeg
     void* Zone_ptr;
 };
 
-
-struct Pfs // page frames
+//virtual memory segment
+struct VMSeg
 {
     uint64_t base;
-    uint32_t len;
-    uint32_t flags;
+    uint64_t pages;
 
-    Pfs* next = nullptr;
-
-    Pfs() = default;
-    Pfs(uint64_t _base = 0, uint32_t _len = 0, uint32_t _flags = 0) {}
+    klist<MSeg*> pm_segs; //physical memory segments
 };
 
-struct PfsHeader
-{
-    uint32_t cnt;
-    Pfs* pfs_list;
-};
-
-
-// struct MSeg
-// {
-//     //klist<Pfs*> pm_list; //physical memory
-//     Pfs* pm_list;
-
-
-//     uint64_t base;
-//     uint32_t len;
-//     uint32_t flags;
-// };
-
-struct VPfs // virtual page frames
-{
-    uint64_t base; // virtual address
-    uint32_t len;
-
-    uint32_t flags;
-
-    PfsHeader* pfs;
-
-
-    VPfs(uint64_t base, uint32_t len = 1, uint32_t flags = 0, PfsHeader* = nullptr);
-};
 
 
 
