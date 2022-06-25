@@ -1,4 +1,9 @@
 #include "mmu\buddy.h"
+#include "new.h"
+
+uint64_t totalMemory;
+uint64_t UsableMemory;
+uint64_t usedMemory;
 
 Zone Zone_DMA;
 Zone Zone_DMA32;
@@ -8,8 +13,13 @@ enum TZone { NORMAL, DMA32, DMA };  //target Zone
 
 static Zone* Zones[3] = { &Zone_Normal,&Zone_DMA32,&Zone_DMA };
 
-static uint32_t buddyChunkSize[BUDDY_ORDER_CNT] = {
+static uint32_t buddyChunkPages[BUDDY_ORDER_CNT] = {
     1,2,4,8,16,32,64,128,256,512,1024
+};
+
+static uint64_t buddyChunkSize[BUDDY_ORDER_CNT] = {
+    1 * PAGE_SIZE,2 * PAGE_SIZE,4 * PAGE_SIZE,8 * PAGE_SIZE,16 * PAGE_SIZE,
+    32 * PAGE_SIZE,64 * PAGE_SIZE,128 * PAGE_SIZE,256 * PAGE_SIZE,512 * PAGE_SIZE,1024 * PAGE_SIZE
 };
 
 MSeg* alloc_pages(uint32_t gfp_flags, uint32_t pages) {
@@ -47,11 +57,11 @@ MSeg* alloc_pages(uint32_t gfp_flags, uint32_t pages) {
 
     int order = 0;
     while (_zone->Segs[order].empty() ||
-        order <= BUDDY_MAX_ORDER && buddyChunkSize[order] < pages) {
+        order <= BUDDY_MAX_ORDER && buddyChunkPages[order] < pages) {
 
     }
 
-    int xpages = buddyChunkSize[order] - pages;
+    int xpages = buddyChunkPages[order] - pages;
     // ret = _zone->Segs[order].front();
     klist<MSeg*>::iterator iter = _zone->Segs[order].begin();
     _zone->Segs[order].__list_remove(iter);
@@ -62,12 +72,12 @@ MSeg* alloc_pages(uint32_t gfp_flags, uint32_t pages) {
     if (xpages) {
         int t = BUDDY_MAX_ORDER;
         for (;t >= 0;t--) {
-            while (xpages >= buddyChunkSize[t])
+            while (xpages >= buddyChunkPages[t])
             {
                 //TODO new chunck
 
-                xpages -= buddyChunkSize[t];
-                tbase += 0x1000 * buddyChunkSize[t];
+                xpages -= buddyChunkPages[t];
+                tbase += 0x1000 * buddyChunkPages[t];
             }
         }
     }
@@ -79,6 +89,28 @@ MSeg* alloc_page(uint32_t gfp_flags) {
     return alloc_pages(gfp_flags, 1);
 }
 
+static uint64_t initBuddyChunk(uint64_t base, uint64_t pages, Zone* zone) {
+    for (uint32_t i = BUDDY_MAX_ORDER;i >= 0;i--) {
+        while (pages >= buddyChunkPages[i])
+        {
+            MSeg* seg = nullptr;//TODO alloc
+            new (seg) MSeg(base, buddyChunkPages[i], zone);
+
+            linked_container<MSeg*>* lc = nullptr;//TODO alloc
+            new (lc) linked_container<MSeg*>(seg);
+
+            zone->Segs->__list_insert(lc);
+
+            base += buddyChunkSize[i];
+            pages -= buddyChunkPages[i];
+
+            totalMemory += buddyChunkSize[i];
+        }
+    }
+
+    return base;
+}
+
 static bool buddy_init_complete = false;
 void buddy_init() {
     if (buddy_init_complete)
@@ -87,9 +119,58 @@ void buddy_init() {
     uint32_t ARDSCount = *((uint32_t*)0x500);
     ARDS* ards_list = (ARDS*)0x580;
 
+    uint64_t _base, _alignValue;
+    uint64_t _pages, _endAddress;
     for (uint32_t i = 0;i < ARDSCount;i++) {
-        //TODO init
+        //usable ram
+        if (ards_list[i].type == 1) {
+            _base = ards_list[i].base;
+            _alignValue = _base % PAGE_SIZE;
+
+            //align the base
+            if (_alignValue) {
+                _base = _base - _alignValue + PAGE_SIZE;
+                _pages = (ards_list[i].length - _alignValue) / PAGE_SIZE;
+            }
+            else _pages = ards_list[i].length / PAGE_SIZE;
+
+            _alignValue = _base + _pages * PAGE_SIZE;
+            //ZONE_DMA
+            if (_alignValue < ZONE_DMA_LIMIT)
+                initBuddyChunk(_base, _pages, &Zone_DMA);
+            //ZONE_DMA32
+            else if (_alignValue < ZONE_DMA32_LIMIT) {
+                if (_base < ZONE_DMA_LIMIT) {
+                    uint64_t xpage = (ZONE_DMA_LIMIT - _base) / PAGE_SIZE;
+                    _base = initBuddyChunk(_base, xpage, &Zone_DMA);
+                    _pages -= xpage;
+                }
+
+                initBuddyChunk(_base, _pages, &Zone_DMA32);
+            }
+            //ZONE_NORMAL
+            else {
+                if (_base < ZONE_DMA32_LIMIT) {
+                    uint64_t xpages;
+                    if (_base < ZONE_DMA_LIMIT) {
+                        xpages = (ZONE_DMA_LIMIT - _base) / PAGE_SIZE;
+                        _base = initBuddyChunk(_base, xpages, &Zone_DMA);
+                        _pages -= xpages;
+                    }
+
+                    xpages = (ZONE_DMA32_LIMIT - _base) / PAGE_SIZE;
+                    _base = initBuddyChunk(_base, xpages, &Zone_DMA32);
+
+                    _pages -= xpages;
+                }
+
+                initBuddyChunk(_base, _pages, &Zone_Normal);
+            }
+
+        }
     }
 
+
+    //TODO remove memory chunck which used by kernel
     buddy_init_complete = true;
 }

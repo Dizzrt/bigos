@@ -9,6 +9,9 @@
 #define BUDDY_ORDER_CNT BUDDY_MAX_ORDER+1
 #define BUDDY_MAX_PAGES 1<<BUDDY_MAX_ORDER
 
+#define ZONE_DMA_LIMIT 0x1000000
+#define ZONE_DMA32_LIMIT 0x100000000
+
 //Address Range Descriptor Structure
 struct ARDS
 {
@@ -26,7 +29,6 @@ struct ARDS
     uint32_t ACPI_exAttributes;
 };
 
-
 //physical memory segment
 struct MSeg
 {
@@ -34,6 +36,9 @@ struct MSeg
     uint64_t pages;
 
     void* Zone_ptr;
+
+    MSeg(uint64_t _base, uint64_t _pages, void* ptr)
+        : base(_base), pages(_pages), Zone_ptr(ptr) {}
 };
 
 //virtual memory segment
@@ -45,7 +50,12 @@ struct VMSeg
     klist<MSeg*> pm_segs; //physical memory segments
 };
 
+struct Zone
+{
+    uint64_t free_pages;
+    uint64_t total_pages;
 
-
+    klist<MSeg*> Segs[BUDDY_ORDER_CNT];
+};
 
 #endif //__BIG_MEMDEF_H__

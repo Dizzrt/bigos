@@ -8,13 +8,9 @@
 #define GFP_DMA32 0b10u
 #define GFP_NORMAL 0b100u
 
-struct Zone
-{
-    uint64_t free_pages;
-    uint64_t total_pages;
-
-    klist<MSeg*> Segs[BUDDY_ORDER_CNT];
-};
+extern uint64_t totalMemory;
+extern uint64_t UsableMemory;
+extern uint64_t usedMemory;
 
 extern Zone Zone_DMA;
 extern Zone Zone_DMA32;
