@@ -238,4 +238,5 @@ void buddy_init() {
         }
     }
 
+    buddy_init_complete = true;
 }
