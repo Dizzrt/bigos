@@ -137,13 +137,13 @@ L6: #kernel found
     movl $0x200,%ecx
     xor %edx,%edx
     movl 0x1c(%di),%eax
+    movl %eax,(0x504) #save kernel size for memory init
     divl %ecx
     cmpl $0,%edx
     je L7
     incl %eax
 L7: #no ramainder
     movl %eax,(KernelSize) # serctors
-    movl %eax,(0x504)
 
     #calcutate LBA of kernel
     movw 0x14(%di),%ax
@@ -177,6 +177,7 @@ protected:
     movw $0x10,%ax
     movw %ax,%ds
     
+    # count the number of pages which used by kernel
     xor %edx,%edx
     movl (KernelSize),%eax
     movl $0x08,%ecx
@@ -209,12 +210,6 @@ L10:
     
     movl $0x0000a03f,(0x9ff0) #pdpt[510] => pd
     movl $0x00000000,(0x9ff4)
-
-    # movl $0x0000903f,(0x8800) #pml4[256]
-    # movl $0x00000000,(0x8804)
-
-    # movl $0x0000a03f,(0x9000) #pdpt[0]
-    # movl $0x00000000,(0x9004)
     
     #pd
     movl %eax,%ecx
