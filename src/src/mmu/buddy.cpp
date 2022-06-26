@@ -171,6 +171,71 @@ void buddy_init() {
     }
 
 
-    //TODO remove memory chunck which used by kernel
-    buddy_init_complete = true;
+    uint32_t kSize = *((uint32_t*)0x504);
+
+    //how many pages used by kernel
+    kSize = kSize / PAGE_SIZE + (kSize % PAGE_SIZE == 0 ? 0 : 1);
+
+    //TODO load kernel in high memory
+    uint64_t kstart = 0x200000;
+    uint64_t kend = kstart + kSize * PAGE_SIZE;
+
+    //remove kernel used pages
+    uint64_t xpages;
+    klist<MSeg*>::iterator iter = Zone_DMA.Segs->begin();
+    while (iter != Zone_DMA.Segs->end()) {
+        MSeg* seg = *iter;
+        uint64_t temp = seg->base + seg->pages * PAGE_SIZE;
+
+        if (temp < kstart) {
+            iter++;
+            continue;
+        }
+
+        if (seg->base < kstart) {
+            if (temp < kend) {
+                xpages = (temp - kstart) / PAGE_SIZE;
+                seg->pages -= xpages;
+                kstart = temp;
+                iter++;
+            }
+            else if (temp == kend) {
+                seg->pages -= kSize;
+                break;
+            }
+            else {
+                seg->pages = (kstart - seg->base) / PAGE_SIZE;
+
+                MSeg* _seg = nullptr;//TODO alloc
+                linked_container<MSeg*>* lc = nullptr;//TODO alloc
+
+                new (_seg) MSeg(kend, (temp - kend) / PAGE_SIZE, &Zone_DMA);
+                new(lc) linked_container<MSeg*>(_seg);
+
+                Zone_DMA.Segs->__list_insert(lc, iter);
+                break;
+            }
+        }
+        else if (seg->base == kstart) {
+            if (temp < kend) {
+                kstart = temp;
+                iter++;
+
+                Zone_DMA.Segs->__list_remove(seg);
+                //TODO free
+            }
+            else if (temp == kend) {
+                Zone_DMA.Segs->__list_remove(iter);
+                //TODO free
+                break;
+            }
+            else {
+                seg->base = kend;
+                seg->pages = (temp - kend) / PAGE_SIZE;
+
+                break;
+            }
+        }
+    }
+
 }
