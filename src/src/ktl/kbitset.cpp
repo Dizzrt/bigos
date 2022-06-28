@@ -1,31 +1,31 @@
 #include "ktl\kbitset.h"
 
-void kbitset::set(uint64_t _i) {
-    uint8_t* bp = _bp + _i / 8;
-    uint8_t mask = 0x80 >> (_i % 8);
+void kbitset::set(uint32_t pos) {
+    uint8_t* bp = _bp + pos / 8;
+    uint8_t mask = 0x80 >> (pos % 8);
 
     *bp |= mask;
     _fc--;
 }
 
-void kbitset::reset(uint64_t _i) {
-    uint8_t* bp = _bp + _i / 8;
-    uint8_t mask = 0x80 >> (_i % 8);
+void kbitset::reset(uint32_t pos) {
+    uint8_t* bp = _bp + pos / 8;
+    uint8_t mask = 0x80 >> (pos % 8);
 
     *bp &= ~mask;
     _fc++;
 }
 
-void kbitset::set(uint64_t begin, uint64_t size) {
-    uint8_t* bp = _bp + begin / 8;
+void kbitset::set(uint32_t pos, uint32_t len) {
+    uint8_t* bp = _bp + pos / 8;
 
-    uint8_t _s = begin % 8;
+    uint8_t _s = pos % 8;
     uint8_t mask = 0x80 >> _s;
 
     _s = 8 - _s;
-    if (size <= _s)
-        _s = size;
-    size -= _s;
+    if (len <= _s)
+        _s = len;
+    len -= _s;
 
     while (_s--) {
         *bp |= mask;
@@ -33,25 +33,25 @@ void kbitset::set(uint64_t begin, uint64_t size) {
     }
     bp++;
 
-    _s = size / 8;
+    _s = len / 8;
     while (_s--) {
         *bp = 0xff;
         bp++;
     }
 
-    _fc -= size;
+    _fc -= len;
 }
 
-void kbitset::reset(uint64_t begin, uint64_t size) {
-    uint8_t* bp = _bp + begin / 8;
+void kbitset::reset(uint32_t pos, uint32_t len) {
+    uint8_t* bp = _bp + pos / 8;
 
-    uint8_t _s = begin % 8;
+    uint8_t _s = pos % 8;
     uint8_t mask = 0x80 >> _s;
 
     _s = 8 - _s;
-    if (size <= _s)
-        _s = size;
-    size -= _s;
+    if (len <= _s)
+        _s = len;
+    len -= _s;
 
     while (_s--) {
         *bp &= ~mask;
@@ -59,20 +59,20 @@ void kbitset::reset(uint64_t begin, uint64_t size) {
     }
     bp++;
 
-    _s = size / 8;
+    _s = len / 8;
     while (_s--) {
         *bp = 0;
         bp++;
     }
 
-    _fc += size;
+    _fc += len;
 }
 
-inline bool kbitset::isFree(uint64_t pos) {
+inline bool kbitset::isFree(uint32_t pos) {
     return !(_bp[pos / 8] >> (8 - pos % 8 - 1) & 1);
 }
 
-uint64_t kbitset::scan(uint64_t len) {
+uint32_t kbitset::scan(uint32_t len) {
     uint16_t* p_16;
     uint32_t* p_32;
     uint64_t* p_64;
@@ -112,7 +112,7 @@ uint64_t kbitset::scan(uint64_t len) {
     return -1;
 }
 
-inline void kbitset::init(uint8_t* bp, uint64_t len) {
+inline void kbitset::__init__(uint8_t* bp, uint32_t len) {
     _bp = bp;
     _fc = _len = len;
 }
