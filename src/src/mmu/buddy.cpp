@@ -13,15 +13,6 @@ enum TZone { NORMAL, DMA32, DMA };  //target Zone
 
 static Zone* Zones[3] = { &Zone_Normal,&Zone_DMA32,&Zone_DMA };
 
-static uint32_t buddyChunkPages[BUDDY_ORDER_CNT] = {
-    1,2,4,8,16,32,64,128,256,512,1024
-};
-
-static uint64_t buddyChunkSize[BUDDY_ORDER_CNT] = {
-    1 * PAGE_SIZE,2 * PAGE_SIZE,4 * PAGE_SIZE,8 * PAGE_SIZE,16 * PAGE_SIZE,
-    32 * PAGE_SIZE,64 * PAGE_SIZE,128 * PAGE_SIZE,256 * PAGE_SIZE,512 * PAGE_SIZE,1024 * PAGE_SIZE
-};
-
 MSeg* alloc_pages(uint32_t gfp_flags, uint32_t pages) {
     if (pages > BUDDY_MAX_PAGES) {
         //TODO give a hint 
