@@ -6,7 +6,6 @@
 #include "ktl\klist.h"
 
 
-
 //slab flags
 #define SLAB_PERMANENT 0x00000001
 //slab flags end
@@ -14,11 +13,6 @@
 //cache flags
 #define CACHE_NOEMPTY 0x00000001
 //cache flags end
-
-#define LONG_ALIGN(SIZE) \
-  ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
-
-#pragma endregion
 
 class Cache; // forward declaration
 class Slab :public kbitset
@@ -37,9 +31,8 @@ public:
     void* alloc_slab(); //return a obj's address
     void free_slab(const void* p);
 
-    Slab() = default;
     // bp_pointer == bitmap pointer
-    Slab(uint32_t SlabOrder, uint32_t ObjCnt, uint64_t StepSize, Cache* _Cache = nullptr, uint32_t Flags = 0, uint64_t Base = 0, uint8_t* Bp_pointer = nullptr);
+    Slab(uint32_t SlabOrder, uint32_t ObjCnt, uint64_t StepSize, uint32_t Flags = 0, uint64_t Base = 0, uint8_t* Bp_pointer = nullptr);
 
     ~Slab() = default;
 };
@@ -76,6 +69,7 @@ public:
 
     //SSC => static slab count
     Cache(uint32_t ObjSize, uint32_t Flags, uint32_t SSC, ...);
+    Cache(uint32_t ObjSize, uint32_t Flags, uint32_t SlabOrder, uint32_t SSC, ...);
 
     bool operator <(const Cache& cache) { return this->objSize < cache.objSize; }
 };

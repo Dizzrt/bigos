@@ -116,11 +116,29 @@ Cache::Cache(uint32_t ObjSize, uint32_t Flags, uint32_t SSC, ...)
     va_end(vlist);
 }
 
+Cache::Cache(uint32_t ObjSize, uint32_t Flags, uint32_t SlabOrder, uint32_t SSC, ...)
+    : objSize(ObjSize), flags(Flags), size(LONG_ALIGN(ObjSize + SHSIZE)),
+    slabOrder(SlabOrder), ops(buddyChunkSize[slabOrder] / size)
+{
+    va_list vlist;
+    va_start(vlist, SSC);
+
+    while (SSC--)
+    {
+        linked_container<Slab*>* _lc = va_arg(vlist, linked_container<Slab*>*);
+        empty.__list_insert(_lc);
+
+        _lc->val->cache = this;
+    }
+
+    va_end(vlist);
+}
+
 //TODO adjust
-Slab::Slab(uint32_t SlabOrder, uint32_t ObjCnt, uint64_t StepSize, Cache* _Cache,
+Slab::Slab(uint32_t SlabOrder, uint32_t ObjCnt, uint64_t StepSize,
     uint32_t Flags, uint64_t Base, uint8_t* Bp_pointer)
     : kbitset(Bp_pointer == nullptr ? nullptr/*TODO alloc Bp_pointer*/ : Bp_pointer, ObjCnt),
-    base(Base == 0 ? 0/*TODO alloc base*/ : Base), cache(_Cache), flags(Flags), stepSize(StepSize) {}
+    base(Base == 0 ? 0/*TODO alloc base*/ : Base), flags(Flags), stepSize(StepSize) {}
 
 void* Slab::alloc_slab() {
     uint64_t offset = scan(1);
