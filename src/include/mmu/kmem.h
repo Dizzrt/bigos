@@ -1,29 +1,9 @@
 #ifndef __BIG_KMEM_H__
 #define __BIG_KMEM_H__
 
-#include "buddy.h"
 #include "slab.h"
-
-// //how many objs which size is OBJSIZE in a slab with a capacity of CAPACITY
-// #define SLAB_OBJ_CNT(CAPACITY,OBJSIZE) \
-//     CAPACITY / LONG_ALIGN(OBJSIZE + SHSIZE)
-
-// //BP => bitmap
-// #define SLAB_BP_SIZE(CAPACITY,OBJSIZE) \
-//     SLAB_OBJ_CNT(CAPACITY,OBJSIZE) / 8 + (SLAB_OBJ_CNT(CAPACITY,OBJSIZE) % 8 == 0 ? 0 : 1)
-
-// #define STATIC_SLAB(NAME,FLAGS,OBJSIZE,PAGECNT)                                 \
-//     static uint8_t __slabPage_##NAME[0x1000*PAGECNT];                           \
-//     static uint8_t __slabBP_##NAME[SLAB_BP_SIZE(0x1000*PAGECNT,OBJSIZE)];       \
-//     static Slab __slab_##NAME(FLAGS,                                            \
-//     SLAB_OBJ_CNT(0x1000 * PAGECNT, OBJSIZE),                                    \
-//     LONG_ALIGN(OBJSIZE), (uint64_t)__slabPage_##NAME, __slabBP_##NAME);         \
-//     static linked_container<Slab*> __slabLC_##NAME(&__slab_##NAME);
-
-// //SSCNT => Static Slab cnt
-// #define STATIC_CACHE(NAME,FLAGS,OBJSIZE,SSIZE,SSCNT,...)                        \
-//     Cache Cache_##NAME(FLAGS,OBJSIZE,SSIZE,SSCNT,##__VA_ARGS__);                \
-//     static linked_container<Cache*> cacheLC_##NAME(&Cache_##NAME);
+#include "buddy.h"
+#include "ktl\pair.h"
 
 #define CACHE_STATIC(NAME,OBJSIZE,FLAGS,SLABORDER,SSC,...)          \
     Cache cache_##NAME(OBJSIZE,FLAGS,SLABORDER,SSC,##__VA_ARGS__);  \
@@ -43,9 +23,60 @@
     ,FLAGS,(uint64_t)__slabMem_##NAME,__slabBP_##NAME);                                                 \
     static linked_container<Slab*> __slabLC_##NAME(&__slab_##NAME);
 
+#define SLABDELTA(SLABORDER,OBJSIZE)                            \
+    (buddyChunkSize[SLABORDER]-(buddyChunkSize[SLABORDER]       \
+    /LONG_ALIGN(OBJSIZE+SHSIZE)*LONG_ALIGN(OBJSIZE+SHSIZE)))
 
-//initialize slab and buddy
+#define __SLAB_ORDER_COM_1(OBJSIZE)                               \
+    SLABDELTA(1,OBJSIZE)<SLABDELTA(0,OBJSIZE)?                  \
+    (SLABDELTA(1,OBJSIZE)<<4)+1:(SLABDELTA(0,OBJSIZE)<<4)+1     \
+
+#define __SLAB_ORDER_COM_2(OBJSIZE)                               \
+    SLABDELTA(2,OBJSIZE)<(__SLAB_ORDER_COM_1(OBJSIZE))>>4?        \
+    (SLABDELTA(2,OBJSIZE)<<4)+2:__SLAB_ORDER_COM_1(OBJSIZE)       \
+
+#define __SLAB_ORDER_COM_3(OBJSIZE)                               \
+    SLABDELTA(3,OBJSIZE)<(__SLAB_ORDER_COM_2(OBJSIZE))>>4?        \
+    (SLABDELTA(3,OBJSIZE)<<4)+3:__SLAB_ORDER_COM_2(OBJSIZE)       \
+
+#define __SLAB_ORDER_COM_4(OBJSIZE)                               \
+    SLABDELTA(4,OBJSIZE)<(__SLAB_ORDER_COM_3(OBJSIZE))>>4?        \
+    (SLABDELTA(4,OBJSIZE)<<4)+4:__SLAB_ORDER_COM_3(OBJSIZE)       \
+
+#define __SLAB_ORDER_COM_5(OBJSIZE)                               \
+    SLABDELTA(5,OBJSIZE)<(__SLAB_ORDER_COM_4(OBJSIZE))>>4?        \
+    (SLABDELTA(5,OBJSIZE)<<4)+5:__SLAB_ORDER_COM_4(OBJSIZE)       \
+
+#define __SLAB_ORDER_COM_6(OBJSIZE)                               \
+    SLABDELTA(6,OBJSIZE)<(__SLAB_ORDER_COM_5(OBJSIZE))>>4?        \
+    (SLABDELTA(6,OBJSIZE)<<4)+6:__SLAB_ORDER_COM_5(OBJSIZE)       \
+
+#define __SLAB_ORDER_COM_7(OBJSIZE)                               \
+    SLABDELTA(7,OBJSIZE)<(__SLAB_ORDER_COM_6(OBJSIZE))>>4?        \
+    (SLABDELTA(7,OBJSIZE)<<4)+7:__SLAB_ORDER_COM_6(OBJSIZE)       \
+
+#define __SLAB_ORDER_COM_8(OBJSIZE)                               \
+    SLABDELTA(8,OBJSIZE)<(__SLAB_ORDER_COM_7(OBJSIZE))>>4?        \
+    (SLABDELTA(8,OBJSIZE)<<4)+8:__SLAB_ORDER_COM_7(OBJSIZE)       \
+
+#define __SLAB_ORDER_COM_9(OBJSIZE)                               \
+    SLABDELTA(9,OBJSIZE)<(__SLAB_ORDER_COM_8(OBJSIZE))>>4?        \
+    (SLABDELTA(9,OBJSIZE)<<4)+9:__SLAB_ORDER_COM_8(OBJSIZE)       \
+
+#define __SLAB_ORDER_COM_10(OBJSIZE)                              \
+    SLABDELTA(10,OBJSIZE)<(__SLAB_ORDER_COM_9(OBJSIZE))>>4?       \
+    (SLABDELTA(10,OBJSIZE)<<4)+10:__SLAB_ORDER_COM_9(OBJSIZE)     \
+
+#define SLAB_ORDER(OBJSIZE)     \
+    (__SLAB_ORDER_COM_10(OBJSIZE))&0xf
+
+
+
+
+    //initialize slab and buddy
 extern void kmem_init();
 
+
+void* test();
 
 #endif //__BIG_KMEM_H__
