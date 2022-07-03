@@ -12,11 +12,14 @@
 #define ZONE_DMA_LIMIT 0x1000000
 #define ZONE_DMA32_LIMIT 0x100000000
 
-uint32_t buddyChunkPages[BUDDY_ORDER_CNT] = {
+#define LONG_ALIGN(SIZE) \
+  ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
+
+constexpr uint32_t buddyChunkPages[BUDDY_ORDER_CNT] = {
    1,2,4,8,16,32,64,128,256,512,1024
 };
 
-uint64_t buddyChunkSize[BUDDY_ORDER_CNT] = {
+constexpr uint64_t buddyChunkSize[BUDDY_ORDER_CNT] = {
    1 * PAGE_SIZE,2 * PAGE_SIZE,4 * PAGE_SIZE,8 * PAGE_SIZE,16 * PAGE_SIZE,
    32 * PAGE_SIZE,64 * PAGE_SIZE,128 * PAGE_SIZE,256 * PAGE_SIZE,512 * PAGE_SIZE,1024 * PAGE_SIZE
 };
