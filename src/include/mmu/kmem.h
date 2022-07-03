@@ -5,7 +5,11 @@
 #include "buddy.h"
 #include "ktl\pair.h"
 
-#define CACHE_STATIC(NAME,OBJSIZE,FLAGS,SLABORDER,SSC,...)          \
+#define CACHE_STATIC(NAME,OBJSIZE,FLAGS,SSC,...)          \
+    Cache cache_##NAME(OBJSIZE,FLAGS,SLAB_ORDER(OBJSIZE),SSC,##__VA_ARGS__);  \
+    static linked_container<Cache*> cacheLC_##NAME(&cache_##NAME);
+
+#define CACHE_ORDER_STATIC(NAME,OBJSIZE,FLAGS,SLABORDER,SSC,...)          \
     Cache cache_##NAME(OBJSIZE,FLAGS,SLABORDER,SSC,##__VA_ARGS__);  \
     static linked_container<Cache*> cacheLC_##NAME(&cache_##NAME);
 
@@ -16,7 +20,14 @@
 #define SLAB_BP_SIZE(SLABORDER,OBJSIZE)     \
     SLAB_OBJ_CNT(SLABORDER,OBJSIZE) / 8 + (SLAB_OBJ_CNT(SLABORDER,OBJSIZE) % 8 == 0 ? 0 : 1)
 
-#define SLAB_STATIC(NAME,SLABORDER,OBJSIZE,FLAGS)                                                 \
+#define SLAB_STATIC(NAME,OBJSIZE,FLAGS)                                                 \
+    static uint8_t __slabMem_##NAME[buddyChunkSize[SLAB_ORDER(OBJSIZE)]];                                         \
+    static uint8_t __slabBP_##NAME[SLAB_BP_SIZE(SLAB_ORDER(OBJSIZE),OBJSIZE)];                                    \
+    static Slab __slab_##NAME(SLAB_ORDER(OBJSIZE),SLAB_OBJ_CNT(SLAB_ORDER(OBJSIZE),OBJSIZE),LONG_ALIGN(OBJSIZE+SHSIZE)      \
+    ,FLAGS,(uint64_t)__slabMem_##NAME,__slabBP_##NAME);                                                 \
+    static linked_container<Slab*> __slabLC_##NAME(&__slab_##NAME);
+
+#define SLAB_ORDER_STATIC(NAME,SLABORDER,OBJSIZE,FLAGS)                                                 \
     static uint8_t __slabMem_##NAME[buddyChunkSize[SLABORDER]];                                         \
     static uint8_t __slabBP_##NAME[SLAB_BP_SIZE(SLABORDER,OBJSIZE)];                                    \
     static Slab __slab_##NAME(SLABORDER,SLAB_OBJ_CNT(SLABORDER,OBJSIZE),LONG_ALIGN(OBJSIZE+SHSIZE)      \
