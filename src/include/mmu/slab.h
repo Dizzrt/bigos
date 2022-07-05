@@ -5,15 +5,6 @@
 #include "ktl\kbitset.h"
 #include "ktl\klist.h"
 
-
-//slab flags
-#define SLAB_PERMANENT 0x00000001
-//slab flags end
-
-//cache flags
-#define CACHE_NOEMPTY 0x00000001
-//cache flags end
-
 class Cache; // forward declaration
 class Slab :public kbitset
 {
@@ -32,7 +23,9 @@ public:
     void free_slab(const void* p);
 
     // bp_pointer == bitmap pointer
-    Slab(uint32_t SlabOrder, uint32_t ObjCnt, uint64_t StepSize, uint32_t Flags = 0, uint64_t Base = 0, uint8_t* Bp_pointer = nullptr);
+    Slab(uint32_t ObjCnt, uint64_t StepSize, uint32_t Flags, uint64_t Base, uint8_t* Bp_pointer);
+    Slab(uint32_t SlabOrder, uint32_t ObjCnt, uint64_t StepSize, uint32_t Flags, uint64_t Base, uint8_t* Bp_pointer);
+
 
     ~Slab() = default;
 };
@@ -48,6 +41,8 @@ struct SlabHeader
 #define SH_MAGIC 0x50b7ff2785ff7b22
 
 class Cache {
+private:
+    void NewSlab(klist<Slab*>& list);
 public:
     klist<Slab*> full;
     klist<Slab*> empty;

@@ -1,6 +1,12 @@
+#include "mmu\mflags.h"
 #include "mmu\slab.h"
+#include "kassert.h"
 #include "stdarg.h"
 #include "new.h"
+
+extern Slab* kmemAlloc_slab();
+extern Cache* kmemAlloc_Cache();
+extern void* kmemAlloc_lcPonter();
 
 void* ChacheChain::alloc(uint32_t Size) {
     Cache* c = nullptr;
@@ -20,9 +26,10 @@ void* ChacheChain::alloc(uint32_t Size) {
 }
 
 Cache* ChacheChain::__create_cache__(uint32_t Flags, uint32_t ObjSize) {
-    //TODO if(ObjSize>slab_objsize_limit)
+    KAssert(ObjSize <= SLAB_OBJSIZE_LIMIT,
+        "new cache's objSize must below SLAB_OBJSIZE_LIMIT");
 
-    Cache* c = nullptr;//TODO alloc
+    Cache* c = kmemAlloc_Cache();
     new (c) Cache(ObjSize, Flags, 0);
 
     __insert_cache__(c);
@@ -51,11 +58,24 @@ void ChacheChain::__insert_cache__(linked_container<Cache*>* _lcache) {
 }
 
 void ChacheChain::__insert_cache__(Cache* _cache) {
-    linked_container<Cache*>* _lc = nullptr;//TODO alloc
+    linked_container<Cache*>* _lc =
+        (linked_container<Cache*>*)kmemAlloc_lcPonter();
+
     new (_lc) linked_container<Cache*>(_cache);
 
     __insert_cache__(_lc);
     return;
+}
+
+void Cache::NewSlab(klist<Slab*>& list) {
+    Slab* _slab = kmemAlloc_slab();
+    linked_container<Slab*>* _lc =
+        (linked_container<Slab*>*)kmemAlloc_lcPonter();
+
+    new (_slab) Slab(slabOrder, ops, size, SLAB_DEFAULT, 0, nullptr);
+    new (_lc) linked_container<Slab*>(_slab);
+
+    list.__list_insert(_lc);
 }
 
 void* Cache::alloc_cache() {
@@ -64,15 +84,17 @@ void* Cache::alloc_cache() {
             auto iter = empty.begin();
             empty.__list_remove(iter);
             partital.__list_insert(iter);
+
+            if (flags & __CACHE_NONEMPTY
+                && empty.empty()) {
+
+                NewSlab(empty);
+            }
         }
         else {
-            //TODO new slab
+            NewSlab(empty);
+            NewSlab(partital);
         }
-
-        //TODO check flags here
-        // if (flags & CACHE_NOEMPTY && empty.empty()) {
-        //     //TODO new slab to empty
-        // }
     }
 
     //partial list has at least one slab
