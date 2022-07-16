@@ -16,11 +16,13 @@ public:
 
     uint64_t maxPages_mapped;
 
-    void* alloc(uint32_t gfp_flags = 0, uint32_t pages = 1);
-    void* alloc(uint32_t pages = 1);
+    void* alloc(uint32_t pages = 1, uint32_t gfp_flags = 0);
 
     MemPool(/* args */) = default;
     ~MemPool() = default;
 };
+
+void kmempool_init();
+
 
 #endif //__BIG_MEMPOOL_H__

@@ -65,14 +65,12 @@ public:
     //SSC => static slab count
     Cache(uint32_t ObjSize, uint32_t Flags, uint32_t SSC, ...);
     Cache(uint32_t ObjSize, uint32_t Flags, uint32_t SlabOrder, uint32_t SSC, ...);
-
-    bool operator <(const Cache& cache) { return this->objSize < cache.objSize; }
 };
 
 class ChacheChain {
 private:
-    klist<Cache*> cache_list;
 public:
+    klist<Cache*> cache_list;
     ChacheChain() = default;
     ~ChacheChain() = default;
 

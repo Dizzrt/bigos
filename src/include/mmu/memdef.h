@@ -12,16 +12,6 @@
 
 #define SLAB_OBJSIZE_LIMIT 4096 //TODO adjust
 
-#define KPOOL_VMALLOC_START 0xffffc90000000000
-#define KPOOL_VMALLOC_END 0xffffe90000000000
-#define KPOOL_VMALLOC_PAGES \
-    (KPOOL_VMALLOC_END-KPOOL_VMALLOC_START)/PAGE_SIZE
-
-#define KPOOL_CODE_START 0xffffffff80100000
-#define KPOOL_CODE_END 0xffffffff80200000
-#define KPOOL_CODE_PAGES    \
-    (KPOOL_CODE_END-KPOOL_CODE_START)/PAGE_SIZE
-
 #define ZONE_DMA_LIMIT 0x1000000
 #define ZONE_DMA32_LIMIT 0x100000000
 
@@ -72,11 +62,13 @@ struct VMSeg
     uint64_t base;
     uint64_t pages;
 
+    uint32_t flags;
+
     klist<MSeg*> pm_segs; //physical memory segments
 
     VMSeg() = default;
-    VMSeg(uint64_t Base, uint64_t Pages)
-        :base(Base), pages(Pages) {}
+    VMSeg(uint64_t Base, uint64_t Pages, uint32_t Flags)
+        :base(Base), pages(Pages), flags(Flags) {}
 };
 
 struct Zone

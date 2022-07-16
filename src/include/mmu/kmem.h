@@ -66,8 +66,8 @@ struct __Slab_Order<ObjSize, _1, _0>
 #define SLAB_ORDER(OBJSIZE)     \
     (__Slab_Order<OBJSIZE,10,SLAB_ORDERS>::_order)
 
+void* Kmem_slab_alloc(uint32_t size);
 void* Kmem_page_alloc(uint32_t pages);
-
 
 extern void kmem_init();
 

@@ -2,7 +2,11 @@
 #include "mmu\buddy.h"
 #include "new.h"
 
-void* MemPool::alloc(uint32_t gfp_flags, uint32_t pages) {
+extern VMSeg* kmemAlloc_vmseg();
+extern MSeg* kmemAlloc_mseg();
+extern void* kmemAlloc_lcPonter();
+
+void* MemPool::alloc(uint32_t pages, uint32_t gfp_flags) {
     void* ret = nullptr;
     //TODO alloc ret
 
@@ -97,7 +101,32 @@ void* MemPool::alloc(uint32_t gfp_flags, uint32_t pages) {
     return ret;
 }
 
-void* MemPool::alloc(uint32_t pages) {
-    //TODO default flags
-    return alloc(0, pages);
+//POOL_S_x => the start adress of x
+//POOL_E_x => the end adress of x
+//POOL_S_x => how many pages in x
+
+#define POOL_S_NORMAL 0xffff880000000000
+#define POOL_E_NORMAL 0xffffc80000000000
+#define POOL_P_NORMAL \
+    (POOL_E_NORMAL-POOL_S_NORMAL)/PAGE_SIZE
+
+#define getlcv(VMSEGP,LCP) \
+    LCP = (linked_container<VMSeg*>*)kmemAlloc_lcPonter(); \
+    new (LCP) linked_container<VMSeg*> (VMSEGP)
+
+extern MemPool kmempool;
+void kmempool_init() {
+    //unmapped vmem
+    // VMSeg* _code = kmemAlloc_vmseg();
+    // VMSeg* _pages = kmemAlloc_vmseg();
+    // VMSeg* _vmalloc = kmemAlloc_vmseg();
+    linked_container<VMSeg*>* _lc;
+
+    VMSeg* _normal = kmemAlloc_vmseg();
+
+    new (_normal) VMSeg(POOL_S_NORMAL, POOL_P_NORMAL, 0);
+    getlcv(_normal, _lc);
+
+    kmempool.unmapped_VMSeg.__list_insert(_lc);
+
 }

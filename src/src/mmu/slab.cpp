@@ -43,9 +43,11 @@ void ChacheChain::__insert_cache__(linked_container<Cache*>* _lcache) {
     auto iter = cache_list.begin();
     while (true)
     {
-        if (iter == cache_list.end())
+        if (iter == cache_list.end()) {
             cache_list.__list_insert(_lcache);
-        else if ((*iter) < t) {
+            break;
+        }
+        else if ((*iter)->objSize < t->objSize) {
             iter++;
             continue;
         }

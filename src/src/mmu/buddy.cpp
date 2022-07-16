@@ -9,6 +9,11 @@ Zone Zone_DMA;
 Zone Zone_DMA32;
 Zone Zone_Normal;
 
+extern MSeg* kmemAlloc_mseg();
+extern void* kmemAlloc_lcPonter();
+
+extern void slab_free(const void* p);
+
 enum TZone { NORMAL, DMA32, DMA };  //target Zone
 
 static Zone* Zones[3] = { &Zone_Normal,&Zone_DMA32,&Zone_DMA };
@@ -40,7 +45,7 @@ MSeg* alloc_pages(uint32_t gfp_flags, uint32_t pages) {
     }
 
     if (Zones[tzone]->free_pages < pages) {
-        //TODO have no enough memory
+        //TODO have no enough continue memory
     }
 
     MSeg* ret;
@@ -66,6 +71,15 @@ MSeg* alloc_pages(uint32_t gfp_flags, uint32_t pages) {
             while (xpages >= buddyChunkPages[t])
             {
                 //TODO new chunck
+                MSeg* _seg = kmemAlloc_mseg();
+                new (_seg) MSeg(tbase, buddyChunkPages[t], _zone);
+
+                linked_container<MSeg*>* _lc =
+                    (linked_container<MSeg*> *)kmemAlloc_lcPonter();
+
+                new (_lc) linked_container<MSeg*>(_seg);
+
+
 
                 xpages -= buddyChunkPages[t];
                 tbase += 0x1000 * buddyChunkPages[t];
@@ -81,16 +95,19 @@ MSeg* alloc_page(uint32_t gfp_flags) {
 }
 
 static uint64_t initBuddyChunk(uint64_t base, uint64_t pages, Zone* zone) {
-    for (uint32_t i = BUDDY_MAX_ORDER;i >= 0;i--) {
+    for (int32_t i = BUDDY_MAX_ORDER;i >= 0;i--) {
         while (pages >= buddyChunkPages[i])
         {
-            MSeg* seg = nullptr;//TODO alloc
+            MSeg* seg = kmemAlloc_mseg();
             new (seg) MSeg(base, buddyChunkPages[i], zone);
 
-            linked_container<MSeg*>* lc = nullptr;//TODO alloc
+            linked_container<MSeg*>* lc =
+                (linked_container<MSeg*>*)kmemAlloc_lcPonter();
+
             new (lc) linked_container<MSeg*>(seg);
 
             zone->Segs->__list_insert(lc);
+            zone->total_pages += buddyChunkPages[i];
 
             base += buddyChunkSize[i];
             pages -= buddyChunkPages[i];
@@ -99,6 +116,7 @@ static uint64_t initBuddyChunk(uint64_t base, uint64_t pages, Zone* zone) {
         }
     }
 
+    zone->free_pages = zone->total_pages;
     return base;
 }
 
@@ -126,6 +144,8 @@ void buddy_init() {
             else _pages = ards_list[i].length / PAGE_SIZE;
 
             _alignValue = _base + _pages * PAGE_SIZE;
+
+
             //ZONE_DMA
             if (_alignValue < ZONE_DMA_LIMIT)
                 initBuddyChunk(_base, _pages, &Zone_DMA);
@@ -136,17 +156,19 @@ void buddy_init() {
                     _base = initBuddyChunk(_base, xpage, &Zone_DMA);
                     _pages -= xpage;
                 }
-
                 initBuddyChunk(_base, _pages, &Zone_DMA32);
             }
             //ZONE_NORMAL
             else {
                 if (_base < ZONE_DMA32_LIMIT) {
                     uint64_t xpages;
+
                     if (_base < ZONE_DMA_LIMIT) {
+
                         xpages = (ZONE_DMA_LIMIT - _base) / PAGE_SIZE;
                         _base = initBuddyChunk(_base, xpages, &Zone_DMA);
                         _pages -= xpages;
+
                     }
 
                     xpages = (ZONE_DMA32_LIMIT - _base) / PAGE_SIZE;
@@ -154,16 +176,13 @@ void buddy_init() {
 
                     _pages -= xpages;
                 }
-
                 initBuddyChunk(_base, _pages, &Zone_Normal);
-            }
 
+            }
         }
     }
 
-
     uint32_t kSize = *((uint32_t*)0x504);
-
     //how many pages used by kernel
     kSize = kSize / PAGE_SIZE + (kSize % PAGE_SIZE == 0 ? 0 : 1);
 
@@ -172,62 +191,32 @@ void buddy_init() {
     uint64_t kend = kstart + kSize * PAGE_SIZE;
 
     //remove kernel used pages
-    uint64_t xpages;
-    klist<MSeg*>::iterator iter = Zone_DMA.Segs->begin();
+    auto iter = Zone_DMA.Segs->begin();
     while (iter != Zone_DMA.Segs->end()) {
         MSeg* seg = *iter;
-        uint64_t temp = seg->base + seg->pages * PAGE_SIZE;
 
-        if (temp < kstart) {
+        if (seg->base >= kend) {
             iter++;
             continue;
         }
 
-        if (seg->base < kstart) {
-            if (temp < kend) {
-                xpages = (temp - kstart) / PAGE_SIZE;
-                seg->pages -= xpages;
-                kstart = temp;
-                iter++;
-            }
-            else if (temp == kend) {
-                seg->pages -= kSize;
-                break;
-            }
-            else {
-                seg->pages = (kstart - seg->base) / PAGE_SIZE;
-
-                MSeg* _seg = nullptr;//TODO alloc
-                linked_container<MSeg*>* lc = nullptr;//TODO alloc
-
-                new (_seg) MSeg(kend, (temp - kend) / PAGE_SIZE, &Zone_DMA);
-                new(lc) linked_container<MSeg*>(_seg);
-
-                Zone_DMA.Segs->__list_insert(lc, iter);
-                break;
-            }
+        uint64_t temp = seg->base + seg->pages * PAGE_SIZE;
+        if (temp < kend) {
+            iter++;
+            Zone_DMA.Segs->__list_remove(seg);
+            Zone_DMA.total_pages -= seg->pages;
+            slab_free(seg);
+            continue;
         }
-        else if (seg->base == kstart) {
-            if (temp < kend) {
-                kstart = temp;
-                iter++;
 
-                Zone_DMA.Segs->__list_remove(seg);
-                //TODO free
-            }
-            else if (temp == kend) {
-                Zone_DMA.Segs->__list_remove(iter);
-                //TODO free
-                break;
-            }
-            else {
-                seg->base = kend;
-                seg->pages = (temp - kend) / PAGE_SIZE;
+        seg->base = kend;
+        uint64_t xpages = (temp - kend) / PAGE_SIZE;
+        Zone_DMA.total_pages -= (seg->pages - xpages);
 
-                break;
-            }
-        }
+        seg->pages = xpages;
+        iter++;
     }
+    Zone_DMA.free_pages = Zone_DMA.total_pages;
 
     buddy_init_complete = true;
 }
