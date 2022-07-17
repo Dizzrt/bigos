@@ -9,20 +9,28 @@ extern Cache* kmemAlloc_Cache();
 extern void* kmemAlloc_lcPonter();
 
 void* ChacheChain::alloc(uint32_t Size) {
-    Cache* c = nullptr;
 
     for (auto i : cache_list) {
-        if (i->objSize == Size)
+        //TODO flags
+        if (i->objSize >= Size)
             return i->alloc_cache();
-        else if (i->objSize > Size) {
-            if (c != nullptr)
-                return c->alloc_cache();
-            else return i->alloc_cache();
-        }
-        else c = i;
     }
 
-    return nullptr;
+    //have no suitable cache
+    //create a new cache
+
+    Cache* c = nullptr;
+    c = kmemAlloc_Cache();
+
+    linked_container<Cache*>* lcc =
+        (linked_container<Cache*>*)kmemAlloc_lcPonter();
+
+    //TODO flags
+    new (c) Cache(Size, 0, 0);
+    new (lcc) linked_container<Cache*>(c);
+
+    cache_list.__list_insert(lcc);
+    return c->alloc_cache();
 }
 
 Cache* ChacheChain::__create_cache__(uint32_t Flags, uint32_t ObjSize) {
@@ -115,14 +123,13 @@ void* Cache::alloc_cache() {
 Cache::Cache(uint32_t ObjSize, uint32_t Flags, uint32_t SSC, ...)
     : objSize(ObjSize), flags(Flags), size(LONG_ALIGN(ObjSize + SHSIZE))
 {
-    uint64_t cur;
-    uint64_t delta = INT64_MAX;
+    uint32_t temp, delta = INT32_MAX;
     for (uint32_t i = 0;i < BUDDY_MAX_ORDER;i++) {
-        cur = buddyChunkSize[i] - (buddyChunkSize[i] / size) * size;
+        temp = buddyChunkSize[i] - (buddyChunkSize[i] / size) * size;
 
-        if (cur < delta) {
+        if (temp < delta) {
+            delta = temp;
             slabOrder = i;
-            delta = cur;
         }
     }
 

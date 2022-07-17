@@ -23,17 +23,6 @@ void Kernel() {
     for (int i = 0;i < 10;i++)
         printk_svga("%d\n", p[i]);
 
-    // klist<int> kt;
-    // linked_container<int>lc1(1);
-    // linked_container<int>lc2(2);
-
-    // kt.__list_insert(&lc1);
-    // kt.__list_insert(&lc2, kt.end());
-
-    // for (auto i : kt)
-    //     printk_svga("%d\n", i);
-
-
     //----------------//
     while (true) {
         asm volatile("hlt");
