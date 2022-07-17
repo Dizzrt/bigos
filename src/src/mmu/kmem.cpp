@@ -1,6 +1,4 @@
 #include "mmu\kmem.h"
-#include "io.h"
-
 
 MemPool kmempool;
 
