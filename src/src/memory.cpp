@@ -1,7 +1,7 @@
 #include "mmu\memory.h"
 #include "mmu\kmem.h"
 
-void* kmalloc(unsigned int size) {
+void* kmalloc(uint32_t size) {
     if (size < SLAB_OBJSIZE_LIMIT)
         return Kmem_slab_alloc(size);
 
