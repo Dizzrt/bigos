@@ -24,6 +24,6 @@ namespace std {
         move(_Tp&& __t)noexcept {
         return static_cast<typename std::remove_reference<_Tp>::type&&>(__t);
     }
-}//namespace
+}//namespace std
 
 #endif //__BIG_MOVE_H__

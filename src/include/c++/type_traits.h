@@ -93,6 +93,6 @@ namespace std {
     template<typename _Tp>
     struct is_rvalue_reference<_Tp&&>
         : public true_type { };
-}//namespace
+}//namespace std
 
 #endif //__BIG_TYPE_TRAITS_H__
