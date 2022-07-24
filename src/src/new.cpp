@@ -8,7 +8,7 @@ extern void kfree(const void* p);
 //---- operator new ----
 void* operator new(size_t size) { return kmalloc(size); }
 void* operator new[](size_t size) { return kmalloc(size); }
-void operator delete(void* p) { kfree(p); }
-void operator delete[](void* p) { kfree(p); }
-void operator delete(void* p, unsigned long _size) { kfree(p); }
+void operator delete(void* p) throw() { kfree(p); }
+void operator delete[](void* p) throw() { kfree(p); }
+void operator delete(void* p, unsigned long _size) throw() { kfree(p); }
 

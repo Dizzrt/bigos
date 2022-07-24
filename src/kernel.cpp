@@ -9,19 +9,20 @@ extern void kmem_init();
 extern "C" void Kernel();
 static void init_kernel();
 
+#include "ktl\list.h"
+
+struct tst {
+    int x, y;
+    tst(int _x) { x = _x, y = _x * _x; }
+    ~tst() { printk_svga("destory tst\n"); }
+};
+
 void Kernel() {
     init_kernel();
     //----------------//
 
-    printk_svga("welcom bigOS\n");
-    uint32_t kSize = *((uint32_t*)0x504);
-    printk_svga("kernel size:%d\n", kSize);
+    kstd::list<int> ls;
 
-    int* p = (int*)kmalloc(sizeof(int) * 10);
-    for (int i = 0;i < 10;i++)
-        p[i] = i * 2;
-    for (int i = 0;i < 10;i++)
-        printk_svga("%d\n", p[i]);
 
     //----------------//
     while (true) {
