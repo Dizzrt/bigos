@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# build
+build/bin
+build/temp
+
+# Apple Desktop services store
+.DS_Store
+ 

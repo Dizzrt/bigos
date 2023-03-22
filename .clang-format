@@ -61,6 +61,7 @@ SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: true
 SpacesBeforeTrailingComments: 3
+AlignConsecutiveMacros: Consecutive
 SpacesInLineCommentPrefix:
   Minimum: 1
   Maximum: -1
