@@ -122,18 +122,18 @@ detect_memory_loop:
     # get video mode
     mov $0x0f, %ah
     int $0x10
-    mov %ah, (0x802)
-    mov %al, (0x803)
-    mov %bh, (0x804)
+    mov %ah, (0x803)
+    mov %al, (0x804)
+    mov %bh, (0x805)
 
     # video configuration information
     mov $0x12, %ah
     mov $0x10, %bl
     int $0x10
-    mov %bh, (0x805)
-    mov %bl, (0x806)
-    mov %ch, (0x807)
-    mov %cl, (0x808)
+    mov %bh, (0x806)
+    mov %bl, (0x807)
+    mov %ch, (0x808)
+    mov %cl, (0x809)
 
     # get hd0 data
     xor %ax, %ax
@@ -141,7 +141,7 @@ detect_memory_loop:
     lds (4*0x41), %si
     xor %ax, %ax
     mov %ax, %es
-    mov $0x809, %di
+    mov $0x810, %di
     mov $0x10, %cx
     rep movsb
 
@@ -151,7 +151,7 @@ detect_memory_loop:
     lds (4*0x46), %si
     xor %ax, %ax
     mov %ax, %es
-    mov $0x819, %di
+    mov $0x820, %di
     mov $0x10, %cx
     rep movsb
 
@@ -167,7 +167,7 @@ no_hd1:
     xor %ax, %ax
     mov %ax, %es
     mov %ax, %ds
-    mov $0x819, %di
+    mov $0x820, %di
     mov $0x10, %cx
     rep stosb
 
@@ -177,6 +177,10 @@ L0:
     movl %eax, (data_offset)
     movl 0x3d(%bx), %eax
     addl %eax, (data_offset)
+    
+    # save data area offset
+    movl (data_offset), %eax
+    movl %eax, (0x830)
 
     # search root directory
     # first cluster of root directory

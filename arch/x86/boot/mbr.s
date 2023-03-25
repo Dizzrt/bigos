@@ -72,8 +72,13 @@ err_print:
     jmp .
 
 mbr:
+    # prepare registers
+    xor %ax, %ax
+    mov %ax, %ds
+    mov %ax, %es
+
     # save boot drive code
-    movb %dl, (0x500)
+    movb %dl, (0x802)
 
     # prepare stack
     mov $STACKSEG, %ax
@@ -94,11 +99,6 @@ mbr:
     
     cli
 
-    # prepare registers
-    xor %ax, %ax
-    mov %ax, %ds
-    mov %ax, %es
-
     # copy self to DEST and jump there
     # [ds:si] => [es:di]
     mov $BASE, %si
@@ -114,7 +114,7 @@ copied_mbr:
     # check if int 0x13 extensions are supported
     mov $0x41, %ah
     mov $0x55aa, %bx
-    mov (0x500), %dl
+    mov (0x802), %dl
     int $0x13
     jnc search_active_partition
     error err_int13e
@@ -135,7 +135,7 @@ active_partition_found:
     movl 0x08(%di), %ebx 
     movl %ebx, (DiskAddressPacket + OFFSET + 0x08) # LBA of partition start
     movb $0x42, %ah
-    movb (0x500), %dl
+    movb (0x802), %dl
     movw $(DiskAddressPacket + OFFSET), %si
     int $0x13
     test %ah, %ah
@@ -143,7 +143,6 @@ active_partition_found:
     error err_read
 
 jmp_dbr:
-    mov (0x500), %dl
     ljmp $DBRSEG, $DBROFFSET
 
 .fill 0x01b8 - (. - _start) ,1,0

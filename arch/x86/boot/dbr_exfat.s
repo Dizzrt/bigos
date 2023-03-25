@@ -91,9 +91,6 @@ err_print:
     jmp .
 
 real_dbr:
-    # save boot drive code
-    movb %dl, (0x500)
-
     # prepare stack
     mov $STACKSEG, %ax
     mov $STACKSP, %sp
@@ -123,7 +120,7 @@ real_dbr:
     movl %eax, 0x08(%di)
 
     movb $0x42, %ah
-    movb (0x500), %dl
+    movb (0x802), %dl
     movw $DiskAddressPacket, %si
     int $0x13
     test %ah, %ah
