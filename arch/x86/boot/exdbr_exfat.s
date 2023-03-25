@@ -16,9 +16,7 @@
 .endm
 
 # bootloader
-.set BOOTSEG,        0x0000
-.set BOOTOFFSET,     0x8000
-.set BOOTOFFSET32,   0x8000
+.set BOOTOFFSET32,   0x10000
 
 .globl _start
 _start:
@@ -37,20 +35,18 @@ gdt_32:
     .quad 0x0000000000000000 # zero
     .quad 0x00cf98000000ffff # code
     .quad 0x00cf92000000ffff # data
-    .quad 0x004796000000c000 # stack
-    .quad 0x00af98000000ffff # code_64
+    .quad 0x0040960900000000 # stack
 
     .equ SELECTOR_CODE_32, 0x01<<3
     .equ SELECTOR_DATA_32, 0x02<<3
     .equ SELECTOR_STACK_32, 0x03<<3
-    .equ SELECTOR_CODE64_32, 0x04<<3
 
 gdt_attribute_32:
     .word 0xff
     .quad gdt_32
 
 data_offset: .long 0
-bootloader_info: .long 0x10000
+load_buffer: .long 0x0f00
 
 err_boot_not_found: .asciz "bootloader not found"
 
@@ -192,9 +188,9 @@ L0:
     # the offset of root directory
     addl (data_offset), %eax
 
-    # prepare DAP to load root directory to 0x10000
+    # prepare DAP to load root directory to 0xf000
     movl %eax, (DiskAddressPacket + 0x08)
-    mov $0x1000, %dx
+    mov (load_buffer), %dx
     mov %dx, (DiskAddressPacket + 0x06)
     mov %dx, %es
     mov $0x08, %dx
@@ -239,7 +235,7 @@ load_boot_directory:
     # the offset of boot directory
     addl (data_offset), %eax
     mov %eax, (DiskAddressPacket + 0x08)
-    # load boot directory to 0x10000
+    # load boot directory to 0xf000
     call int13h_extension_read
 
     xor %di, %di
@@ -280,7 +276,11 @@ L4:
     jmp search_boot_loop
 
 entering_protected_mode:
-    add %di, (bootloader_info)
+    # save the boot.bin offset
+    movl (load_buffer), %eax
+    shl $0x04, %eax
+    add %di, %ax
+    movl %eax, %edi
 
     cli
     lgdt (gdt_attribute_32)
@@ -304,10 +304,7 @@ protected_mode:
 
     movw $SELECTOR_STACK_32, %ax
     movw %ax, %ss
-    movl $0x7ffff, %esp
-
-    xor %eax, %eax
-    movl (bootloader_info), %edi
+    movl $0xfbff, %esp
 
     mov $0x08, %ebx
     mov 0x34(%edi), %eax
@@ -397,11 +394,11 @@ wait_disk:
     mul %ebx
     mov %eax, %ecx
 
-    mov $0x8000, %edi
+    mov $BOOTOFFSET32, %edi
     mov $0x01f0, %dx
 pio_loop:
     inw %dx, %ax
-    movw %ax, (%di)
+    movw %ax, (%edi)
     add $0x02, %edi
     loop pio_loop
 
