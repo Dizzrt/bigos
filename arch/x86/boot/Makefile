@@ -24,7 +24,7 @@ LDFLAGS = --oformat binary -nostdlib
 INCLUDE_PARM = $(foreach d, $(INCLUDE_PATH), -I$d)
 
 # install parms
-VDISK_PATH = $(TOP_PATH)/build/os.vhd
+VDISK_PATH = $(TOP_PATH)/test/os.vhd
 BOCHSCON_PATH = $(TOP_PATH)/test/bochsrc.bxrc
 SECTOR_SIZE = 512
 INSTALL_FLAGS = --vdisk $(VDISK_PATH) --sector-size $(SECTOR_SIZE)
@@ -69,7 +69,7 @@ build-exdbr: $(PATH_CHECK) exdbr_exfat.s
 	$(LD) $(LDFLAGS) -e _start -Ttext 0x1000 $(TEMP_PATH)/exdbr_exfat.o -o $(BIN_PATH)/exdbr.bin
 
 build-boot: $(PATH_CHECK) $(TEMP_PATH)/boot.s.o $(TEMP_PATH)/boot.cc.o
-	$(LD) $(LDFLAGS) -e _start -Ttext 0x8000 $(TEMP_PATH)/boot.s.o $(TEMP_PATH)/boot.cc.o -o $(BIN_PATH)/boot.bin
+	$(LD) $(LDFLAGS) -e _start -Ttext 0x10000 $(TEMP_PATH)/boot.s.o $(TEMP_PATH)/boot.cc.o -o $(BIN_PATH)/boot.bin
 
 .PHONY:install-mbr
 install-mbr:
