@@ -6,14 +6,14 @@ else
 	ROOT_PATH = $(CURDIR)
 endif
 
-MODULES = kernel
+MODULES = kernel drivers
 BOCHSCON_PATH = $(ROOT_PATH)/test/bochsrc.bxrc
 
 BUILD_PATH = $(ROOT_PATH)/build
 OBJ_PATH = $(BUILD_PATH)/temp
 BIN_PATH = $(BUILD_PATH)/bin
 LIB_PATH = $(ROOT_PATH)/lib
-INCLUDE_PATH = $(ROOT_PATH)/include
+INCLUDE_PATH = $(ROOT_PATH)/include $(ROOT_PATH)/c++/include $(ROOT_PATH)/drivers/include
 PATH_CHECK = $(BIN_PATH)
 
 LEADING_FILES = $(LIB_PATH)/crt0.o $(LIB_PATH)/crti.o $(LIB_PATH)/crtbegin.o

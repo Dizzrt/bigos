@@ -10,5 +10,14 @@
 #define _BIG_TYPES_H
 
 #include <stdint.h>
+#include <stddef.h>
 
-#endif
+typedef unsigned int gfp_t;
+
+typedef void* ptr_t;
+typedef uint8_t* ptr8_t;
+typedef uint16_t* ptr16_t;
+typedef uint32_t* ptr32_t;
+typedef uint64_t* ptr64_t;
+
+#endif   // _BIG_TYPES_H

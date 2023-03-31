@@ -3,7 +3,9 @@
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.formatting": "clangFormat",
     "C_Cpp.default.systemIncludePath": [
-        "${workspaceFolder}/include"
+        "${workspaceFolder}/include",
+        "${workspaceFolder}/c++/include",
+        "${workspaceFolder}/drivers/include"
     ],
     "python.formatting.provider": "yapf",
     "psi-header.config": {
