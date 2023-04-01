@@ -69,5 +69,7 @@
             ]
         }
     ],
-    "files.associations": {}
+    "files.associations": {
+        "type_traits": "cpp"
+    }
 }

@@ -9,6 +9,8 @@
 #ifndef _BIG_ATTRIBUTES_H
 #define _BIG_ATTRIBUTES_H
 
+#define _attr_nodiscard_ [[nodiscard]]
+
 #define _attr_pure_ __attribute__((__pure__))
 
 #endif

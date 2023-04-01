@@ -1,0 +1,36 @@
+//
+// File: type_traits
+// Created by Dizzrt on 2023/03/28.
+//
+// Copyright (C) 2023 The BigOS Authors.
+// Licensed under the GNU General Public License v3.0 only.
+//
+
+#ifndef _BIG_TYPE_TRAITS
+#define _BIG_TYPE_TRAITS
+
+#pragma GCC system_header
+
+#include <bigos/types.h>
+
+namespace std {
+    template <size_t _Len>
+    struct __aligned_storage_msa {
+        union __type {
+            unsigned char __data[_Len];
+            struct __attribute__((__aligned__)) {
+            } __align;
+        };
+    };
+
+    template <size_t _Len, size_t _Align = __alignof__(typename __aligned_storage_msa<_Len>::__type)>
+    struct aligned_storage {
+        union type {
+            unsigned char __data[_Len];
+            struct __attribute__((__aligned__((_Align)))) {
+            } __align;
+        };
+    };
+}   // namespace std
+
+#endif   // _BIG_TYPE_TRAITS

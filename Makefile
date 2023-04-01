@@ -6,7 +6,7 @@ else
 	ROOT_PATH = $(CURDIR)
 endif
 
-MODULES = kernel drivers
+MODULES = kernel ktl drivers
 BOCHSCON_PATH = $(ROOT_PATH)/test/bochsrc.bxrc
 
 BUILD_PATH = $(ROOT_PATH)/build
