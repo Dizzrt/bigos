@@ -33,4 +33,52 @@ namespace std {
     };
 }   // namespace std
 
+// non-standard
+namespace bigos {
+    template <typename _Tp>
+    struct greater {
+        constexpr const _Tp& operator()(const _Tp& x, const _Tp& y) const { return x > y ? x : y; }
+    };
+
+    template <typename _Tp>
+    struct less {
+        constexpr const _Tp& operator()(const _Tp& x, const _Tp& y) const { return x < y ? x : y; }
+    };
+
+    namespace detail {
+        template <size_t... _N>
+        struct __ulong_list;
+
+        template <typename _Compare, size_t... _N>
+        struct __ulong_list_compare_impl;
+
+        template <typename _Compare, size_t _n, size_t... _N>
+        struct __ulong_list_compare_impl<_Compare, _n, _N...> {
+            static constexpr size_t value = _Compare()(_n, __ulong_list_compare_impl<_Compare, _N...>::value);
+        };
+
+        template <typename _Compare, size_t _n>
+        struct __ulong_list_compare_impl<_Compare, _n> {
+            static constexpr size_t value = _n;
+        };
+
+        template <typename _Compare, typename _Tp>
+        struct __ulong_list_compare;
+
+        template <typename _Compare, size_t... _N>
+        struct __ulong_list_compare<_Compare, __ulong_list<_N...>> {
+            static constexpr size_t value = __ulong_list_compare_impl<_Compare, _N...>::value;
+        };
+    }   // namespace detail
+
+    template <typename Compare, size_t... _N>
+    using ulong_list_compare = detail::__ulong_list_compare<Compare, detail::__ulong_list<_N...>>;
+
+    template <size_t... _N>
+    using ulong_list_min = detail::__ulong_list_compare<less<size_t>, detail::__ulong_list<_N...>>;
+
+    template <size_t... _N>
+    using ulong_list_max = detail::__ulong_list_compare<greater<size_t>, detail::__ulong_list<_N...>>;
+}   // namespace bigos
+
 #endif   // _BIG_TYPE_TRAITS
