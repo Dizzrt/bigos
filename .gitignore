@@ -37,4 +37,6 @@ build/temp
 
 # Apple Desktop services store
 .DS_Store
- 
+
+# vscode
+.vscode/c_cpp_properties.json
