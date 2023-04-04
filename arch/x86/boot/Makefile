@@ -23,10 +23,21 @@ CXXFLAGS = -mno-sse -mno-sse2 -mno-mmx -ffreestanding -mno-red-zone -fno-rtti -f
 LDFLAGS = --oformat binary -nostdlib
 INCLUDE_PARM = $(foreach d, $(INCLUDE_PATH), -I$d)
 
-# install parms
+# debug parms
+ifeq ($(ARCH), Darwin)
+# for macos
+BOCHS_RUN = bochs
+VDISK_PATH = $(TOP_PATH)/test/os.dmg
+else
+# for windows
+BOCHS_RUN = bochsdbg
 VDISK_PATH = $(TOP_PATH)/test/os.vhd
-BOCHSCON_PATH = $(TOP_PATH)/test/bochsrc.bxrc
+endif
+
 SECTOR_SIZE = 512
+BOCHSRC_PATH = $(TOP_PATH)/test/bochsrc.bxrc
+
+# install parms
 INSTALL_FLAGS = --vdisk $(VDISK_PATH) --sector-size $(SECTOR_SIZE)
 
 all: mbr dbr exdbr boot
@@ -89,7 +100,7 @@ install-boot:
 
 .PHONY:run
 run:
-	@bochsdbg -f $(BOCHSCON_PATH) -q
+	@$(BOCHS_RUN) -f $(BOCHSRC_PATH) -q
 
 .PHONY:clean
 clean:
