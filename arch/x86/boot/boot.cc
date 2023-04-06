@@ -18,6 +18,7 @@
 #define KERNEL_PTS_VMD 0x100000
 #define KERNEL_PMD     0x1000000
 #define KERNEL_VMD     0xffffffff80000000
+#define PAGE_SIZE      0x1000
 
 #define DISK_MASTER         0x40
 #define DISK_SLAVE          0x50
@@ -141,7 +142,7 @@ int read_disk(uint8_t disk, uint16_t nr_sector, uint64_t lba48, uint16_t *buffer
 }
 
 void setup_paging(int size) {
-    int nr_pt = (size + BYTES_PER_SECTOR - 1) / BYTES_PER_SECTOR;
+    int nr_pt = (size + PAGE_SIZE - 1) / PAGE_SIZE;
     int nr_pd = (nr_pt + 512 - 1) / 512;
 
     uint64_t phys_addr = KERNEL_PTS_PMD;
