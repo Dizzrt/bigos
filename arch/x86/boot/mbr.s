@@ -162,17 +162,7 @@ reserved: .word 0
 
 # partition table
 pte:
-    # for debug
-    .byte 0x80 # active
-    .word 0x2120 # start CHS
-    .byte 0
-    .byte 0x07 # type exFAT
-    .word 0x3ffe # end CHS
-    .byte 0x07
-    .long 0x00000800 # LBA of partition start
-    .long 0x0001f800 # Number of sectors in partition
-
-    // .octa 0
+    .octa 0
     .octa 0
     .octa 0
     .octa 0

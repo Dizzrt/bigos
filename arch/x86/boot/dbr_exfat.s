@@ -28,7 +28,7 @@
 .globl _start
 _start:
     # 0xeb7690 => jmp dbr
-    # don't user 'jmp' directly to avoid generate other bytes sequence
+    # don't use 'jmp' directly to avoid generate other bytes sequence
     .word 0x76eb
     .byte 0x90
 
@@ -36,21 +36,21 @@ exfat_info:
     # for debug only
     .ascii "EXFAT   "   #0 file system name
     .fill 53, 1, 0      #8 reserved
-    .quad 0x0800        #3d partition offset
-    .quad 0x01f800      #45 volume length
-    .long 0x0800        #4d FAT offset
-    .long 0x80          #51 FAT length
-    .long 0x1000        #55 cluster heap offset
-    .long 0x3d00        #59 cluster count
-    .long 0x05          #5d first cluster of root directory
-    .long 0x8733d59e    #61 volume serial number
-    .word 0x0100        #65 file system vision
-    .word 0x0           #67 volume flags
-    .byte 0x09          #69 bytes per sector shift
-    .byte 0x03          #6a sectors per cluster shift
-    .byte 0x01          #6b number of fats
-    .byte 0x80          #6c drive select
-    .byte 0x0           #6d percent in use
+    .quad 0x00          #3d partition offset
+    .quad 0x00          #45 volume length
+    .long 0x00          #4d FAT offset
+    .long 0x00          #51 FAT length
+    .long 0x00          #55 cluster heap offset
+    .long 0x00          #59 cluster count
+    .long 0x00          #5d first cluster of root directory
+    .long 0x00          #61 volume serial number
+    .word 0x00          #65 file system vision
+    .word 0x00          #67 volume flags
+    .byte 0x00          #69 bytes per sector shift
+    .byte 0x00          #6a sectors per cluster shift
+    .byte 0x00          #6b number of fats
+    .byte 0x00          #6c drive select
+    .byte 0x00          #6d percent in use
     .fill 7, 1, 0       #6e reserved
 
 dbr:

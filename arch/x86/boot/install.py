@@ -78,12 +78,21 @@ def updateMbr():
         mbr = f.read()
 
     if len(mbr) > 0x200:
-        debugError('update mbr failed, beacause mbr exceeds 512 bytes', False)
+        debugError('update mbr failed, because mbr exceeds 512 bytes', False)
         return None
 
     with open(VDISK_PATH, 'rb+') as f:
+        # save patition table entries
+        f.seek(0x1be)
+        ptes = f.read(64)
+
+        # write mbr
         f.seek(0)
         f.write(mbr)
+
+        # write patition table entries
+        f.seek(0x1be)
+        f.write(ptes)
 
     debugSuccess('update mbr successfully')
     return None
@@ -95,26 +104,55 @@ def updateDbr():
         dbr = f.read()
 
     if len(dbr) > 0x200:
-        debugError('update dbr failed, beacause mbr exceeds 512 bytes', False)
+        debugError('update dbr failed, because mbr exceeds 512 bytes', False)
         return None
 
+    jmp_code = dbr[0:3]
     boot_code = dbr[0x78:]
 
     with open(VDISK_PATH, 'rb+') as f:
-        # bigOS partition must in the first PTE
-        f.seek(0x01c6)
-        partition_offset = int.from_bytes(f.read(4), 'little')
+        f.seek(0x1be)
+        ptes = f.read(16)
+
+        pte_offset = 0
+        for _ in range(4):
+            # search exfat partition
+            type_offset = pte_offset + 0x04
+            partition_type = int.from_bytes(ptes[type_offset:type_offset + 1], "little")
+            if partition_type == 0x07:
+                break
+            pte_offset = pte_offset + 0x10
+
+        if (pte_offset > 0x30):
+            debugError('update dbr failed, because no exfat parition was found', False)
+            return None
+
+        # lba of partition start
+        lba_offset = pte_offset + 0x08
+        lba = int.from_bytes(ptes[lba_offset:lba_offset + 4], "little")
 
         # main boot region
+        # jmp code
+        f.seek(lba * BYTES_PER_SECTOR)
+        f.write(jmp_code)
+
         # boot code offset = 0x78
-        f.seek(partition_offset * BYTES_PER_SECTOR + 0x78)
+        f.seek(lba * BYTES_PER_SECTOR + 0x78)
         f.write(boot_code)
 
         # backup boot region
-        f.seek((partition_offset + 12) * BYTES_PER_SECTOR + 0x78)
+        f.seek((lba + 12) * BYTES_PER_SECTOR)
+        f.write(jmp_code)
+
+        f.seek((lba + 12) * BYTES_PER_SECTOR + 0x78)
         f.write(boot_code)
 
-        updateChecksum(f, partition_offset)
+        updateChecksum(f, lba)
+
+        # make the parition active
+        f.seek(pte_offset + 0x1be)
+        attr = ptes[pte_offset] | 0x80
+        f.write(attr.to_bytes(1, 'little'))
 
     debugSuccess('update dbr successfully')
     return None
@@ -126,20 +164,36 @@ def updateExDbr():
         exdbr = f.read()
 
     if len(exdbr) > 0x200 * 8:
-        debugError('update exdbr failed, beacause exdbr exceeds 4096 bytes', False)
+        debugError('update exdbr failed, because exdbr exceeds 4096 bytes', False)
         return None
 
     with open(VDISK_PATH, 'rb+') as f:
-        f.seek(0x01c6)
-        partition_offset = int.from_bytes(f.read(4), 'little')
+        f.seek(0x1be)
+        ptes = f.read(16)
 
-        f.seek((partition_offset + 1) * BYTES_PER_SECTOR)
+        pte_offset = 0
+        for _ in range(4):
+            is_active = ptes[pte_offset] & 0x80
+            type_offset = pte_offset + 0x04
+            partition_type = int.from_bytes(ptes[type_offset:type_offset + 1], "little")
+            if partition_type == 0x07 and is_active == 0x80:
+                break
+            pte_offset = pte_offset + 0x10
+
+        if (pte_offset > 0x30):
+            debugError('update dbr failed, because no exfat parition was found', False)
+            return None
+
+        lba_offset = pte_offset + 0x08
+        lba = int.from_bytes(ptes[lba_offset:lba_offset + 4], "little")
+
+        f.seek((lba + 1) * BYTES_PER_SECTOR)
         f.write(exdbr)
 
-        f.seek((partition_offset + 12 + 1) * BYTES_PER_SECTOR)
+        f.seek((lba + 12 + 1) * BYTES_PER_SECTOR)
         f.write(exdbr)
 
-        updateChecksum(f, partition_offset)
+        updateChecksum(f, lba)
 
     debugSuccess('update exdbr successfully')
     return None
