@@ -5,7 +5,8 @@
     "C_Cpp.default.systemIncludePath": [
         "${workspaceFolder}/include",
         "${workspaceFolder}/c++/include",
-        "${workspaceFolder}/drivers/include"
+        "${workspaceFolder}/drivers/include",
+        "${workspaceFolder}/c++/libsupc++/include"
     ],
     "python.formatting.provider": "yapf",
     "psi-header.config": {
@@ -70,6 +71,7 @@
         }
     ],
     "files.associations": {
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "new": "cpp"
     }
 }

@@ -64,6 +64,9 @@ namespace ktl {
         _Tp *valptr() { return _storage.ptr(); }
         _Tp const *valptr() const { return _storage.ptr(); }
 
+        _Tp &operator*() noexcept { return *_storage.ptr(); }
+        _Tp *operator->() noexcept { return *_storage.ptr(); }
+
         _List_node() = default;
         _List_node(_Tp _val) { *_storage.ptr() = _val; }
     };
@@ -191,7 +194,7 @@ namespace ktl {
 
     public:
         _List_foundation() : _sentinel(&_sentinel_node), _nr_node(0) {}
-        // virtual ~_List_foundation() = default;
+        virtual ~_List_foundation() = default;
 
         iterator begin() noexcept _attr_pure_ { return iterator(_sentinel->next); }
         iterator end() noexcept _attr_pure_ { return iterator(_sentinel); }
