@@ -134,7 +134,7 @@ namespace ktl {
             mask >>= 1;
         }
 
-        heap_ptr_ += ret;
+        nr_avl_bits_ += ret;
         return ret;
     }
 
