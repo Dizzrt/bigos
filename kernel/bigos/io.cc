@@ -105,9 +105,9 @@ void bigos::kprintf(const char* fmt, ...) {
                 }
 
                 if (is_long)
-                    itoa(va_arg(vlist, int64_t), nbuffer_ptr, radix);
+                    utoa(va_arg(vlist, uint64_t), nbuffer_ptr, radix);
                 else
-                    itoa(va_arg(vlist, int32_t), nbuffer_ptr, radix);
+                    utoa(va_arg(vlist, uint32_t), nbuffer_ptr, radix);
                 offset_buf = buffer_append(buffer, nbuffer, offset_buf);
             }
 
