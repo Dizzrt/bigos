@@ -16,13 +16,13 @@ endif
 BOCHSRC_PATH = $(ROOT_PATH)/test/bochsrc.bxrc
 
 # compile parms
-MODULES = kernel ktl drivers
+MODULES = kernel ktl drivers c++ mm
 
 BUILD_PATH = $(ROOT_PATH)/build
 OBJ_PATH = $(BUILD_PATH)/temp
 BIN_PATH = $(BUILD_PATH)/bin
 LIB_PATH = $(ROOT_PATH)/lib
-INCLUDE_PATH = $(ROOT_PATH)/include $(ROOT_PATH)/c++/include $(ROOT_PATH)/drivers/include
+INCLUDE_PATH = $(ROOT_PATH)/include $(ROOT_PATH)/c++/include $(ROOT_PATH)/c++/libsupc++/include $(ROOT_PATH)/drivers/include
 PATH_CHECK = $(BIN_PATH)
 
 LEADING_FILES = $(LIB_PATH)/crt0.o $(LIB_PATH)/crti.o $(LIB_PATH)/crtbegin.o
@@ -44,6 +44,7 @@ OBJS = $(foreach module, $(MODULES), ${wildcard $(OBJ_PATH)/$(module)/*.o})
 
 all: $(MODULES)
 	@make link
+	@printf "\033[32mdone\033[0m\n"
 
 .PHONY: $(MODULES)
 $(MODULES): 

@@ -6,22 +6,31 @@
 // Licensed under the GNU General Public License v3.0 only.
 //
 
+#include <mm/memory.h>
 #include <bigos/types.h>
 
-// TODO operator new
+// operator new
 void *operator new(size_t size) {
-    return nullptr;
+    return bigos::kmalloc(size);
 }
 
 void *operator new[](size_t size) {
-    return nullptr;
+    return bigos::kmalloc(size);
 }
 
-// TODO operator delete
-void operator delete(void *p) {}
+// operator delete
+void operator delete(void *p) {
+    bigos::free(p);
+}
 
-void operator delete[](void *p) {}
+void operator delete[](void *p) {
+    bigos::free(p);
+}
 
-void operator delete(void *p, size_t size) {}
+void operator delete(void *p, size_t size) {
+    bigos::free(p);
+}
 
-void operator delete[](void *p, size_t size) {}
+void operator delete[](void *p, size_t size) {
+    bigos::free(p);
+}

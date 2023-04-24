@@ -237,6 +237,10 @@ void load_kernel() {
     int kernel_file_size = pheader[0].p_filesz;
     lba48 = ehdr_lba48 + pheader[0].p_offset / BYTES_PER_SECTOR;
 
+    // save kernel size
+    uint32_t *ks_ptr = (uint32_t *)0x80c;
+    *ks_ptr = kernel_size;
+
     setup_paging(kernel_size);
     nr_sectors = (kernel_file_size + BYTES_PER_SECTOR - 1) / BYTES_PER_SECTOR;
     read_disk(DISK_MASTER, nr_sectors, lba48, (uint16_t *)KERNEL_VMD);

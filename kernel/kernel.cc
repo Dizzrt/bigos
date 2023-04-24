@@ -15,9 +15,17 @@
 #warning It is recommended to build with GCC
 #endif
 
+#include <video/vga.h>
+
+#include <mm/kmem.h>
+#include <mm/memory.h>
+
 extern "C" void kernel();
 
 void kernel() {
+    vga::clear_screen();
+    bigos::mm::init_mem();
+
     while (true) {
         asm volatile("hlt");
     }
