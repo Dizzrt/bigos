@@ -19,12 +19,14 @@
 
 #include <mm/kmem.h>
 #include <mm/memory.h>
+#include <irq/interrupt.h>
 
 extern "C" void kernel();
 
 void kernel() {
     vga::clear_screen();
     bigos::mm::init_mem();
+    bigos::irq::init_irq();
 
     while (true) {
         asm volatile("hlt");

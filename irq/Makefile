@@ -2,14 +2,13 @@ SRCS = $(wildcard *.cc)
 OBJS = $(patsubst %.cc, %.o, $(SRCS))
 INCLUDE_PARM = $(foreach path, $(INCLUDE_PATH), -I$(path))
 
-OBJ_PATH := $(OBJ_PATH)/drivers
+OBJ_PATH := $(OBJ_PATH)/irq
 PATH_CHECK = $(OBJ_PATH)
 
 export INCLUDE_PARM OBJ_PATH
 
 all: $(PATH_CHECK) $(OBJS)
-	make -C video
-	make -C irqchip
+	make -C isr
 	
 $(PATH_CHECK):
 	mkdir -p $@

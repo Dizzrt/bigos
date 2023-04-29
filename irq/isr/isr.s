@@ -1,0 +1,346 @@
+# 
+# File: isr.s
+# Created by Dizzrt on 2023/04/29.
+# 
+# Copyright (C) 2023 The BigOS Authors.
+# Licensed under the GNU General Public License v3.0 only.
+# 
+
+.file "isr.s"
+.code64
+
+.text
+call_isr:
+    push %rax
+    push %rbx
+    push %rcx
+    push %rdx
+    push %rbp
+    push %rdi
+    movq isr_list(, %rdi, 8), %rax
+    call *%rax
+    pop %rdi
+    movb $0x20, %al
+    cmp $0x08, %rdi
+    jb L0
+    movw $0xa0, %dx
+    outb %al, %dx
+L0:
+    movw $0x20, %dx
+    outb %al, %dx
+    pop %rbp
+    pop %rdx
+    pop %rcx
+    pop %rbx
+    pop %rax
+    pop %rsi
+    pop %rdi
+    iretq
+
+pre_call_isr:
+    push %rsi
+    xor %rsi, %rsi
+    jmp call_isr
+
+pre_call_isr_with_ecode:
+    xchg %rsi, (%rsp)
+    jmp call_isr
+
+.data
+.extern isr_list
+
+.globl isr_entry_list
+isr_entry_list:
+
+.macro isr_entry irq_num, has_ecode = 0
+.text
+isr_entry_\irq_num:
+    push %rdi
+    movq $\irq_num, %rdi
+
+    # has no error code
+    .if \has_ecode == 0
+        jmp pre_call_isr
+    # has error code
+    .else
+        jmp pre_call_isr_with_ecode
+    .endif
+.data
+.quad isr_entry_\irq_num
+.endm
+
+isr_entry 0x00
+isr_entry 0x01
+isr_entry 0x02
+isr_entry 0x03
+isr_entry 0x04
+isr_entry 0x05
+isr_entry 0x06
+isr_entry 0x07
+isr_entry 0x08,1
+isr_entry 0x09
+isr_entry 0x0a,1
+isr_entry 0x0b,1
+isr_entry 0x0c,1
+isr_entry 0x0d,1
+isr_entry 0x0e,1
+isr_entry 0x0f
+isr_entry 0x10
+isr_entry 0x11,1
+isr_entry 0x12
+isr_entry 0x13
+
+# reserved
+isr_entry 0x14
+isr_entry 0x15
+isr_entry 0x16
+isr_entry 0x17
+isr_entry 0x18
+isr_entry 0x19
+isr_entry 0x1a
+isr_entry 0x1b
+isr_entry 0x1c
+isr_entry 0x1d
+isr_entry 0x1e
+isr_entry 0x1f
+
+# maskable interrupts
+# 8259 irq
+isr_entry 0x20
+isr_entry 0x21
+isr_entry 0x22
+isr_entry 0x23
+isr_entry 0x24
+isr_entry 0x25
+isr_entry 0x26
+isr_entry 0x27
+isr_entry 0x28
+isr_entry 0x29
+isr_entry 0x2a
+isr_entry 0x2b
+isr_entry 0x2c
+isr_entry 0x2d
+isr_entry 0x2e
+isr_entry 0x2f
+
+# other
+isr_entry 0x30
+isr_entry 0x31
+isr_entry 0x32
+isr_entry 0x33
+isr_entry 0x34
+isr_entry 0x35
+isr_entry 0x36
+isr_entry 0x37
+isr_entry 0x38
+isr_entry 0x39
+isr_entry 0x3a
+isr_entry 0x3b
+isr_entry 0x3c
+isr_entry 0x3d
+isr_entry 0x3e
+isr_entry 0x3f
+
+isr_entry 0x40
+isr_entry 0x41
+isr_entry 0x42
+isr_entry 0x43
+isr_entry 0x44
+isr_entry 0x45
+isr_entry 0x46
+isr_entry 0x47
+isr_entry 0x48
+isr_entry 0x49
+isr_entry 0x4a
+isr_entry 0x4b
+isr_entry 0x4c
+isr_entry 0x4d
+isr_entry 0x4e
+isr_entry 0x4f
+
+isr_entry 0x50
+isr_entry 0x51
+isr_entry 0x52
+isr_entry 0x53
+isr_entry 0x54
+isr_entry 0x55
+isr_entry 0x56
+isr_entry 0x57
+isr_entry 0x58
+isr_entry 0x59
+isr_entry 0x5a
+isr_entry 0x5b
+isr_entry 0x5c
+isr_entry 0x5d
+isr_entry 0x5e
+isr_entry 0x5f
+
+isr_entry 0x60
+isr_entry 0x61
+isr_entry 0x62
+isr_entry 0x63
+isr_entry 0x64
+isr_entry 0x65
+isr_entry 0x66
+isr_entry 0x67
+isr_entry 0x68
+isr_entry 0x69
+isr_entry 0x6a
+isr_entry 0x6b
+isr_entry 0x6c
+isr_entry 0x6d
+isr_entry 0x6e
+isr_entry 0x6f
+
+isr_entry 0x70
+isr_entry 0x71
+isr_entry 0x72
+isr_entry 0x73
+isr_entry 0x74
+isr_entry 0x75
+isr_entry 0x76
+isr_entry 0x77
+isr_entry 0x78
+isr_entry 0x79
+isr_entry 0x7a
+isr_entry 0x7b
+isr_entry 0x7c
+isr_entry 0x7d
+isr_entry 0x7e
+isr_entry 0x7f
+
+isr_entry 0x80
+isr_entry 0x81
+isr_entry 0x82
+isr_entry 0x83
+isr_entry 0x84
+isr_entry 0x85
+isr_entry 0x86
+isr_entry 0x87
+isr_entry 0x88
+isr_entry 0x89
+isr_entry 0x8a
+isr_entry 0x8b
+isr_entry 0x8c
+isr_entry 0x8d
+isr_entry 0x8e
+isr_entry 0x8f
+
+isr_entry 0x90
+isr_entry 0x91
+isr_entry 0x92
+isr_entry 0x93
+isr_entry 0x94
+isr_entry 0x95
+isr_entry 0x96
+isr_entry 0x97
+isr_entry 0x98
+isr_entry 0x99
+isr_entry 0x9a
+isr_entry 0x9b
+isr_entry 0x9c
+isr_entry 0x9d
+isr_entry 0x9e
+isr_entry 0x9f
+
+isr_entry 0xa0
+isr_entry 0xa1
+isr_entry 0xa2
+isr_entry 0xa3
+isr_entry 0xa4
+isr_entry 0xa5
+isr_entry 0xa6
+isr_entry 0xa7
+isr_entry 0xa8
+isr_entry 0xa9
+isr_entry 0xaa
+isr_entry 0xab
+isr_entry 0xac
+isr_entry 0xad
+isr_entry 0xae
+isr_entry 0xaf
+
+isr_entry 0xb0
+isr_entry 0xb1
+isr_entry 0xb2
+isr_entry 0xb3
+isr_entry 0xb4
+isr_entry 0xb5
+isr_entry 0xb6
+isr_entry 0xb7
+isr_entry 0xb8
+isr_entry 0xb9
+isr_entry 0xba
+isr_entry 0xbb
+isr_entry 0xbc
+isr_entry 0xbd
+isr_entry 0xbe
+isr_entry 0xbf
+
+isr_entry 0xc0
+isr_entry 0xc1
+isr_entry 0xc2
+isr_entry 0xc3
+isr_entry 0xc4
+isr_entry 0xc5
+isr_entry 0xc6
+isr_entry 0xc7
+isr_entry 0xc8
+isr_entry 0xc9
+isr_entry 0xca
+isr_entry 0xcb
+isr_entry 0xcc
+isr_entry 0xcd
+isr_entry 0xce
+isr_entry 0xcf
+
+isr_entry 0xd0
+isr_entry 0xd1
+isr_entry 0xd2
+isr_entry 0xd3
+isr_entry 0xd4
+isr_entry 0xd5
+isr_entry 0xd6
+isr_entry 0xd7
+isr_entry 0xd8
+isr_entry 0xd9
+isr_entry 0xda
+isr_entry 0xdb
+isr_entry 0xdc
+isr_entry 0xdd
+isr_entry 0xde
+isr_entry 0xdf
+
+isr_entry 0xe0
+isr_entry 0xe1
+isr_entry 0xe2
+isr_entry 0xe3
+isr_entry 0xe4
+isr_entry 0xe5
+isr_entry 0xe6
+isr_entry 0xe7
+isr_entry 0xe8
+isr_entry 0xe9
+isr_entry 0xea
+isr_entry 0xeb
+isr_entry 0xec
+isr_entry 0xed
+isr_entry 0xee
+isr_entry 0xef
+
+isr_entry 0xf0
+isr_entry 0xf1
+isr_entry 0xf2
+isr_entry 0xf3
+isr_entry 0xf4
+isr_entry 0xf5
+isr_entry 0xf6
+isr_entry 0xf7
+isr_entry 0xf8
+isr_entry 0xf9
+isr_entry 0xfa
+isr_entry 0xfb
+isr_entry 0xfc
+isr_entry 0xfd
+isr_entry 0xfe
+isr_entry 0xff

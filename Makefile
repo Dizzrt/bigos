@@ -16,7 +16,7 @@ endif
 BOCHSRC_PATH = $(ROOT_PATH)/test/bochsrc.bxrc
 
 # compile parms
-MODULES = kernel ktl drivers c++ mm
+MODULES = kernel ktl drivers c++ mm irq
 
 BUILD_PATH = $(ROOT_PATH)/build
 OBJ_PATH = $(BUILD_PATH)/temp
