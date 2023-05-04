@@ -56,6 +56,12 @@
             "begin": "# ",
             "end": "# ",
             "prefix": "# "
+        },
+        {
+            "language": ".lua",
+            "begin": "-- ",
+            "end": "-- ",
+            "prefix": "-- "
         }
     ],
     "psi-header.templates": [

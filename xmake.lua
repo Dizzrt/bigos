@@ -30,6 +30,10 @@ target("kernel")
     set_kind("binary")
     -- O2 optimize
     set_optimize("faster")
+
+    set_plat("cross")
+    set_arch("x86_64")
+    
     add_files("kernel/**.cc")
     add_files("ktl/**.cc")
     add_files("drivers/**.cc")
@@ -37,6 +41,13 @@ target("kernel")
     add_files("mm/**.cc")
     add_files("irq/**.cc")
     add_files("irq/**.s")
+
+    if is_mode("debug") then 
+        set_symbols("debug")
+    elseif is_mode("release") then
+        set_symbols("hidden")
+        set_strip("all")
+    end
 
     on_link(function (target) 
         local objs_table = target:objectfiles()
@@ -54,4 +65,14 @@ target("kernel")
         local output_path = path.translate("$(buildir)/kernel")
 
         os.exec("x86_64-elf-ld %s -L%s -T %s %s -o %s",ld_flags,lib_dir,ld_script,objs,output_path)
+    end)
+
+    on_run(function (target) 
+        local bochs_cmd = "bochs"
+        if is_host("windows") then
+            bochs_cmd = "bochsdbg"
+        end
+
+        local bochs_config = "$(projectdir)/test/bochsrc.bxrc"
+        os.exec("%s -f %s -q",bochs_cmd,bochs_config)
     end)
