@@ -32,8 +32,8 @@
 *.app
 
 # build
-build/bin
-build/temp
+build/
+.xmake/
 
 # Apple Desktop services store
 .DS_Store
