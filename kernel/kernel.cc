@@ -24,7 +24,8 @@
 extern "C" void kernel();
 
 void kernel() {
-    vga::clear_screen();
+    driver::vga::clear_screen();
+
     bigos::mm::init_mem();
     bigos::irq::init_irq();
 

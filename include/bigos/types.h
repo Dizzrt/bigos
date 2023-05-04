@@ -24,4 +24,7 @@ typedef uint64_t* ptr64_t;
 #define NAMESPACE_BIGOS_BEG namespace bigos {
 #define NAMESPACE_BIGOS_END }
 
+#define NAMESPACE_DRIVER_BEG namespace driver {
+#define NAMESPACE_DRIVER_END }
+
 #endif   // _BIG_TYPES_H

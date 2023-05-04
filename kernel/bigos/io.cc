@@ -32,11 +32,11 @@ void bigos::outb(uint16_t port, uint8_t value) {
 }
 
 void bigos::kput(char c) {
-    vga::write(c);
+    driver::vga::write(c);
 }
 
 void bigos::kputs(const char* s) {
-    vga::write(s);
+    driver::vga::write(s);
 }
 
 static uint8_t buffer_append(char* buffer, char* str, uint32_t offset) {

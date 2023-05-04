@@ -9,107 +9,128 @@
 #include <video/vga.h>
 #include <bigos/io.h>
 
-ptr8_t vga::get_bf_pointer() {
-    uintptr_t addr = 0xb8000;
-    addr = addr + (get_cursor_position() << 1);
-    return (ptr8_t)addr;
-}
+NAMESPACE_DRIVER_BEG
+namespace vga {
+    static DisplayMode mode_3{80, 25, true};
 
-uint16_t vga::get_cursor_position() {
-    uint16_t pos;
-    bigos::outb(VGA_CRT_IC, 0x0e);
-    pos = bigos::inb(VGA_CRT_DC);
+    // TODO support more display mode
+    // only support mode_3 yet
+    static DisplayMode *mode = &mode_3;
+    static uint64_t frame_buffer_base = 0xb8000;
 
-    pos <<= 8;
-    bigos::outb(VGA_CRT_IC, 0x0f);
-    pos |= bigos::inb(VGA_CRT_DC);
-
-    return pos;
-}
-
-void vga::move_cursor(int16_t offset) {
-    uint16_t pos = get_cursor_position() + offset;
-    set_cursor_position(pos);
-}
-
-void vga::set_cursor_position(uint16_t position) {
-    bigos::outb(VGA_CRT_IC, 0x0e);
-    bigos::outb(VGA_CRT_DC, (uint8_t)(position >> 8));
-    bigos::outb(VGA_CRT_IC, 0x0f);
-    bigos::outb(VGA_CRT_DC, (uint8_t)position);
-}
-
-void vga::set_cursor_position(uint16_t x, uint16_t y) {
-    uint16_t pos = y * 80 + x;
-    set_cursor_position(pos);
-}
-
-void vga::clear_screen() {
-    ptr8_t bf_ptr = (ptr8_t)VGA_TEXT_FB_BASE;
-    for (int i = 0; i < 80 * 25 * 2; i += 2) {
-        bf_ptr[i] = 0x20;
-        bf_ptr[i + 1] = 0x0f;
+    static inline uint16_t convert_pos(uint8_t __x, uint8_t __y) {
+        return mode->width * __y + __x;
     }
 
-    set_cursor_position(0);
-}
+    // return the offset of cursor
+    static uint16_t get_cursor() {
+        uint16_t ret;
 
-void vga::scroll_screen() {
-    // TODO
-}
+        bigos::outb(VGA_CRT_IC, 0x0e);
+        ret = bigos::inb(VGA_CRT_DC);
 
-void vga::write(char c, uint8_t color) {
-    uint16_t pos = get_cursor_position();
-    write(c, pos, color);
-}
+        ret <<= 8;
+        bigos::outb(VGA_CRT_IC, 0x0f);
+        ret |= bigos::inb(VGA_CRT_DC);
 
-void vga::write(char c, uint16_t position, uint8_t color) {
-    if (c == '\n') {
-        position = (position / 80 + 1) * 80;
-        set_cursor_position(position);
-    } else if (c == '\t') {
-        move_cursor(4);
-    } else {
-        ptr8_t bf_ptr = (ptr8_t)((position << 1) + VGA_TEXT_FB_BASE);
-        bf_ptr[0] = c;
-        bf_ptr[1] = color;
-        move_cursor(1);
+        return ret;
     }
-}
 
-void vga::write(char c, uint16_t x, uint16_t y, uint8_t color) {
-    uint16_t pos = y * 80 + x;
-    write(c, pos, color);
-}
+    static void set_cursor(uint16_t __pos) {
+        bigos::outb(VGA_CRT_IC, 0x0e);
+        bigos::outb(VGA_CRT_DC, (uint8_t)(__pos >> 8));
+        bigos::outb(VGA_CRT_IC, 0x0f);
+        bigos::outb(VGA_CRT_DC, (uint8_t)__pos);
+    }
 
-void vga::write(const char *s, uint8_t color) {
-    uint16_t pos = get_cursor_position();
-    write(s, pos, color);
-}
-
-void vga::write(const char *s, uint16_t position, uint8_t color) {
-    ptr8_t bf_ptr = (ptr8_t)((position << 1) + VGA_TEXT_FB_BASE);
-    while (*s != 0) {
-        if (*s == '\n') {
-            position = get_cursor_position();
-            position = (position / 80 + 1) * 80;
-            set_cursor_position(position);
-            bf_ptr = get_bf_pointer();
-        } else if (*s == '\t') {
-            move_cursor(4);
-            bf_ptr += 8;
-        } else {
-            bf_ptr[0] = *s;
-            bf_ptr[1] = color;
-
-            bf_ptr += 2;
-            move_cursor(1);
+    static void write(char __ch, uint16_t __pos, uint8_t __color = VT_COLOR_NORMAL) {
+        if (__ch == '\n') {
+            __pos = (__pos / mode->width + 1) * mode->width;
+            set_cursor(__pos);
+            return;
         }
-        s++;
-    }
-}
 
-void vga::write(const char *s, uint16_t x, uint16_t y, uint8_t color) {
-    uint16_t pos = y * 80 + x;
-    write(s, pos, color);
-}
+        if (__ch == '\t') {
+            move_cursor(4);
+            return;
+        }
+
+        ptr8_t fb_ptr = (ptr8_t)((__pos << 1) + frame_buffer_base);
+        fb_ptr[0] = __ch;
+        fb_ptr[1] = __color;
+        move_cursor();
+    }
+
+    static void write(const char *__s, uint16_t __pos, uint8_t __color = VT_COLOR_NORMAL) {
+        ptr8_t fb_ptr = (ptr8_t)((__pos << 1) + frame_buffer_base);
+        set_cursor(__pos);
+
+        while (*__s != 0) {
+            char c = *__s;
+            ++__s;
+
+            if (c == '\n') {
+                __pos = get_cursor();
+                __pos = (__pos / mode->width + 1) * mode->width;
+
+                set_cursor(__pos);
+                fb_ptr = (ptr8_t)((__pos << 1) + frame_buffer_base);
+                continue;
+            }
+
+            if (c == '\t') {
+                move_cursor(4);
+                fb_ptr += 8;
+                continue;
+            }
+
+            fb_ptr[0] = c;
+            fb_ptr[1] = __color;
+
+            fb_ptr += 2;
+            move_cursor();
+        }
+    }
+
+    void set_cursor(uint8_t __x, uint8_t __y) {
+        set_cursor(convert_pos(__x, __y));
+    }
+
+    void move_cursor(int16_t __offset) {
+        uint16_t pos = get_cursor() + __offset;
+        set_cursor(pos);
+    }
+
+    void write(char __ch, uint8_t __color) {
+        write(__ch, get_cursor(), __color);
+    }
+
+    void write(char __ch, uint8_t __x, uint8_t __y, uint8_t __color) {
+        write(__ch, convert_pos(__x, __y), __color);
+    }
+
+    void write(const char *__s, uint8_t __color) {
+        write(__s, get_cursor(), __color);
+    }
+
+    void write(const char *__s, uint8_t __x, uint8_t __y, uint8_t __color) {
+        write(__s, convert_pos(__x, __y), __color);
+    }
+
+    void clear_screen() {
+        ptr8_t fb_ptr = (ptr8_t)frame_buffer_base;
+        uint32_t nr_char = mode->width * mode->height;
+
+        while (nr_char--) {
+            fb_ptr[0] = 0x20;
+            fb_ptr[1] = VT_COLOR_NORMAL;
+
+            fb_ptr += 2;
+        }
+
+        set_cursor(0);
+    }
+
+    // TODO void scroll_screen(int16_t __offset) {}
+}   // namespace vga
+NAMESPACE_DRIVER_END
