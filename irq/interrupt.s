@@ -1,12 +1,12 @@
 # 
-# File: isr.s
+# File: interrupt.s
 # Created by Dizzrt on 2023/04/29.
 # 
 # Copyright (C) 2023 The BigOS Authors.
 # Licensed under the GNU General Public License v3.0 only.
 # 
 
-.file "isr.s"
+.file "interrupt.s"
 .code64
 
 .text

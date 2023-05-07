@@ -58,37 +58,39 @@
 #define VT_COLOR_SUCCESS  0x0a
 
 NAMESPACE_DRIVER_BEG
-namespace vga {
-    struct DisplayMode {
-        uint32_t width;
-        uint32_t height;
-        bool isText;
-        uint8_t aligned[3];
-        // uint8_t color_bytes;
-    };
+namespace video {
+    namespace vga {
+        struct DisplayMode {
+            uint32_t width;
+            uint32_t height;
+            bool isText;
+            uint8_t aligned[3];
+            // uint8_t color_bytes;
+        };
 
-    // text mode functions
-    // set the cursor position
-    void set_cursor(uint8_t __x, uint8_t __y);
+        // text mode functions
+        // set the cursor position
+        void set_cursor(uint8_t __x, uint8_t __y);
 
-    // if __offset is positive move forward else move backward
-    void move_cursor(int16_t __offset = 1);
+        // if __offset is positive move forward else move backward
+        void move_cursor(int16_t __offset = 1);
 
-    void write(char __ch, uint8_t __color = VT_COLOR_NORMAL);
-    void write(char __ch, uint8_t __x, uint8_t __y, uint8_t __color = VT_COLOR_NORMAL);
+        void write(char __ch, uint8_t __color = VT_COLOR_NORMAL);
+        void write(char __ch, uint8_t __x, uint8_t __y, uint8_t __color = VT_COLOR_NORMAL);
 
-    void write(const char *__s, uint8_t __color = VT_COLOR_NORMAL);
-    void write(const char *__s, uint8_t __x, uint8_t __y, uint8_t __color = VT_COLOR_NORMAL);
+        void write(const char *__s, uint8_t __color = VT_COLOR_NORMAL);
+        void write(const char *__s, uint8_t __x, uint8_t __y, uint8_t __color = VT_COLOR_NORMAL);
 
-    void clear_screen();
+        void clear_screen();
 
-    // if __offset is positive scroll up else scroll down
-    // TODO void scroll_screen(int16_t __offset = 1);
+        // if __offset is positive scroll up else scroll down
+        // TODO void scroll_screen(int16_t __offset = 1);
 
-    // TODO graphic mode functions
+        // TODO graphic mode functions
 
-    // TODO common functions
+        // TODO common functions
 
-}   // namespace vga
+    }   // namespace vga
+}   // namespace video
 NAMESPACE_DRIVER_END
 #endif   // _BIG_VGA_H

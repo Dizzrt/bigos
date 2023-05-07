@@ -34,19 +34,6 @@ namespace irq {
         }
     };
 
-    void init_irq() noexcept;
-
-    inline void enable_irq() noexcept {
-        asm volatile("sti");
-    }
-
-    inline void disable_irq() noexcept {
-        asm volatile("cli");
-    }
-}   // namespace irq
-
-// implement in file isr.cc
-namespace isr {
     typedef void (*isr_handler)(uint64_t __irq_num, uint64_t __ecode);
 
     namespace __detail {
@@ -55,7 +42,18 @@ namespace isr {
         void init_idt() noexcept;
     }   // namespace __detail
 
+    inline void enable_irq() noexcept {
+        asm volatile("sti");
+    }
+
+    inline void disable_irq() noexcept {
+        asm volatile("cli");
+    }
+
     void register_isr(uint64_t __irq_num, isr_handler __isr) noexcept;
-}   // namespace isr
+
+    void init_irq() noexcept;
+}   // namespace irq
+
 NAMESPACE_BIGOS_END
 #endif   // _BIG_INTERRUPT_H

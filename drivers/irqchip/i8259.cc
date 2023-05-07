@@ -13,69 +13,69 @@
 
 static uint16_t init_mask = 0xffff;
 
-NAMESPACE_BIGOS_BEG
-namespace irq {
-    namespace __detail {
-        void init_i8259() {
+NAMESPACE_DRIVER_BEG
+namespace irqchip {
+    namespace i8259 {
+        void init() {
             // master
-            outb(I8259_MASTER_ICW1, 0x11);
-            outb(I8259_MASTER_ICW2, 0x20);
-            outb(I8259_MASTER_ICW3, 0x04);
-            outb(I8259_MASTER_ICW4, 0x01);
-            outb(I8259_MASTER_OCW1, init_mask);
+            bigos::outb(I8259_MASTER_ICW1, 0x11);
+            bigos::outb(I8259_MASTER_ICW2, 0x20);
+            bigos::outb(I8259_MASTER_ICW3, 0x04);
+            bigos::outb(I8259_MASTER_ICW4, 0x01);
+            bigos::outb(I8259_MASTER_OCW1, init_mask);
 
             // slave
-            outb(I8259_SLAVE_ICW1, 0x11);
-            outb(I8259_SLAVE_ICW2, 0x28);
-            outb(I8259_SLAVE_ICW3, 0x02);
-            outb(I8259_SLAVE_ICW4, 0x01);
-            outb(I8259_SLAVE_OCW1, (init_mask >> 8));
-        }
-    }   // namespace __detail
-
-    void i8259_init_imr(uint16_t __irq_num) {
-        if (__irq_num > 0x0f)
-            return;
-
-        uint16_t mask = 1 << __irq_num;
-        init_mask &= ~mask;
-    }
-
-    void i8259_set_imr(uint8_t __irq_num) {
-        uint8_t value;
-        uint16_t port;
-
-        if (__irq_num < 8) {
-            port = I8259_MASTER_OCW1;
-        } else {
-            port = I8259_SLAVE_OCW1;
-            __irq_num -= 8;
+            bigos::outb(I8259_SLAVE_ICW1, 0x11);
+            bigos::outb(I8259_SLAVE_ICW2, 0x28);
+            bigos::outb(I8259_SLAVE_ICW3, 0x02);
+            bigos::outb(I8259_SLAVE_ICW4, 0x01);
+            bigos::outb(I8259_SLAVE_OCW1, (init_mask >> 8));
         }
 
-        value = inb(port) | (1 << __irq_num);
-        outb(port, value);
-    }
+        void init_imr(uint16_t __irq_num) {
+            if (__irq_num > 0x0f)
+                return;
 
-    void i8259_reset_imr(uint8_t __irq_num) {
-        uint8_t value;
-        uint16_t port;
-
-        if (__irq_num < 8) {
-            port = I8259_MASTER_OCW1;
-        } else {
-            port = I8259_SLAVE_OCW1;
-            __irq_num -= 8;
+            uint16_t mask = 1 << __irq_num;
+            init_mask &= ~mask;
         }
 
-        value = inb(port) & ~(1 << __irq_num);
-        outb(port, value);
-    }
+        void set_imr(uint8_t __irq_num) {
+            uint8_t value;
+            uint16_t port;
 
-    void i8259_EOI(uint16_t __irq_num) {
-        if (__irq_num >= 8)
-            outb(I8259_SLAVE_OCW2, I8259_EOI);
+            if (__irq_num < 8) {
+                port = I8259_MASTER_OCW1;
+            } else {
+                port = I8259_SLAVE_OCW1;
+                __irq_num -= 8;
+            }
 
-        outb(I8259_MASTER_OCW2, I8259_EOI);
-    }
-}   // namespace irq
-NAMESPACE_BIGOS_END
+            value = bigos::inb(port) | (1 << __irq_num);
+            bigos::outb(port, value);
+        }
+
+        void reset_imr(uint8_t __irq_num) {
+            uint8_t value;
+            uint16_t port;
+
+            if (__irq_num < 8) {
+                port = I8259_MASTER_OCW1;
+            } else {
+                port = I8259_SLAVE_OCW1;
+                __irq_num -= 8;
+            }
+
+            value = bigos::inb(port) & ~(1 << __irq_num);
+            bigos::outb(port, value);
+        }
+
+        void send_eoi(uint16_t __irq_num) {
+            if (__irq_num >= 8)
+                bigos::outb(I8259_SLAVE_OCW2, I8259_EOI);
+
+            bigos::outb(I8259_MASTER_OCW2, I8259_EOI);
+        }
+    }   // namespace i8259
+}   // namespace irqchip
+NAMESPACE_DRIVER_END

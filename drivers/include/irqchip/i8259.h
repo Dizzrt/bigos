@@ -46,17 +46,17 @@
 
 #define i8259_get_irq_num(irq) (irq + I8259_IRQ_BASE)
 
-NAMESPACE_BIGOS_BEG
-namespace irq {
-    namespace __detail {
-        void init_i8259() noexcept;
-    }   // namespace __detail
+NAMESPACE_DRIVER_BEG
+namespace irqchip {
+    namespace i8259 {
+        void init() noexcept;
 
-    void i8259_init_imr(uint16_t __irq_num) noexcept;
-    void i8259_set_imr(uint8_t __irq_num) noexcept;
-    void i8259_reset_imr(uint8_t __irq_num) noexcept;
+        void init_imr(uint16_t __irq_num) noexcept;
+        void set_imr(uint8_t __irq_num) noexcept;
+        void reset_imr(uint8_t __irq_num) noexcept;
 
-    void i8259_EOI(uint16_t __irq_num) noexcept;
-}   // namespace irq
-NAMESPACE_BIGOS_END
+        void send_eoi(uint16_t __irq_num) noexcept;
+    }   // namespace i8259
+}   // namespace irqchip
+NAMESPACE_DRIVER_END
 #endif   // _BIG_I8259_H
