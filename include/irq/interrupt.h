@@ -13,11 +13,11 @@
 
 #define IDT_SIZE    0x1000
 #define IDT_BASE    0x1000ul
-#define MAX_IRQ_NUM (IDT_SIZE / sizeof(bigos::irq::INTDescriptor) - 1)
+#define MAX_IRQ_NUM (IDT_SIZE / sizeof(bigos::irq::IntrDescriptor) - 1)
 
 NAMESPACE_BIGOS_BEG
 namespace irq {
-    struct INTDescriptor {
+    struct IntrDescriptor {
         uint16_t offset_low;
         uint16_t selector;
         uint16_t attributes;
@@ -25,8 +25,8 @@ namespace irq {
         uint32_t offset_high;
         uint32_t reserved;
 
-        INTDescriptor() = default;
-        INTDescriptor(void* __addr) {
+        IntrDescriptor() = default;
+        IntrDescriptor(void* __addr) {
             uint64_t addr = (uint64_t)__addr;
             offset_low = addr;
             offset_mid = addr >> 16;
@@ -34,11 +34,9 @@ namespace irq {
         }
     };
 
-    typedef void (*isr_handler)(uint64_t __irq_num, uint64_t __ecode);
+    typedef void (*irq_handler)(uint64_t __irq_num, uint64_t __ecode);
 
     namespace __detail {
-        extern "C" isr_handler isr_list[MAX_IRQ_NUM];
-
         void init_idt() noexcept;
     }   // namespace __detail
 
@@ -49,8 +47,6 @@ namespace irq {
     inline void disable_irq() noexcept {
         asm volatile("cli");
     }
-
-    void register_isr(uint64_t __irq_num, isr_handler __isr) noexcept;
 
     void init_irq() noexcept;
 }   // namespace irq
