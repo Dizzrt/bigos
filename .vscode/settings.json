@@ -8,7 +8,7 @@
         "${workspaceFolder}/drivers/include",
         "${workspaceFolder}/c++/libsupc++/include"
     ],
-    "python.formatting.provider": "yapf",
+    "python.formatting.provider": "black",
     "psi-header.config": {
         "forceToTop": true,
         "blankLinesAfter": 1,
@@ -79,5 +79,8 @@
     "files.associations": {
         "type_traits": "cpp",
         "new": "cpp"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
     }
 }

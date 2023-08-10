@@ -1,0 +1,91 @@
+[
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/kernel/string.cc.o", "kernel/string.cc"],
+  "file": "kernel/string.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/kernel/bigos/utils.cc.o", "kernel/bigos/utils.cc"],
+  "file": "kernel/bigos/utils.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/kernel/bigos/io.cc.o", "kernel/bigos/io.cc"],
+  "file": "kernel/bigos/io.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/kernel/kernel.cc.o", "kernel/kernel.cc"],
+  "file": "kernel/kernel.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/ktl/bitset.cc.o", "ktl/bitset.cc"],
+  "file": "ktl/bitset.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/ktl/buffer.cc.o", "ktl/buffer.cc"],
+  "file": "ktl/buffer.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/ktl/list.cc.o", "ktl/list.cc"],
+  "file": "ktl/list.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/drivers/video/vga.cc.o", "drivers/video/vga.cc"],
+  "file": "drivers/video/vga.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/drivers/irqchip/i8259.cc.o", "drivers/irqchip/i8259.cc"],
+  "file": "drivers/irqchip/i8259.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/c++/libsupc++/cxxabi.cc.o", "c++/libsupc++/cxxabi.cc"],
+  "file": "c++/libsupc++/cxxabi.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/c++/libsupc++/new.cc.o", "c++/libsupc++/new.cc"],
+  "file": "c++/libsupc++/new.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/mm/vmem.cc.o", "mm/vmem.cc"],
+  "file": "mm/vmem.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/mm/slab.cc.o", "mm/slab.cc"],
+  "file": "mm/slab.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/mm/buddy.cc.o", "mm/buddy.cc"],
+  "file": "mm/buddy.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/mm/kmem.cc.o", "mm/kmem.cc"],
+  "file": "mm/kmem.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/irq/isr.cc.o", "irq/isr.cc"],
+  "file": "irq/isr.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O2", "-std=c++17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-DNDEBUG", "-o", "build/.objs/kernel/cross/x86_64/release/irq/interrupt.cc.o", "irq/interrupt.cc"],
+  "file": "irq/interrupt.cc"
+},
+{
+  "directory": "/Users/dizzrt/Desktop/bigos",
+  "arguments": ["/Library/Developer/CommandLineTools/usr/bin/clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-O2", "-std=c17", "-I/Users/dizzrt/Desktop/bigos/include", "-I/Users/dizzrt/Desktop/bigos/c++/include", "-I/Users/dizzrt/Desktop/bigos/c++/libsupc++/include", "-I/Users/dizzrt/Desktop/bigos/drivers/include", "-Dx86_64-elf-gcc", "-mno-sse", "-mno-sse2", "-mno-mmx", "-mcmodel=kernel", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions", "-o", "build/.objs/kernel/cross/x86_64/release/irq/interrupt.s.o", "irq/interrupt.s"],
+  "file": "irq/interrupt.s"
+}]
