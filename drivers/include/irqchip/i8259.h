@@ -51,11 +51,10 @@ namespace irqchip {
     namespace i8259 {
         void init() noexcept;
 
-        void init_imr(uint16_t __irq_num) noexcept;
-        void set_imr(uint8_t __irq_num) noexcept;
-        void reset_imr(uint8_t __irq_num) noexcept;
+        void enable_irq(uint8_t __irq) noexcept;
+        void disable_irq(uint8_t __irq) noexcept;
 
-        void send_eoi(uint16_t __irq_num) noexcept;
+        void send_eoi(uint16_t __irq) noexcept;
     }   // namespace i8259
 }   // namespace irqchip
 NAMESPACE_DRIVER_END
