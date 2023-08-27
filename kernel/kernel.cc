@@ -17,17 +17,22 @@
 
 #include <video/vga.h>
 
-#include <mm/kmem.h>
-#include <mm/memory.h>
+#include <memory.h>
 #include <irq/interrupt.h>
+#include <bigos/tty.h>
+
+#include <bigos/io.h>
+#include <ktl/buffer.h>
 
 extern "C" void kernel();
 
 void kernel() {
-    driver::vga::clear_screen();
+    driver::video::vga::clear_screen();
 
-    bigos::mm::init_mem();
+    bigos::init_mem();
     bigos::irq::init_irq();
+    // bigos::terminal::init_tty();
+    bigos::irq::enable_irq();
 
     while (true) {
         asm volatile("hlt");

@@ -9,10 +9,10 @@
 #ifndef _BIG_BUDDY_H
 #define _BIG_BUDDY_H
 
-#include "memdef.h"
-
 #include <ktl/list.h>
 #include <bigos/types.h>
+
+#include <memdef.h>
 
 // get page block size by order
 #define get_pblk_size(ORDER) (PAGE_SIZE * (1ul << ORDER))

@@ -1,0 +1,45 @@
+//
+// File: algorithm
+// Created by Dizzrt on 2023/04/05.
+//
+// Copyright (C) 2023 The BigOS Authors.
+// Licensed under the GNU General Public License v3.0 only.
+//
+
+#ifndef _BIG_ALGORITHM_H
+#define _BIG_ALGORITHM_H
+
+#pragma GCC system_header
+
+namespace std {
+    template <typename _Tp>
+    constexpr inline const _Tp& min(const _Tp& x, const _Tp& y) {
+        if (x < y)
+            return x;
+        return y;
+    }
+
+    template <typename _Tp, typename _Compare>
+    constexpr inline const _Tp& min(const _Tp& x, const _Tp& y, _Compare compare) {
+        if (compare(x, y))
+            return x;
+        return y;
+    }
+
+    template <typename _Tp>
+    constexpr inline const _Tp& max(const _Tp& x, const _Tp& y) {
+        if (x > y)
+            return x;
+        return y;
+    }
+
+    template <typename _Tp, typename _Compare>
+    constexpr inline const _Tp& max(const _Tp& x, const _Tp& y, _Compare compare) {
+        if (compare(x, y))
+            return x;
+        return y;
+    }
+
+}   // namespace std
+
+#endif

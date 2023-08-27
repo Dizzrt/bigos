@@ -235,6 +235,23 @@ namespace ktl {
             _position._node->unhook();
             _nr_node--;
         }
+
+        void remove(const value_type &_value) {
+            iterator first = begin();
+            iterator last = end();
+
+            while (first != last) {
+                iterator next = first;
+                ++next;
+
+                if (*first == _value) {
+                    first._node->unhook();
+                    _nr_node--;
+                }
+
+                first = next;
+            }
+        }
     };
 
     template <typename _Tp>

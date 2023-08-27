@@ -6,7 +6,7 @@
 // Licensed under the GNU General Public License v3.0 only.
 //
 
-#include <mm/memory.h>
+#include <memory.h>
 #include <bigos/types.h>
 
 // operator new

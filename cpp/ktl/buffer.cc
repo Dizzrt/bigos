@@ -9,7 +9,7 @@
 #include <ktl/buffer.h>
 
 #include <string.h>
-#include <mm/memory.h>
+#include <memory.h>
 
 ktl::Buffer::Buffer(uint32_t __cap, ptr8_t __buffer) : cap_(__cap), size_(0), head(0), tail(0), buffer_(__buffer) {
     if (buffer_ == nullptr)

@@ -18,29 +18,29 @@ set_toolchains("x86_64-elf-gcc")
 add_rules("mode.debug", "mode.release")
 
 add_includedirs("$(projectdir)/include")
-add_includedirs("$(projectdir)/c++/include")
-add_includedirs("$(projectdir)/c++/libsupc++/include")
+add_includedirs("$(projectdir)/cpp/include")
+add_includedirs("$(projectdir)/cpp/libsupc++/include")
 add_includedirs("$(projectdir)/drivers/include")
+add_includedirs("$(projectdir)/mm")
+add_includedirs("$(projectdir)/mm/include")
 
 add_cxxflags("-mno-sse","-mno-sse2", "-mno-mmx", "-mcmodel=kernel", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions")
 
 add_asflags("-mno-sse","-mno-sse2", "-mno-mmx", "-mcmodel=kernel", "-ffreestanding", "-mno-red-zone", "-fno-rtti", "-fno-exceptions")
 
 target("kernel")
-    set_kind("binary")
-    -- O2 optimize
-    set_optimize("faster")
-
     set_plat("cross")
     set_arch("x86_64")
+    set_kind("binary")
+    
+    -- O2 optimize
+    set_optimize("faster")
     
     add_files("kernel/**.cc")
-    add_files("ktl/**.cc")
+    add_files("kernel/**.s")
+    add_files("cpp/**.cc")
     add_files("drivers/**.cc")
-    add_files("c++/**.cc")
     add_files("mm/**.cc")
-    add_files("irq/**.cc")
-    add_files("irq/**.s")
 
     if is_mode("debug") then 
         set_symbols("debug")

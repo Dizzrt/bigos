@@ -6,12 +6,12 @@
 // Licensed under the GNU General Public License v3.0 only.
 //
 
-#include <mm/kmem.h>
-#include <mm/vmem.h>
-#include <mm/buddy.h>
-
 #include <type_traits>
 #include <bigos/io.h>   // TODO remove later
+
+#include "kmem.h"
+#include "vmem.h"
+#include "buddy.h"
 
 namespace bigos::mm::__detail {
     struct slab_order_compare {

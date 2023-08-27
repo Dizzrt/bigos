@@ -6,10 +6,10 @@
 // Licensed under the GNU General Public License v3.0 only.
 //
 
-#include <mm/vmem.h>
-
 #include <string.h>
 #include <bigos/io.h>   //TODO remove later
+
+#include "vmem.h"
 
 #define KVMEM_LEN        0x10000000000ul
 #define KVMEM_BASE       0xffff880000000000ul

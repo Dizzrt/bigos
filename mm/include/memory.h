@@ -22,6 +22,8 @@ _attr_nodiscard_ extern void *kmalloc(size_t __size, gfm_t __gfm = 0) noexcept _
 
 extern void free(const void *__p) noexcept;
 
+void init_mem() noexcept;
+
 NAMESPACE_BIGOS_END
 
 #endif   // _BIG_MEMORY_H

@@ -6,14 +6,13 @@
 // Licensed under the GNU General Public License v3.0 only.
 //
 
-#include <mm/slab.h>
-#include <mm/memory.h>
-#include <mm/memdef.h>
-
 #include <new>
 #include <stdarg.h>
-
 #include <bigos/io.h>   // TODO remove later
+
+#include "slab.h"
+#include "memory.h"
+#include "memdef.h"
 
 NAMESPACE_BIGOS_BEG
 namespace mm {

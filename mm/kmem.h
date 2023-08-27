@@ -9,11 +9,10 @@
 #ifndef _BIG_KMEM_H
 #define _BIG_KMEM_H
 
-#include "slab.h"
-
 #include <bigos/types.h>
 #include <bigos/attributes.h>
 
+#include "slab.h"
 #include "buddy.h"   //TODO remove later
 
 NAMESPACE_BIGOS_BEG

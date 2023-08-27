@@ -9,11 +9,11 @@
 #ifndef _BIG_SLAB_H
 #define _BIG_SLAB_H
 
-#include <mm/buddy.h>
-
 #include <ktl/list.h>
 #include <ktl/bitset.h>
 #include <bigos/types.h>
+
+#include "buddy.h"
 
 #define LONG_ALIGN(SIZE) ((SIZE + sizeof(long) - 1) & ~(sizeof(long) - 1))
 

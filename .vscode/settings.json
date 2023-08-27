@@ -4,9 +4,10 @@
     "C_Cpp.formatting": "clangFormat",
     "C_Cpp.default.systemIncludePath": [
         "${workspaceFolder}/include",
-        "${workspaceFolder}/c++/include",
+        "${workspaceFolder}/cpp/include",
+        "${workspaceFolder}/cpp/libsupc++/include",
         "${workspaceFolder}/drivers/include",
-        "${workspaceFolder}/c++/libsupc++/include"
+        "${workspaceFolder}/mm/include",
     ],
     "python.formatting.provider": "black",
     "psi-header.config": {
@@ -78,6 +79,7 @@
     ],
     "files.associations": {
         "type_traits": "cpp",
+        "algorithm": "cpp",
         "new": "cpp"
     },
     "[python]": {

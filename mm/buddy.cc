@@ -6,9 +6,9 @@
 // Licensed under the GNU General Public License v3.0 only.
 //
 
-#include <mm/buddy.h>
-
 #include <bigos/io.h>   // remove later
+
+#include "buddy.h"
 
 // ards types
 #define ARDS_USABLE   1

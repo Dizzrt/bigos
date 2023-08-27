@@ -9,13 +9,13 @@
 #ifndef _BIG_VMEM_H
 #define _BIG_VMEM_H
 
-#include "buddy.h"
-#include "memdef.h"
-#include "memory.h"
-
 #include <ktl/pair.h>
 #include <bigos/types.h>
 #include <bigos/attributes.h>
+
+#include "buddy.h"
+#include "memdef.h"
+#include "memory.h"
 
 NAMESPACE_BIGOS_BEG
 namespace mm {
