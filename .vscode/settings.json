@@ -9,7 +9,6 @@
         "${workspaceFolder}/drivers/include",
         "${workspaceFolder}/mm/include",
     ],
-    "python.formatting.provider": "black",
     "psi-header.config": {
         "forceToTop": true,
         "blankLinesAfter": 1,
@@ -83,6 +82,7 @@
         "new": "cpp"
     },
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
     }
 }
