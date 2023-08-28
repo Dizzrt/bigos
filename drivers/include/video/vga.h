@@ -41,15 +41,15 @@
 #define VT_FGC_WHITE       0x0f
 
 // vga text mode background colors
-#define VT_BLINK     0x80
-#define VT_BGC_BLACK 0x00
-#define VT_BGC_BLACK 0x10
-#define VT_BGC_BLACK 0x20
-#define VT_BGC_BLACK 0x30
-#define VT_BGC_BLACK 0x40
-#define VT_BGC_BLACK 0x50
-#define VT_BGC_BLACK 0x60
-#define VT_BGC_BLACK 0x70
+#define VT_BLINK          0x80
+#define VT_BGC_BLACK      0x00
+#define VT_BGC_BLUE       0x10
+#define VT_BGC_GREEN      0x20
+#define VT_BGC_CYAN       0x30
+#define VT_BGC_RED        0x40
+#define VT_BGC_MAGENTA    0x50
+#define VT_BGC_BROWN      0x60
+#define VT_BGC_LIGHT_GREY 0x70
 
 // vga text mode colors
 #define VT_COLOR_NORMAL   0x0f

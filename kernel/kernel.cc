@@ -19,7 +19,6 @@
 
 #include <memory.h>
 #include <irq/interrupt.h>
-#include <bigos/tty.h>
 
 #include <bigos/io.h>
 #include <ktl/buffer.h>
