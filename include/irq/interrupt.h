@@ -17,10 +17,25 @@
 
 NAMESPACE_BIGOS_BEG
 namespace irq {
+    namespace __detail {
+        void init_idt() noexcept;
+
+        struct IntrDescriptorAttributes {
+            uint16_t ist : 3;
+            uint16_t reserved : 5;
+            uint16_t type : 5;
+            uint16_t dpl : 2;
+            uint16_t p : 1;
+        } __attribute__((packed));
+    }   // namespace __detail
+
     struct IntrDescriptor {
         uint16_t offset_low;
         uint16_t selector;
-        uint16_t attributes;
+        union {
+            uint16_t attributes;
+            __detail::IntrDescriptorAttributes attributes_detail;
+        };
         uint16_t offset_mid;
         uint32_t offset_high;
         uint32_t reserved;
@@ -35,10 +50,6 @@ namespace irq {
     };
 
     typedef void (*irq_handler)(uint64_t __irq_num, uint64_t __ecode);
-
-    namespace __detail {
-        void init_idt() noexcept;
-    }   // namespace __detail
 
     inline void enable_irq() noexcept {
         asm volatile("sti");
